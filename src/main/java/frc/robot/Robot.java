@@ -4,7 +4,13 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -13,6 +19,17 @@ import edu.wpi.first.wpilibj.TimedRobot;
  * project.
  */
 public class Robot extends TimedRobot {
+  public Robot() {
+    // Log to a USB stick
+    Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/"));
+    // Publish data to NetworkTables
+    Logger.getInstance().addDataReceiver(new NT4Publisher());
+    // Enables power distribution logging
+    new PowerDistribution(1, ModuleType.kCTRE);
+
+    Logger.getInstance().start();
+  }
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
