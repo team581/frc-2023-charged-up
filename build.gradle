@@ -142,6 +142,8 @@ spotless {
 		googleJavaFormat()
 		trimTrailingWhitespace()
 		endWithNewline()
+
+		targetExclude('src/main/java/frc/robot/BuildConstants.java')
 	}
 
 	groovy {
