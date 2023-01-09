@@ -1,5 +1,8 @@
 {
   "[gradle]": {"editor.defaultFormatter": "richardwillis.vscode-spotless-gradle"},
+  "[groovy]": {"editor.defaultFormatter": "richardwillis.vscode-spotless-gradle"},
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.test.defaultConfig": "WPIlibUnitTests",
   "java.test.config": [{
     "workingDirectory": "${workspaceFolder}/build/jni/release",
     "name": "WPIlibUnitTests",
@@ -10,13 +13,8 @@
     "vmargs": ["-Djava.library.path=${workspaceFolder}/build/jni/release"]
   }],
   "editor.defaultFormatter": "richardwillis.vscode-spotless-gradle",
-  "java.server.launchMode": "Standard",
-  "[java]": {"editor.defaultFormatter": "richardwillis.vscode-spotless-gradle"},
-  "[ignore]": {"editor.defaultFormatter": "richardwillis.vscode-spotless-gradle"},
-  "[groovy]": {"editor.defaultFormatter": "richardwillis.vscode-spotless-gradle"},
-  "java.configuration.updateBuildConfiguration": "automatic",
-  "java.test.defaultConfig": "WPIlibUnitTests",
   "spotlessGradle.format.enable": true,
+  "java.server.launchMode": "Standard",
   "files.exclude": {
     "**/CVS": true,
     "**/*~": true,
@@ -30,5 +28,7 @@
     "**/.git": true,
     "**/.hg": true
   },
-  "[xml]": {"editor.defaultFormatter": "esbenp.prettier-vscode"}
+  "[xml]": {"editor.defaultFormatter": "esbenp.prettier-vscode"},
+  "[java]": {"editor.defaultFormatter": "richardwillis.vscode-spotless-gradle"},
+  "[ignore]": {"editor.defaultFormatter": "richardwillis.vscode-spotless-gradle"}
 }
