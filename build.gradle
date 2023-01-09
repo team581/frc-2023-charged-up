@@ -1,7 +1,8 @@
 plugins {
-    id "java"
-    id "edu.wpi.first.GradleRIO" version "2023.1.1"
-    id "com.peterabeles.gversion" version "1.10"
+	id "java"
+	id "edu.wpi.first.GradleRIO" version "2023.1.1"
+	id "com.peterabeles.gversion" version "1.10"
+	id "com.diffplug.spotless" version "6.11.0"
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
@@ -10,46 +11,46 @@ targetCompatibility = JavaVersion.VERSION_11
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
 
 repositories {
-    maven {
-        url = uri("https://maven.pkg.github.com/Mechanical-Advantage/AdvantageKit")
-        credentials {
-            username = "Mechanical-Advantage-Bot"
-            password = "\u0067\u0068\u0070\u005f\u006e\u0056\u0051\u006a\u0055\u004f\u004c\u0061\u0079\u0066\u006e\u0078\u006e\u0037\u0051\u0049\u0054\u0042\u0032\u004c\u004a\u006d\u0055\u0070\u0073\u0031\u006d\u0037\u004c\u005a\u0030\u0076\u0062\u0070\u0063\u0051"
-        }
-    }
+	maven {
+		url = uri("https://maven.pkg.github.com/Mechanical-Advantage/AdvantageKit")
+		credentials {
+			username = "Mechanical-Advantage-Bot"
+			password = "\u0067\u0068\u0070\u005f\u006e\u0056\u0051\u006a\u0055\u004f\u004c\u0061\u0079\u0066\u006e\u0078\u006e\u0037\u0051\u0049\u0054\u0042\u0032\u004c\u004a\u006d\u0055\u0070\u0073\u0031\u006d\u0037\u004c\u005a\u0030\u0076\u0062\u0070\u0063\u0051"
+		}
+	}
 }
 
 configurations.all {
-    exclude group: "edu.wpi.first.wpilibj"
+	exclude group: "edu.wpi.first.wpilibj"
 }
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
 deploy {
-    targets {
-        roborio(getTargetTypeClass('RoboRIO')) {
-            // Team number is loaded either from the .wpilib/wpilib_preferences.json
-            // or from command line. If not found an exception will be thrown.
-            // You can use getTeamOrDefault(team) instead of getTeamNumber if you
-            // want to store a team number in this file.
-            team = project.frc.getTeamNumber()
-            debug = project.frc.getDebugOrDefault(false)
+	targets {
+		roborio(getTargetTypeClass('RoboRIO')) {
+			// Team number is loaded either from the .wpilib/wpilib_preferences.json
+			// or from command line. If not found an exception will be thrown.
+			// You can use getTeamOrDefault(team) instead of getTeamNumber if you
+			// want to store a team number in this file.
+			team = project.frc.getTeamNumber()
+			debug = project.frc.getDebugOrDefault(false)
 
-            artifacts {
-                // First part is artifact name, 2nd is artifact type
-                // getTargetTypeClass is a shortcut to get the class type using a string
+			artifacts {
+				// First part is artifact name, 2nd is artifact type
+				// getTargetTypeClass is a shortcut to get the class type using a string
 
-                frcJava(getArtifactTypeClass('FRCJavaArtifact')) {
-                }
+				frcJava(getArtifactTypeClass('FRCJavaArtifact')) {
+				}
 
-                // Static files artifact
-                frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
-                    files = project.fileTree('src/main/deploy')
-                    directory = '/home/lvuser/deploy'
-                }
-            }
-        }
-    }
+				// Static files artifact
+				frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
+					files = project.fileTree('src/main/deploy')
+					directory = '/home/lvuser/deploy'
+				}
+			}
+		}
+	}
 }
 
 def deployArtifact = deploy.targets.roborio.artifacts.frcJava
@@ -63,33 +64,33 @@ def includeDesktopSupport = false
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 // Also defines JUnit 5.
 dependencies {
-    implementation wpi.java.deps.wpilib()
-    implementation wpi.java.vendor.java()
+	implementation wpi.java.deps.wpilib()
+	implementation wpi.java.vendor.java()
 
-    roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
-    roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)
+	roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
+	roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)
 
-    roborioRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.roborio)
-    roborioRelease wpi.java.vendor.jniRelease(wpi.platforms.roborio)
+	roborioRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.roborio)
+	roborioRelease wpi.java.vendor.jniRelease(wpi.platforms.roborio)
 
-    nativeDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.desktop)
-    nativeDebug wpi.java.vendor.jniDebug(wpi.platforms.desktop)
-    simulationDebug wpi.sim.enableDebug()
+	nativeDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.desktop)
+	nativeDebug wpi.java.vendor.jniDebug(wpi.platforms.desktop)
+	simulationDebug wpi.sim.enableDebug()
 
-    nativeRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.desktop)
-    nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
-    simulationRelease wpi.sim.enableRelease()
+	nativeRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.desktop)
+	nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
+	simulationRelease wpi.sim.enableRelease()
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+	testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 
-    annotationProcessor "org.littletonrobotics.akit.junction:junction-autolog:2.0.0"
+	annotationProcessor "org.littletonrobotics.akit.junction:junction-autolog:2.0.0"
 }
 
 test {
-    useJUnitPlatform()
-    systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
+	useJUnitPlatform()
+	systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
 }
 
 // Simulation configuration (e.g. environment variables).
@@ -100,9 +101,9 @@ wpi.sim.addDriverstation()
 // in order to make them all available at runtime. Also adding the manifest so WPILib
 // knows where to look for our Robot Class.
 jar {
-    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
-    manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+	from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+	manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
+	duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 // Configure jar and deploy tasks
@@ -112,16 +113,56 @@ wpi.java.configureTestTasks(test)
 
 // Configure string concat to always inline compile
 tasks.withType(JavaCompile) {
-    options.compilerArgs.add '-XDstringConcat=inline'
+	options.compilerArgs.add '-XDstringConcat=inline'
 }
 
 // Create build constants file during build
 project.compileJava.dependsOn(createVersionFile)
 gversion {
-  srcDir       = "src/main/java/"
-  classPackage = "frc.robot"
-  className    = "BuildConstants"
-  dateFormat   = "yyyy-MM-dd HH:mm:ss z"
-  timeZone     = "America/Los_Angeles"
-  indent       = "  "
+	srcDir       = "src/main/java/"
+	classPackage = "frc.robot"
+	className    = "BuildConstants"
+	dateFormat   = "yyyy-MM-dd HH:mm:ss z"
+	timeZone     = "America/Los_Angeles"
+	indent       = "  "
+}
+
+apply plugin: 'groovy'
+spotless {
+	encoding 'UTF-8'
+	lineEndings 'UNIX'
+
+	java {
+		licenseHeader '// Copyright (c) FIRST and other WPILib contributors.\n' +
+				'// Open Source Software; you can modify and/or share it under the terms of\n' +
+				'// the WPILib BSD license file in the root directory of this project.\n\n'
+		toggleOffOn()
+		importOrder()
+		removeUnusedImports()
+		googleJavaFormat()
+		trimTrailingWhitespace()
+		endWithNewline()
+	}
+
+	groovy {
+		importOrder()
+		excludeJava()
+		greclipse()
+	}
+
+	groovyGradle {
+		greclipse()
+	}
+
+	json {
+		target '**/*.json'
+		simple().indentWithSpaces(2)
+	}
+
+	format 'misc', {
+		target '.gitignore'
+
+		trimTrailingWhitespace()
+		endWithNewline()
+	}
 }
