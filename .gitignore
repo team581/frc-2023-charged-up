@@ -152,4 +152,4 @@ gradle-app.setting
 # WPILib simulation GUI and other tools window save file
 *-window.json
 
-src/main/java/frc/robot/BuildConstants.java
+src/main/java/frc/robot/generated

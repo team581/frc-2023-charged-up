@@ -119,8 +119,8 @@ tasks.withType(JavaCompile) {
 // Create build constants file during build
 project.compileJava.dependsOn(createVersionFile)
 gversion {
-	srcDir       = "src/main/java/"
-	classPackage = "frc.robot"
+	srcDir       = "src/main/java"
+	classPackage = "frc.robot.generated"
 	className    = "BuildConstants"
 	dateFormat   = "yyyy-MM-dd HH:mm:ss z"
 	timeZone     = "America/Los_Angeles"
@@ -143,7 +143,7 @@ spotless {
 		trimTrailingWhitespace()
 		endWithNewline()
 
-		targetExclude('src/main/java/frc/robot/BuildConstants.java')
+		targetExclude('src/main/java/frc/robot/generated/**')
 	}
 
 	groovy {
