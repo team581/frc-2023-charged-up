@@ -10,5 +10,5 @@ public class Config {
   public static final RobotConfigKind CONFIG_KIND =
       System.getenv("serialnum") == "xxxxx" ? RobotConfigKind.TYKE : RobotConfigKind.SPIKE;
 
-  public static final double EXAMPLE_FIELD = CONFIG_KIND == RobotConfigKind.SPIKE ? 123 : 321;
+  public static final double ELEVATOR_GEARING = CONFIG_KIND == RobotConfigKind.SPIKE ? 999 : 60.0 * 2.0;
 }
