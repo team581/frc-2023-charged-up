@@ -17,7 +17,8 @@ public class LifecycleSubsystem extends SubsystemBase {
   private enum Mode {
     TELEOP,
     AUTONOMOUS,
-    DISABLED
+    DISABLED,
+    ENABLED
   }
 
   private Mode mode = null;
@@ -31,6 +32,20 @@ public class LifecycleSubsystem extends SubsystemBase {
     super.periodic();
     robotPeriodic();
 
+    if (DriverStation.isEnabled()) {
+      enabledPeriodic();
+      if (mode != Mode.ENABLED) {
+        enabledInit();
+        mode = Mode.ENABLED;
+      }
+    } else {
+      disabledPeriodic();
+      if (mode != Mode.DISABLED) {
+        disabledInit();
+        mode = Mode.DISABLED;
+      }
+    }
+
     if (DriverStation.isTeleopEnabled()) {
       teleopPeriodic();
       if (mode != Mode.TELEOP) {
@@ -43,12 +58,6 @@ public class LifecycleSubsystem extends SubsystemBase {
         autonomousInit();
         mode = Mode.AUTONOMOUS;
       }
-    } else if (DriverStation.isDisabled()) {
-      disabledPeriodic();
-      if (mode != Mode.DISABLED) {
-        disabledInit();
-        mode = Mode.DISABLED;
-      }
     }
   }
 
@@ -57,6 +66,10 @@ public class LifecycleSubsystem extends SubsystemBase {
 
   /** {@link IterativeRobotBase#robotPeriodic()} */
   public void robotPeriodic() {}
+
+  public void enabledInit() {}
+
+  public void enabledPeriodic() {}
 
   /** {@link IterativeRobotBase#autonomousInit()} */
   public void autonomousInit() {}
