@@ -1,14 +1,52 @@
 {
-  "javaDependencies": [{
-    "groupId": "com.ctre.phoenixpro",
-    "artifactId": "wpiapi-java",
-    "version": "23.0.1"
-  }],
-  "fileName": "PhoenixPro.json",
+  "javaDependencies": [
+    {
+      "groupId": "com.ctre.phoenix",
+      "artifactId": "api-java",
+      "version": "5.30.2"
+    },
+    {
+      "groupId": "com.ctre.phoenix",
+      "artifactId": "wpiapi-java",
+      "version": "5.30.2"
+    },
+    {
+      "groupId": "com.ctre.phoenixpro",
+      "artifactId": "wpiapi-java",
+      "version": "23.0.1"
+    }
+  ],
+  "fileName": "PhoenixProAnd5.json",
   "frcYear": 2023,
-  "jsonUrl": "https://maven.ctr-electronics.com/release/com/ctre/phoenixpro/PhoenixPro-frc2023-latest.json",
-  "name": "CTRE-PhoenixPro",
+  "jsonUrl": "https://maven.ctr-electronics.com/release/com/ctre/phoenixpro/PhoenixProAnd5-frc2023-latest.json",
+  "name": "CTRE-Phoenix (Pro And v5)",
   "jniDependencies": [
+    {
+      "simMode": "hwsim",
+      "validPlatforms": [
+        "windowsx86-64",
+        "linuxx86-64",
+        "linuxathena"
+      ],
+      "groupId": "com.ctre.phoenix",
+      "artifactId": "cci",
+      "skipInvalidPlatforms": true,
+      "isJar": false,
+      "version": "5.30.2"
+    },
+    {
+      "simMode": "swsim",
+      "validPlatforms": [
+        "windowsx86-64",
+        "linuxx86-64",
+        "osxuniversal"
+      ],
+      "groupId": "com.ctre.phoenix.sim",
+      "artifactId": "cci-sim",
+      "skipInvalidPlatforms": true,
+      "isJar": false,
+      "version": "5.30.2"
+    },
     {
       "simMode": "hwsim",
       "validPlatforms": [
@@ -144,11 +182,41 @@
   "cppDependencies": [
     {
       "simMode": "hwsim",
-      "groupId": "com.ctre.phoenixpro",
-      "libName": "CTRE_PhoenixPro_WPI",
+      "groupId": "com.ctre.phoenix",
+      "libName": "CTRE_Phoenix_WPI",
       "artifactId": "wpiapi-cpp",
       "skipInvalidPlatforms": true,
-      "version": "23.0.1",
+      "version": "5.30.2",
+      "headerClassifier": "headers",
+      "binaryPlatforms": [
+        "windowsx86-64",
+        "linuxx86-64",
+        "linuxathena"
+      ],
+      "sharedLibrary": true
+    },
+    {
+      "simMode": "hwsim",
+      "groupId": "com.ctre.phoenix",
+      "libName": "CTRE_Phoenix",
+      "artifactId": "api-cpp",
+      "skipInvalidPlatforms": true,
+      "version": "5.30.2",
+      "headerClassifier": "headers",
+      "binaryPlatforms": [
+        "windowsx86-64",
+        "linuxx86-64",
+        "linuxathena"
+      ],
+      "sharedLibrary": true
+    },
+    {
+      "simMode": "hwsim",
+      "groupId": "com.ctre.phoenix",
+      "libName": "CTRE_PhoenixCCI",
+      "artifactId": "cci",
+      "skipInvalidPlatforms": true,
+      "version": "5.30.2",
       "headerClassifier": "headers",
       "binaryPlatforms": [
         "windowsx86-64",
@@ -174,11 +242,41 @@
     },
     {
       "simMode": "swsim",
-      "groupId": "com.ctre.phoenixpro.sim",
-      "libName": "CTRE_PhoenixPro_WPISim",
+      "groupId": "com.ctre.phoenix.sim",
+      "libName": "CTRE_Phoenix_WPISim",
       "artifactId": "wpiapi-cpp-sim",
       "skipInvalidPlatforms": true,
-      "version": "23.0.1",
+      "version": "5.30.2",
+      "headerClassifier": "headers",
+      "binaryPlatforms": [
+        "windowsx86-64",
+        "linuxx86-64",
+        "osxuniversal"
+      ],
+      "sharedLibrary": true
+    },
+    {
+      "simMode": "swsim",
+      "groupId": "com.ctre.phoenix.sim",
+      "libName": "CTRE_PhoenixSim",
+      "artifactId": "api-cpp-sim",
+      "skipInvalidPlatforms": true,
+      "version": "5.30.2",
+      "headerClassifier": "headers",
+      "binaryPlatforms": [
+        "windowsx86-64",
+        "linuxx86-64",
+        "osxuniversal"
+      ],
+      "sharedLibrary": true
+    },
+    {
+      "simMode": "swsim",
+      "groupId": "com.ctre.phoenix.sim",
+      "libName": "CTRE_PhoenixCCISim",
+      "artifactId": "cci-sim",
+      "skipInvalidPlatforms": true,
+      "version": "5.30.2",
       "headerClassifier": "headers",
       "binaryPlatforms": [
         "windowsx86-64",
@@ -321,8 +419,38 @@
         "osxuniversal"
       ],
       "sharedLibrary": true
+    },
+    {
+      "simMode": "hwsim",
+      "groupId": "com.ctre.phoenixpro",
+      "libName": "CTRE_PhoenixPro_WPI",
+      "artifactId": "wpiapi-cpp",
+      "skipInvalidPlatforms": true,
+      "version": "23.0.1",
+      "headerClassifier": "headers",
+      "binaryPlatforms": [
+        "windowsx86-64",
+        "linuxx86-64",
+        "linuxathena"
+      ],
+      "sharedLibrary": true
+    },
+    {
+      "simMode": "swsim",
+      "groupId": "com.ctre.phoenixpro.sim",
+      "libName": "CTRE_PhoenixPro_WPISim",
+      "artifactId": "wpiapi-cpp-sim",
+      "skipInvalidPlatforms": true,
+      "version": "23.0.1",
+      "headerClassifier": "headers",
+      "binaryPlatforms": [
+        "windowsx86-64",
+        "linuxx86-64",
+        "osxuniversal"
+      ],
+      "sharedLibrary": true
     }
   ],
   "version": "23.0.1",
-  "uuid": "e995de00-2c64-4df5-8831-c1441420ff19"
+  "uuid": "3fcf3402-e646-4fa6-971e-18afe8173b1a"
 }
