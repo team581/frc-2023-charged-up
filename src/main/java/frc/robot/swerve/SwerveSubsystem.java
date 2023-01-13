@@ -5,10 +5,10 @@
 package frc.robot.swerve;
 
 public class SwerveSubsystem {
-  private SwerveModule frontRight;
-  private SwerveModule frontLeft;
-  private SwerveModule backRight;
-  private SwerveModule backLeft;
+  private final SwerveModule frontRight;
+  private final SwerveModule frontLeft;
+  private final SwerveModule backRight;
+  private final SwerveModule backLeft;
 
   public SwerveSubsystem(
       SwerveModule frontRight,
