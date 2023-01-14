@@ -16,6 +16,7 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
   private double goalPositionInInches = 0;
   private double sensorUnitsPerElevatorInch = 0;
   private boolean isHoming = false;
+  private double homingCurrent = 5;
 
   public ElevatorSubsystem(TalonFX motor) {
     this.motor = motor;
@@ -52,14 +53,16 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
     // Convert goal in inches to sensor units, and set motor
 
     if (isHoming) {
-      motor.set(ControlMode.PercentOutput, -0.0001);
+      motor.set(ControlMode.PercentOutput, -0.01);
       double current = motor.getSupplyCurrent();
-      if (current > 0.015)
-      motor.setSelectedSensorPosition(0);
-      this.isHoming = false;
+      if (current > homingCurrent) {
+        motor.setSelectedSensorPosition(0);
+        this.isHoming = false;
+        goalPositionInInches = 0;
+      }
     } else {
-    double goalPositionInSensorUnits = goalPositionInInches * sensorUnitsPerElevatorInch;
-    motor.set(ControlMode.Position, goalPositionInSensorUnits);
+      double goalPositionInSensorUnits = goalPositionInInches * sensorUnitsPerElevatorInch;
+      motor.set(ControlMode.Position, goalPositionInSensorUnits);
     }
   }
 }
