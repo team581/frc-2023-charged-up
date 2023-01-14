@@ -4,53 +4,46 @@
 
 package frc.robot.elevator;
 
-import com.ctre.phoenixpro.StatusSignalValue;
-import com.ctre.phoenixpro.configs.FeedbackConfigs;
-import com.ctre.phoenixpro.configs.Slot0Configs;
-import com.ctre.phoenixpro.controls.PositionVoltage;
-import com.ctre.phoenixpro.hardware.TalonFX;
-
 import frc.robot.config.Config;
 import frc.robot.util.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+
 public class ElevatorSubsystem extends LifecycleSubsystem {
   private final TalonFX motor;
-  private final StatusSignalValue<Double> distance;
-  private double goalDistance = 0;
+  private double goalPositionInInches = 0;
+  private double sensorUnitsPerElevatorInch = 0;
 
   public ElevatorSubsystem(TalonFX motor) {
     this.motor = motor;
-    this.distance = motor.getPosition();
 
-    var slot0Configs = new Slot0Configs();
-    slot0Configs.kP = 0;
-    slot0Configs.kI = 0;
-    slot0Configs.kD = 0;
-
-    var feedbackConfigs = new FeedbackConfigs();
-    feedbackConfigs.SensorToMechanismRatio = Config.ELEVATOR_GEARING;
-    motor.getConfigurator().apply(feedbackConfigs);
+    // Set pid for slot 0
+    // Set motion magic
   }
 
-  public double getDistance() {
-    // TODO: Convert from rotations to inches
-    return distance.getValue();
+  public double getPosition() {
+   // Read talon sensor, convert to inches
+   double sensorUnits = motor.getSelectedSensorPosition();
+   double position = sensorUnits / sensorUnitsPerElevatorInch;
+   return position;
   }
 
-  public void setDistance(double distance) {
-    goalDistance = distance;
+  public void setGoalPosition(double goal) {
+    // Save goal position
+    this.goalPositionInInches = goal;
   }
 
-  @Override
+   @Override
   public void robotPeriodic() {
-    Logger.getInstance().recordOutput("Elevator/Distance", getDistance());
+    Logger.getInstance().recordOutput("Elevator/Position", getPosition());
   }
 
   @Override
   public void enabledPeriodic() {
-    // TODO: Convert from inches to rotations
-    var request = new PositionVoltage(goalDistance).withSlot(0);
-    motor.setControl(request);
+    // Convert goal in inches to sensor units, and set motor
+    double goalPositionInSensorUnits = goalPositionInInches * sensorUnitsPerElevatorInch;
+    motor.set(ControlMode.Position, goalPositionInSensorUnits);
   }
 }
