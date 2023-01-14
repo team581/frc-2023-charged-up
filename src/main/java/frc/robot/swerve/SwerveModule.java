@@ -4,11 +4,17 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenixpro.hardware.CANcoder;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 
 public class SwerveModule {
-  private final static double TICKS_PER_ROTATION = 12.8 * 2048;
+  private static final double TICKS_PER_ROTATION = 12.8 * 2048;
+  private static final double DRIVE_NOTOR_NAX_VOLTAGE = 12;
+  private static final GearingConverter DRIVE_MOTOR_GEARING_CONVERTER = GearingConverter.fromReduction(10);
+  private static final GearingConverter STEER_MOTOR_GEARING_CONVERTER = GearingConverter.fromReduction(12.8);
+  private static final CircleConverter DRIVE_MOTOR_WHEEL_CONVERTER = GearingConverter.fromDiameter(6);
+
   private SwerveModuleConstants constants;
   private TalonFX driveMotor;
   private TalonFX steerMotor;
@@ -37,6 +43,18 @@ public class SwerveModule {
     steerMotor.setInverted(this.constants.driveInversion);
 
     resetWheelAngle();
+  }
+
+  public void setDesiredStae()
+
+  private Rotation2d getSteerMotorPosition() {
+    double ticksBeforeGearing = steerMotor.getSelectedSensorVelocity();
+    double ticks =
+  }
+
+  public void getDriveMotorVelocity() {
+    final var ticksPer100msBeforeGearing = driveMotor.getSelectedSensorVelocity();
+    final var ticksPer100ms = DRIVE_MOTOR_GEARING_CONVERTER.beforeToAfterGearing(sensorUnitsPer100msBeforeGearing);
   }
 
   public void resetWheelAngle() {
