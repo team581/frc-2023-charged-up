@@ -21,24 +21,28 @@ public class SwerveSubsystem {
   public static final double MAX_VELOCITY = 4.5;
   public static final double MAX_ANGULAR_VELOCITY = 20;
 
-  private final ImuSubsystem imu;
-  private final SwerveModule frontRight;
-  private final SwerveModule frontLeft;
-  private final SwerveModule backRight;
-  private final SwerveModule backLeft;
+  // private final ImuSubsystem imu;
+  // private final SwerveModule frontRight;
+  // private final SwerveModule frontLeft;
+  // private final SwerveModule backRight;
+  // private final SwerveModule backLeft;
 
+  public SwerveSubsystem() {
+
+  }
   public SwerveSubsystem(
       ImuSubsystem imu,
       SwerveModule frontRight,
       SwerveModule frontLeft,
       SwerveModule backRight,
       SwerveModule backLeft) {
-    this.imu = imu;
-    this.frontRight = frontRight;
-    this.frontLeft = frontLeft;
-    this.backRight = backRight;
-    this.backLeft = backLeft;
+    // this.imu = imu;
+    // this.frontRight = frontRight;
+    // this.frontLeft = frontLeft;
+    // this.backRight = backRight;
+    // this.backLeft = backLeft;
   }
+
 
   public void periodic() {
     // ChassisSpeeds speeds = getChassisSpeeds;
@@ -76,14 +80,14 @@ public class SwerveSubsystem {
       double sidewaysPercentage,
       double forwardPercentage,
       double thetaPercentage,
-      boolean fieldRelative) {
+      boolean openLoop) {
     Logger.getInstance().recordOutput("Sideways percentage", sidewaysPercentage);
     Logger.getInstance().recordOutput("Forward percentage", forwardPercentage);
     Logger.getInstance().recordOutput("Theta percentage", thetaPercentage);
 
     ChassisSpeeds myChassisSpeeds = new ChassisSpeeds(sidewaysPercentage, forwardPercentage, thetaPercentage);
 
-    setChassisSpeeds(myChassisSpeeds, fieldRelative);
+    setChassisSpeeds(myChassisSpeeds, openLoop);
   }
 
   // public double getAngle() {
