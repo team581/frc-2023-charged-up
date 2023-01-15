@@ -6,10 +6,15 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import frc.robot.elevator.ElevatorSubsystem;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
+
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -18,6 +23,8 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  * project.
  */
 public class Robot extends TimedRobot {
+  XboxController controller = new XboxController(0);
+  private final ElevatorSubsystem elevator;
   public Robot() {
     // Log to a USB stick
     Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/"));
@@ -25,6 +32,7 @@ public class Robot extends TimedRobot {
     Logger.getInstance().addDataReceiver(new NT4Publisher());
     // Enables power distribution logging
     new PowerDistribution(1, ModuleType.kCTRE);
+    elevator = new ElevatorSubsystem(new TalonFX(14, "581CANivore"));
 
     Logger.getInstance().start();
   }
@@ -49,7 +57,22 @@ public class Robot extends TimedRobot {
   public void teleopInit() {}
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    boolean buttonA = controller.getAButton();
+    boolean buttonB = controller.getBButton();
+    boolean buttonY = controller.getYButton();
+    boolean buttonX = controller.getXButton();
+
+    if (buttonX) {
+      elevator.startHoming();
+    } else if (buttonA) {
+      elevator.setGoalPosition(0);
+    } else if (buttonB) {
+      elevator.setGoalPosition(6);
+    } else if (buttonY) {
+      elevator.setGoalPosition(12);
+    }
+  }
 
   @Override
   public void disabledInit() {}

@@ -4,7 +4,6 @@
 
 package frc.robot.elevator;
 
-import frc.robot.config.Config;
 import frc.robot.util.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
 
@@ -14,7 +13,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 public class ElevatorSubsystem extends LifecycleSubsystem {
   private final TalonFX motor;
   private double goalPositionInInches = 0;
-  private double sensorUnitsPerElevatorInch = 0;
+  private double sensorUnitsPerElevatorInch = (2048 * 1.75 * Math.PI) / 20;
   private boolean isHoming = false;
   private double homingCurrent = 5;
 
