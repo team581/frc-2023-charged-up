@@ -4,17 +4,17 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import frc.robot.elevator.ElevatorSubsystem;
-import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.elevator.ElevatorSubsystem;
 
+import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -22,9 +22,10 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
   XboxController controller = new XboxController(0);
   private final ElevatorSubsystem elevator;
+
   public Robot() {
     // Log to a USB stick
     Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/"));
@@ -45,7 +46,9 @@ public class Robot extends TimedRobot {
   public void robotInit() {}
 
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+    CommandScheduler.getInstance().run();
+  }
 
   @Override
   public void autonomousInit() {}
@@ -62,15 +65,14 @@ public class Robot extends TimedRobot {
     boolean buttonB = controller.getBButton();
     boolean buttonY = controller.getYButton();
     boolean buttonX = controller.getXButton();
-
     if (buttonX) {
       elevator.startHoming();
     } else if (buttonA) {
-      elevator.setGoalPosition(0);
+      elevator.setGoalPosition(2);
     } else if (buttonB) {
-      elevator.setGoalPosition(6);
-    } else if (buttonY) {
       elevator.setGoalPosition(12);
+    } else if (buttonY) {
+      elevator.setGoalPosition(24);
     }
   }
 

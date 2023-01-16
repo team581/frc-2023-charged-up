@@ -4,24 +4,37 @@
 
 package frc.robot.elevator;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import frc.robot.util.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 public class ElevatorSubsystem extends LifecycleSubsystem {
   private final TalonFX motor;
   private double goalPositionInInches = 0;
-  private double sensorUnitsPerElevatorInch = (2048 * 1.75 * Math.PI) / 20;
+  private double sensorUnitsPerElevatorInch = 40960 / (1.75 * Math.PI);
   private boolean isHoming = false;
-  private double homingCurrent = 5;
+  private double homingCurrent = 1.5;
 
   public ElevatorSubsystem(TalonFX motor) {
     this.motor = motor;
+    this.motor.setInverted(true);
 
     // Set pid for slot 0
+    this.motor.config_kF(0, 0);
+    this.motor.config_kP(0, 0.8);
+    this.motor.config_kI(0, 0);
+    this.motor.config_kD(0, 0);
     // Set motion magic
+    this.motor.configMotionCruiseVelocity(15000);
+    this.motor.configMotionAcceleration(30000);
+    // Set current limiting
+    this.motor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(false, 40, 40, 1));
+    this.motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(false, 10, 15, 0.5));
   }
 
   public void startHoming() {
@@ -29,10 +42,10 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
   }
 
   public double getPosition() {
-   // Read talon sensor, convert to inches
-   double sensorUnits = motor.getSelectedSensorPosition();
-   double position = sensorUnits / sensorUnitsPerElevatorInch;
-   return position;
+    // Read talon sensor, convert to inches
+    double sensorUnits = motor.getSelectedSensorPosition();
+    double position = sensorUnits / sensorUnitsPerElevatorInch;
+    return position;
   }
 
   public void setGoalPosition(double goal) {
@@ -40,7 +53,7 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
     this.goalPositionInInches = goal;
   }
 
-   @Override
+  @Override
   public void robotPeriodic() {
     Logger.getInstance().recordOutput("Elevator/Position", getPosition());
     Logger.getInstance().recordOutput("Elevator/Current", motor.getSupplyCurrent());
@@ -50,9 +63,8 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
   public void enabledPeriodic() {
     // Add homing sequence
     // Convert goal in inches to sensor units, and set motor
-
     if (isHoming) {
-      motor.set(ControlMode.PercentOutput, -0.01);
+      motor.set(ControlMode.PercentOutput, -0.1);
       double current = motor.getSupplyCurrent();
       if (current > homingCurrent) {
         motor.setSelectedSensorPosition(0);
@@ -62,6 +74,7 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
     } else {
       double goalPositionInSensorUnits = goalPositionInInches * sensorUnitsPerElevatorInch;
       motor.set(ControlMode.Position, goalPositionInSensorUnits);
+      motor.set(TalonFXControlMode.MotionMagic, goalPositionInSensorUnits);
     }
   }
 }
