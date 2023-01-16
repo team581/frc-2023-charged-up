@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.elevator.ElevatorSubsystem;
+import frc.robot.wrist.WristSubsystem;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -23,7 +24,8 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  */
 public class Robot extends LoggedRobot {
   XboxController controller = new XboxController(0);
-  private final ElevatorSubsystem elevator;
+  private final ElevatorSubsystem elevator = new ElevatorSubsystem(new TalonFX(14, "581CANivore"));
+  private final WristSubsystem wrist = new WristSubsystem(new TalonFX(16, "581CANivore"));
 
   public Robot() {
     // Log to a USB stick
@@ -31,7 +33,7 @@ public class Robot extends LoggedRobot {
     // Publish data to NetworkTables
     Logger.getInstance().addDataReceiver(new NT4Publisher());
     // Enables power distribution logging
-    new PowerDistribution(0, ModuleType.kCTRE);
+    new PowerDistribution(1, ModuleType.kCTRE);
     elevator = new ElevatorSubsystem(new TalonFX(14, "581CANivore"));
 
     Logger.getInstance().start();
@@ -66,6 +68,7 @@ public class Robot extends LoggedRobot {
     boolean buttonX = controller.getXButton();
     if (buttonX) {
       elevator.startHoming();
+      wrist.startHoming();
     } else if (buttonA) {
       elevator.setGoalPosition(2);
     } else if (buttonB) {
