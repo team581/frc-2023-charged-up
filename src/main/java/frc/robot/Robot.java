@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.config.Config;
 import frc.robot.imu.ImuSubsystem;
+import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSubsystem;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -60,10 +61,11 @@ public class Robot extends LoggedRobot {
   private final ImuSubsystem imu = new ImuSubsystem(new Pigeon2(Config.PIGEON_ID, "581CANivore"));
   private final SwerveSubsystem swerveSubsystem =
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
-
+  private final LocalizationSubsystem localizationSubsystem = new LocalizationSubsystem();
   private final XboxController controller = new XboxController(Config.CONTROLLER_PORT);
 
   public Robot() {
+
     // Log to a USB stick
     Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/"));
     // Publish data to NetworkTables
