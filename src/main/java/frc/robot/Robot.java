@@ -31,7 +31,7 @@ public class Robot extends LoggedRobot {
     // Publish data to NetworkTables
     Logger.getInstance().addDataReceiver(new NT4Publisher());
     // Enables power distribution logging
-    new PowerDistribution(1, ModuleType.kCTRE);
+    new PowerDistribution(0, ModuleType.kCTRE);
     elevator = new ElevatorSubsystem(new TalonFX(14, "581CANivore"));
 
     Logger.getInstance().start();
