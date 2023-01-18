@@ -4,16 +4,20 @@
 
 package frc.robot.wrist;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.util.LifecycleSubsystem;
+
+import javax.swing.text.Position;
+
 import org.littletonrobotics.junction.Logger;
 
 public class WristSubsystem extends LifecycleSubsystem {
-  private static final double GEARING = 999;
+  private static final double GEARING = 48 * 2;
   private static final double HOMED_CURRENT = 5;
-  private static final Rotation2d TOLERANCE = Rotation2d.fromDegrees(3);
+  private static final Rotation2d TOLERANCE = Rotation2d.fromDegrees(2);
   private final TalonFX motor;
   private Rotation2d goalAngle = new Rotation2d();
   private boolean homing = false;
@@ -22,7 +26,7 @@ public class WristSubsystem extends LifecycleSubsystem {
     this.motor = motor;
 
     motor.config_kF(0, 0);
-    motor.config_kP(0, 0);
+    motor.config_kP(0,0.05); // Edit PID and add motion magic
     motor.config_kI(0, 0);
     motor.config_kD(0, 0);
 
@@ -48,7 +52,7 @@ public class WristSubsystem extends LifecycleSubsystem {
   @Override
   public void enabledPeriodic() {
     if (homing) {
-      motor.set(TalonFXControlMode.PercentOutput, -0.07); // Make homing faster
+      motor.set(TalonFXControlMode.PercentOutput, -0.25);
 
       if (motor.getStatorCurrent() > HOMED_CURRENT) {
         motor.set(TalonFXControlMode.PercentOutput, 0);
@@ -56,7 +60,7 @@ public class WristSubsystem extends LifecycleSubsystem {
         homing = false;
       }
     } else {
-      // motor.set(TalonFXControlMode.Position, goalAngle.getRotations() * 2048.0 * GEARING);
+      motor.set(ControlMode.Position, goalAngle.getRotations() * 2048 * GEARING);
     }
   }
 

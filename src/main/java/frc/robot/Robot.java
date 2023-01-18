@@ -5,6 +5,8 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.XboxController;
@@ -66,15 +68,25 @@ public class Robot extends LoggedRobot {
     boolean buttonB = controller.getBButton();
     boolean buttonY = controller.getYButton();
     boolean buttonX = controller.getXButton();
+    double rightTrigger = controller.getRightTriggerAxis();
+    boolean rightBumper = controller.getRightBumper();
+
+
     if (buttonX) {
       elevator.startHoming();
       wrist.startHoming();
     } else if (buttonA) {
       elevator.setGoalPosition(2);
     } else if (buttonB) {
-      elevator.setGoalPosition(12);
+      //elevator.setGoalPosition(12);
+      wrist.setAngle(Rotation2d.fromDegrees(30));
     } else if (buttonY) {
-      elevator.setGoalPosition(24);
+      //elevator.setGoalPosition(24);
+      wrist.setAngle(Rotation2d.fromDegrees(60));
+    } else if (rightTrigger > 0.3) {
+      wrist.setAngle(Rotation2d.fromDegrees(10));
+    } else if (rightBumper) {
+      wrist.setAngle(Rotation2d.fromDegrees(100));
     }
   }
 
