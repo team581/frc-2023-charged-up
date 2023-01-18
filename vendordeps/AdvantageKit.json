@@ -1,39 +1,41 @@
 {
-  "javaDependencies": [
-    {
-      "groupId": "org.littletonrobotics.akit.junction",
-      "artifactId": "wpilib-shim",
-      "version": "2.0.0"
-    },
-    {
-      "groupId": "org.littletonrobotics.akit.junction",
-      "artifactId": "junction-core",
-      "version": "2.0.0"
-    },
-    {
-      "groupId": "org.littletonrobotics.akit.conduit",
-      "artifactId": "conduit-api",
-      "version": "2.0.0"
-    }
-  ],
-  "fileName": "AdvantageKit.json",
-  "jsonUrl": "https://github.com/Mechanical-Advantage/AdvantageKit/releases/latest/download/AdvantageKit.json",
-  "name": "AdvantageKit",
-  "jniDependencies": [{
-    "validPlatforms": [
-      "linuxathena",
-      "windowsx86-64",
-      "linuxx86-64",
-      "osxuniversal"
+    "fileName": "AdvantageKit.json",
+    "name": "AdvantageKit",
+    "version": "2.1.1",
+    "uuid": "d820cc26-74e3-11ec-90d6-0242ac120003",
+    "mavenUrls": [],
+    "jsonUrl": "https://github.com/Mechanical-Advantage/AdvantageKit/releases/latest/download/AdvantageKit.json",
+    "javaDependencies": [
+        {
+            "groupId": "org.littletonrobotics.akit.junction",
+            "artifactId": "wpilib-shim",
+            "version": "2.1.1"
+        },
+        {
+            "groupId": "org.littletonrobotics.akit.junction",
+            "artifactId": "junction-core",
+            "version": "2.1.1"
+        },
+        {
+            "groupId": "org.littletonrobotics.akit.conduit",
+            "artifactId": "conduit-api",
+            "version": "2.1.1"
+        }
     ],
-    "groupId": "org.littletonrobotics.akit.conduit",
-    "artifactId": "conduit-wpilibio",
-    "skipInvalidPlatforms": false,
-    "isJar": false,
-    "version": "2.0.0"
-  }],
-  "mavenUrls": [],
-  "cppDependencies": [],
-  "version": "2.0.0",
-  "uuid": "d820cc26-74e3-11ec-90d6-0242ac120003"
+    "jniDependencies": [
+        {
+            "groupId": "org.littletonrobotics.akit.conduit",
+            "artifactId": "conduit-wpilibio",
+            "version": "2.1.1",
+            "skipInvalidPlatforms": false,
+            "isJar": false,
+            "validPlatforms": [
+                "linuxathena",
+                "windowsx86-64",
+                "linuxx86-64",
+                "osxuniversal"
+            ]
+        }
+    ],
+    "cppDependencies": []
 }

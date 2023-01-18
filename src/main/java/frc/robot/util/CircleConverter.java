@@ -23,8 +23,8 @@ public class CircleConverter {
   }
 
   /** Converts a rotation to a distance. */
-  public double rotationsToDistance(double rotations) {
-    return Units.rotationsToRadians(rotations) * radius;
+  public double rotationsToDistance(double rotationsPerMinute) {
+    return Units.rotationsToRadians(rotationsPerMinute) * radius;
   }
 
   /** Converts a rotation to a distance. */
