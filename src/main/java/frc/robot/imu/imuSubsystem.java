@@ -7,15 +7,16 @@ package frc.robot.imu;
 import com.ctre.phoenix.sensors.Pigeon2;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.util.LifecycleSubsystem;
 
-public class ImuSubsystem {
+public class ImuSubsystem extends LifecycleSubsystem{
   private final Pigeon2 imu;
 
   public ImuSubsystem(Pigeon2 imu) {
     this.imu = imu;
   }
 
-  public void periodic() {
+  public void robotPeriodic() {
     SmartDashboard.putNumber("Gyro sensor", this.getRobotHeading().getDegrees());
   }
 

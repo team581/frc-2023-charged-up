@@ -5,11 +5,12 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
-import com.ctre.phoenixpro.hardware.CANcoder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.swerve.SwerveCorner;
@@ -35,31 +36,31 @@ public class Robot extends LoggedRobot {
   //TODO: Verify all motors are the correct motors
       new SwerveModule(
           new SwerveModuleConstants(
-              Rotation2d.fromDegrees(104.6), SwerveCorner.FRONT_LEFT, false, false),
-          new TalonFX(2, "581CANivore"),
-          new TalonFX(3, "581CANivore"),
-          new CANcoder(10, "581CANivore"));
+              Rotation2d.fromDegrees(-62.84), SwerveCorner.FRONT_LEFT, false, false),
+          new TalonFX(8, "581CANivore"),
+          new TalonFX(9, "581CANivore"),
+          new CANCoder(13, "581CANivore"));
   SwerveModule frontRight =
       new SwerveModule(
           new SwerveModuleConstants(
-              Rotation2d.fromDegrees(78.95), SwerveCorner.FRONT_RIGHT, false, false),
-          new TalonFX(4, "581CANivore"),
-          new TalonFX(5, "581CANivore"),
-          new CANcoder(11, "581CANivore"));
+              Rotation2d.fromDegrees(-147.8), SwerveCorner.FRONT_RIGHT, false, false),
+          new TalonFX(6, "581CANivore"),
+          new TalonFX(7, "581CANivore"),
+          new CANCoder(12, "581CANivore"));
   SwerveModule backLeft =
       new SwerveModule(
           new SwerveModuleConstants(
-              Rotation2d.fromDegrees(-148), SwerveCorner.BACK_LEFT, false, false),
-          new TalonFX(6, "581CANivore"),
-          new TalonFX(7, "581CANivore"),
-          new CANcoder(12, "581CANivore"));
+              Rotation2d.fromDegrees(78.75), SwerveCorner.BACK_LEFT, false, false),
+          new TalonFX(4, "581CANivore"),
+          new TalonFX(5, "581CANivore"),
+          new CANCoder(11, "581CANivore"));
   SwerveModule backRight =
       new SwerveModule(
           new SwerveModuleConstants(
-              Rotation2d.fromDegrees(-62.53), SwerveCorner.BACK_RIGHT, false, false),
-          new TalonFX(8, "581CANivore"),
-          new TalonFX(9, "581CANivore"),
-          new CANcoder(13, "581CANivore"));
+              Rotation2d.fromDegrees(104.58), SwerveCorner.BACK_RIGHT, false, false),
+          new TalonFX(2, "581CANivore"),
+          new TalonFX(3, "581CANivore"),
+          new CANCoder(10, "581CANivore"));
   SwerveSubsystem swerveSubsystem =
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
   XboxController controller = new XboxController(0);
@@ -83,7 +84,9 @@ public class Robot extends LoggedRobot {
   public void robotInit() {}
 
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+    CommandScheduler.getInstance().run();
+  }
 
   @Override
   public void autonomousInit() {}
@@ -97,7 +100,10 @@ public class Robot extends LoggedRobot {
   @Override
   public void teleopPeriodic() {
     swerveSubsystem.driveTeleop(
-        controller.getLeftX(), -controller.getLeftY(), -controller.getRightX(), true);
+        -controller.getLeftX(), controller.getLeftY(), -controller.getRightX(), true);
+    if (controller.getStartButton()) {
+      imu.zero();
+    }
   }
 
   @Override

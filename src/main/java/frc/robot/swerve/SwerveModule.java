@@ -8,7 +8,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenixpro.hardware.CANcoder;
+import com.ctre.phoenix.sensors.CANCoder;
+
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -23,7 +24,6 @@ public class SwerveModule {
   private static final double TICKS_PER_ROTATION = 12.8 * 2048;
   private static final SimpleMotorFeedforward DRIV_SIMPLE_MOTOR_FEEDFORWARD =
       new SimpleMotorFeedforward(0, 0, 0);
-  private static final double DRIVE_MOTOR_MAX_VOLTAGE = 12;
   private static final GearingConverter DRIVE_MOTOR_GEARING_CONVERTER =
       GearingConverter.fromReduction(10);
   private static final GearingConverter STEER_MOTOR_GEARING_CONVERTER =
@@ -34,11 +34,11 @@ public class SwerveModule {
   private final SwerveModuleConstants constants;
   private final TalonFX driveMotor;
   private final TalonFX steerMotor;
-  private final CANcoder encoder;
+  private final CANCoder encoder;
   private Rotation2d previousAngle = new Rotation2d();
 
   public SwerveModule(
-      SwerveModuleConstants constants, TalonFX driveMotor, TalonFX steerMotor, CANcoder encoder) {
+      SwerveModuleConstants constants, TalonFX driveMotor, TalonFX steerMotor, CANCoder encoder) {
     this.constants = constants;
     this.driveMotor = driveMotor;
     this.steerMotor = steerMotor;
@@ -79,8 +79,9 @@ public class SwerveModule {
     final var feetPerSecond = Units.metersToFeet(state.speedMetersPerSecond);
     final var feetPerMinute = feetPerSecond * 60;
     final var rotationsPerMinute = DRIVE_MOTOR_WHEEL_CONVERTER.distanceToRotations(feetPerMinute);
+    final var sensorUnitsPer100ms = SensorUnitConverter.talonFX.rotationsPerMinuteToSensorUnitsPer100ms(rotationsPerMinute);
     final var sensorUnitsPer100msBeforeGearing =
-        SensorUnitConverter.talonFX.rotationsPerMinuteToSensorUnitsPer100ms(rotationsPerMinute);
+        SensorUnitConverter.talonFX.rotationsPerMinuteToSensorUnitsPer100ms(sensorUnitsPer100ms);
 
     if (OpenLoop) {
       driveMotor.set(
@@ -118,6 +119,7 @@ public class SwerveModule {
         .recordOutput(
             this.constants.corner.toString() + "/CANcoder position (deg)",
             this.getCancoderPosition().getDegrees());
+    Logger.getInstance().recordOutput(this.constants.corner.toString() + "/Raw CANcoder position (deg)", this.getRawCancoderPosition().getDegrees());
     Logger.getInstance()
         .recordOutput(
             this.toString() + "/Steer motor commanded angle (deg)",
@@ -150,7 +152,11 @@ public class SwerveModule {
   }
 
   private final Rotation2d getCancoderPosition() {
-    return Rotation2d.fromRotations(encoder.getAbsolutePosition().getValue())
+    return getRawCancoderPosition()
         .minus(constants.angleOffset);
+  }
+
+  private Rotation2d getRawCancoderPosition() {
+    return Rotation2d.fromDegrees(encoder.getAbsolutePosition());
   }
 }

@@ -10,13 +10,15 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.imu.ImuSubsystem;
+import frc.robot.util.LifecycleSubsystem;
+
 import org.littletonrobotics.junction.Logger;
 
-public class SwerveSubsystem {
-  private static final Translation2d FRONT_LEFT_LOCATION = new Translation2d(-0.381, 0.381);
-  private static final Translation2d FRONT_RIGHT_LOCATION = new Translation2d(0.381, 0.381);
-  private static final Translation2d BACK_LEFT_LOCATION = new Translation2d(-0.381, -0.381);
-  private static final Translation2d BACK_RIGHT_LOCATION = new Translation2d(0.381, -0.381);
+public class SwerveSubsystem extends LifecycleSubsystem{
+  private static final Translation2d FRONT_LEFT_LOCATION = new Translation2d(0.381, 0.381);
+  private static final Translation2d FRONT_RIGHT_LOCATION = new Translation2d(0.381, -0.381);
+  private static final Translation2d BACK_LEFT_LOCATION = new Translation2d(-0.381, 0.381);
+  private static final Translation2d BACK_RIGHT_LOCATION = new Translation2d(-0.381, -0.381);
   private static final SwerveDriveKinematics KINEMATICS =
       new SwerveDriveKinematics(
           FRONT_LEFT_LOCATION, FRONT_RIGHT_LOCATION, BACK_LEFT_LOCATION, BACK_RIGHT_LOCATION);
@@ -42,7 +44,8 @@ public class SwerveSubsystem {
     this.backLeft = backLeft;
   }
 
-  public void periodic() {
+  @Override
+  public void robotPeriodic() {
     ChassisSpeeds speeds = getChassisSpeeds();
 
     this.frontLeft.logValues();
@@ -52,7 +55,7 @@ public class SwerveSubsystem {
 
     Logger.getInstance().recordOutput("Swerve/Rotational velocity", speeds.omegaRadiansPerSecond);
     Logger.getInstance().recordOutput("Swerve/Forward velocity", speeds.vxMetersPerSecond);
-    Logger.getInstance().recordOutput("Swerve/HOrizontal velocity", speeds.vyMetersPerSecond);
+    Logger.getInstance().recordOutput("Swerve/Horizontal velocity", speeds.vyMetersPerSecond);
   }
 
   public ChassisSpeeds getChassisSpeeds() {
@@ -94,7 +97,7 @@ public class SwerveSubsystem {
         ChassisSpeeds.fromFieldRelativeSpeeds(
             robotTranslation.getX(),
             robotTranslation.getY(),
-            -1 * thetaPercentage * MAX_VELOCITY,
+            -1 * thetaPercentage * MAX_ANGULAR_VELOCITY,
             fieldRelative ? imu.getRobotHeading() : new Rotation2d());
     SwerveModuleState[] moduleStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_VELOCITY);
