@@ -16,13 +16,20 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.imu.ImuSubsystem;
+import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.util.LifecycleSubsystem;
 
 public class LocalizationSubsystem extends LifecycleSubsystem {
+
+  private final SwerveSubsystem swerve;
+  private final ImuSubsystem imu;
+
   private Pose2d botPose = new Pose2d();
   
-  public LocalizationSubsystem() {
-  
+  public LocalizationSubsystem(SwerveSubsystem swerve, ImuSubsystem imu) {
+    this.swerve = swerve;
+    this.imu = imu;
   }
 
   @Override
