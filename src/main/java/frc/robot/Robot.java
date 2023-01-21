@@ -78,10 +78,10 @@ public class Robot extends LoggedRobot {
       elevator.setGoalPosition(2);
     } else if (buttonB) {
       elevator.setGoalPosition(12);
-      //wrist.setAngle(Rotation2d.fromDegrees(45));
+      wrist.setAngle(Rotation2d.fromDegrees(45));
     } else if (buttonY) {
       elevator.setGoalPosition(24);
-      //wrist.setAngle(Rotation2d.fromDegrees(90));
+      wrist.setAngle(Rotation2d.fromDegrees(90));
     } else if (rightTrigger > 0.3) {
       wrist.setAngle(Rotation2d.fromDegrees(30));
     } else if (rightBumper) {
