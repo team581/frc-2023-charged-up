@@ -7,15 +7,12 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.config.Config;
 import frc.robot.imu.ImuSubsystem;
-import frc.robot.swerve.SwerveCorner;
 import frc.robot.swerve.SwerveModule;
-import frc.robot.swerve.SwerveModuleConstants;
 import frc.robot.swerve.SwerveSubsystem;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -29,41 +26,37 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  * project.
  */
 public class Robot extends LoggedRobot {
-  Pigeon2 pigeonImu = new Pigeon2(1, "581CANivore");
+  Pigeon2 pigeonImu = new Pigeon2(Config.PIGEON_ID, "581CANivore");
 
   ImuSubsystem imu = new ImuSubsystem(pigeonImu);
   SwerveModule frontLeft =
-  //TODO: Verify all motors are the correct motors
+      // TODO: Verify all motors are the correct motors
       new SwerveModule(
-          new SwerveModuleConstants(
-              Rotation2d.fromDegrees(-62.84), SwerveCorner.FRONT_LEFT, false, false),
-          new TalonFX(8, "581CANivore"),
-          new TalonFX(9, "581CANivore"),
-          new CANCoder(13, "581CANivore"));
+          Config.SWERVE_FL_CONSTANTS,
+          new TalonFX(Config.SWERVE_FL_DRIVE_MOTOR_ID, "581CANivore"),
+          new TalonFX(Config.SWERVE_FL_STEER_MOTOR_ID, "581CANivore"),
+          new CANCoder(Config.SWERVE_FL_CANCODER_ID, "581CANivore"));
   SwerveModule frontRight =
       new SwerveModule(
-          new SwerveModuleConstants(
-              Rotation2d.fromDegrees(-147.8), SwerveCorner.FRONT_RIGHT, false, false),
-          new TalonFX(6, "581CANivore"),
-          new TalonFX(7, "581CANivore"),
-          new CANCoder(12, "581CANivore"));
+          Config.SWERVE_FR_CONSTANTS,
+          new TalonFX(Config.SWERVE_FR_DRIVE_MOTOR_ID, "581CANivore"),
+          new TalonFX(Config.SWERVE_FR_STEER_MOTOR_ID, "581CANivore"),
+          new CANCoder(Config.SWERVE_FR_CANCODER_ID, "581CANivore"));
   SwerveModule backLeft =
       new SwerveModule(
-          new SwerveModuleConstants(
-              Rotation2d.fromDegrees(78.75), SwerveCorner.BACK_LEFT, false, false),
-          new TalonFX(4, "581CANivore"),
-          new TalonFX(5, "581CANivore"),
-          new CANCoder(11, "581CANivore"));
+          Config.SWERVE_BL_CONSTANTS,
+          new TalonFX(Config.SWERVE_BL_DRIVE_MOTOR_ID, "581CANivore"),
+          new TalonFX(Config.SWERVE_BL_STEER_MOTOR_ID, "581CANivore"),
+          new CANCoder(Config.SWERVE_BL_CANCODER_ID, "581CANivore"));
   SwerveModule backRight =
       new SwerveModule(
-          new SwerveModuleConstants(
-              Rotation2d.fromDegrees(104.58), SwerveCorner.BACK_RIGHT, false, false),
-          new TalonFX(2, "581CANivore"),
-          new TalonFX(3, "581CANivore"),
-          new CANCoder(10, "581CANivore"));
+          Config.SWERVE_BR_CONSTANTS,
+          new TalonFX(Config.SWERVE_BR_DRIVE_MOTOR_ID, "581CANivore"),
+          new TalonFX(Config.SWERVE_BR_STEER_MOTOR_ID, "581CANivore"),
+          new CANCoder(Config.SWERVE_BR_CANCODER_ID, "581CANivore"));
   SwerveSubsystem swerveSubsystem =
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
-  XboxController controller = new XboxController(0);
+  XboxController controller = new XboxController(Config.CONTROLLER_PORT);
 
   public Robot() {
     // Log to a USB stick
@@ -71,7 +64,7 @@ public class Robot extends LoggedRobot {
     // Publish data to NetworkTables
     Logger.getInstance().addDataReceiver(new NT4Publisher());
     // Enables power distribution logging
-    new PowerDistribution(1, ModuleType.kCTRE);
+    new PowerDistribution(Config.PDP_ID, Config.PDP_TYPE);
 
     Logger.getInstance().start();
   }
