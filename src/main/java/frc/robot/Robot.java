@@ -36,7 +36,6 @@ public class Robot extends LoggedRobot {
     Logger.getInstance().addDataReceiver(new NT4Publisher());
     // Enables power distribution logging
     new PowerDistribution(1, ModuleType.kCTRE);
-    elevator = new ElevatorSubsystem(new TalonFX(14, "581CANivore"));
 
     Logger.getInstance().start();
   }
@@ -78,15 +77,15 @@ public class Robot extends LoggedRobot {
     } else if (buttonA) {
       elevator.setGoalPosition(2);
     } else if (buttonB) {
-      //elevator.setGoalPosition(12);
-      wrist.setAngle(Rotation2d.fromDegrees(30));
+      elevator.setGoalPosition(12);
+      //wrist.setAngle(Rotation2d.fromDegrees(45));
     } else if (buttonY) {
-      //elevator.setGoalPosition(24);
-      wrist.setAngle(Rotation2d.fromDegrees(60));
+      elevator.setGoalPosition(24);
+      //wrist.setAngle(Rotation2d.fromDegrees(90));
     } else if (rightTrigger > 0.3) {
-      wrist.setAngle(Rotation2d.fromDegrees(10));
+      wrist.setAngle(Rotation2d.fromDegrees(30));
     } else if (rightBumper) {
-      wrist.setAngle(Rotation2d.fromDegrees(100));
+      wrist.setAngle(Rotation2d.fromDegrees(135));
     }
   }
 

@@ -5,6 +5,8 @@
 package frc.robot.wrist;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -16,20 +18,25 @@ import org.littletonrobotics.junction.Logger;
 
 public class WristSubsystem extends LifecycleSubsystem {
   private static final double GEARING = 48 * 2;
-  private static final double HOMED_CURRENT = 5;
+  private static final double HOMED_CURRENT = 10;
   private static final Rotation2d TOLERANCE = Rotation2d.fromDegrees(2);
   private final TalonFX motor;
   private Rotation2d goalAngle = new Rotation2d();
   private boolean homing = false;
+  private boolean goToGoal = false;
 
   public WristSubsystem(TalonFX motor) {
     this.motor = motor;
 
     motor.config_kF(0, 0);
-    motor.config_kP(0,0.05); // Edit PID and add motion magic
+    motor.config_kP(0,0.1); // Edit PID and add motion magic
     motor.config_kI(0, 0);
     motor.config_kD(0, 0);
 
+    this.motor.configMotionCruiseVelocity(20000);
+    this.motor.configMotionAcceleration(50000);
+
+    this.motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(false, 25, 25, 0.5));
   }
 
   public Rotation2d getAngle() {
@@ -47,20 +54,23 @@ public class WristSubsystem extends LifecycleSubsystem {
 
   public void startHoming() {
     homing = true;
+    goToGoal = false;
   }
 
   @Override
   public void enabledPeriodic() {
     if (homing) {
-      motor.set(TalonFXControlMode.PercentOutput, -0.25);
+      motor.set(TalonFXControlMode.PercentOutput, -0.075);
 
       if (motor.getStatorCurrent() > HOMED_CURRENT) {
         motor.set(TalonFXControlMode.PercentOutput, 0);
         motor.setSelectedSensorPosition(0);
+        setAngle(Rotation2d.fromDegrees(10));
         homing = false;
+        goToGoal = true;
       }
-    } else {
-      motor.set(ControlMode.Position, goalAngle.getRotations() * 2048 * GEARING);
+    } else if (goToGoal) {
+      motor.set(ControlMode.MotionMagic, goalAngle.getRotations() * 2048 * GEARING);
     }
   }
 
@@ -68,5 +78,9 @@ public class WristSubsystem extends LifecycleSubsystem {
   public void robotPeriodic() {
     Logger.getInstance().recordOutput("Wrist/Angle", getAngle().getDegrees());
     Logger.getInstance().recordOutput("Wrist/GoalAngle", goalAngle.getDegrees());
+    Logger.getInstance().recordOutput("Wrist/Homing", homing);
+    Logger.getInstance().recordOutput("Wrist/Current", motor.getStatorCurrent());
+    Logger.getInstance().recordOutput("Wrist/GoToGoal", goToGoal);
+    Logger.getInstance().recordOutput("Wrist/Voltage", motor.getMotorOutputVoltage());
   }
 }
