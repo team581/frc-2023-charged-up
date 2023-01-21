@@ -5,7 +5,6 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -69,7 +68,6 @@ public class Robot extends LoggedRobot {
     boolean buttonX = controller.getXButton();
     double rightTrigger = controller.getRightTriggerAxis();
     boolean rightBumper = controller.getRightBumper();
-
 
     if (buttonX) {
       elevator.startHoming();

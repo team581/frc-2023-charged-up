@@ -5,15 +5,11 @@
 package frc.robot.wrist;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.util.LifecycleSubsystem;
-
-import javax.swing.text.Position;
-
 import org.littletonrobotics.junction.Logger;
 
 public class WristSubsystem extends LifecycleSubsystem {
@@ -29,7 +25,7 @@ public class WristSubsystem extends LifecycleSubsystem {
     this.motor = motor;
 
     motor.config_kF(0, 0);
-    motor.config_kP(0,0.1); // Edit PID and add motion magic
+    motor.config_kP(0, 0.1); // Edit PID and add motion magic
     motor.config_kI(0, 0);
     motor.config_kD(0, 0);
 
