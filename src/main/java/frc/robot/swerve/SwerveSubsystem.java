@@ -19,7 +19,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   private static final Translation2d FRONT_RIGHT_LOCATION = new Translation2d(0.381, -0.381);
   private static final Translation2d BACK_LEFT_LOCATION = new Translation2d(-0.381, 0.381);
   private static final Translation2d BACK_RIGHT_LOCATION = new Translation2d(-0.381, -0.381);
-  private static final SwerveDriveKinematics KINEMATICS =
+  public static final SwerveDriveKinematics KINEMATICS =
       new SwerveDriveKinematics(
           FRONT_LEFT_LOCATION, FRONT_RIGHT_LOCATION, BACK_LEFT_LOCATION, BACK_RIGHT_LOCATION);
   public static final double MAX_VELOCITY = 4.5;

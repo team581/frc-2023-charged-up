@@ -61,7 +61,8 @@ public class Robot extends LoggedRobot {
   private final ImuSubsystem imu = new ImuSubsystem(new Pigeon2(Config.PIGEON_ID, "581CANivore"));
   private final SwerveSubsystem swerveSubsystem =
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
-  private final LocalizationSubsystem localizationSubsystem = new LocalizationSubsystem(swerveSubsystem, imu);
+  private final LocalizationSubsystem localizationSubsystem =
+      new LocalizationSubsystem(swerveSubsystem, imu);
   private final XboxController controller = new XboxController(Config.CONTROLLER_PORT);
 
   public Robot() {
