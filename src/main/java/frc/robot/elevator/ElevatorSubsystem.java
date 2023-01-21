@@ -18,6 +18,7 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
   private double sensorUnitsPerElevatorInch = 40960 / (1.75 * Math.PI);
   private boolean isHoming = false;
   private double homingCurrent = 1.5;
+  private boolean goToGoal = false;
 
   public ElevatorSubsystem(TalonFX motor) {
     this.motor = motor;
@@ -30,7 +31,7 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
     this.motor.config_kD(0, 0);
     // Set motion magic
     this.motor.configMotionCruiseVelocity(15000);
-    this.motor.configMotionAcceleration(30000);
+    this.motor.configMotionAcceleration(27500);
     // Set current limiting
     this.motor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(false, 40, 40, 1));
     this.motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(false, 10, 15, 0.5));
@@ -50,12 +51,20 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
   public void setGoalPosition(double goal) {
     // Save goal position
     this.goalPositionInInches = goal;
+    goToGoal = true;
   }
 
   @Override
   public void robotPeriodic() {
     Logger.getInstance().recordOutput("Elevator/Position", getPosition());
     Logger.getInstance().recordOutput("Elevator/Current", motor.getSupplyCurrent());
+    Logger.getInstance().recordOutput("Elevator/GoalPosition", goalPositionInInches);
+    Logger.getInstance().recordOutput("Elevator/Homing", isHoming);
+  }
+
+  @Override
+  public void enabledInit() {
+    goToGoal = false;
   }
 
   @Override
@@ -70,10 +79,12 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
         this.isHoming = false;
         goalPositionInInches = 0;
       }
-    } else {
+    } else if (goToGoal) {
       double goalPositionInSensorUnits = goalPositionInInches * sensorUnitsPerElevatorInch;
       motor.set(ControlMode.Position, goalPositionInSensorUnits);
       motor.set(TalonFXControlMode.MotionMagic, goalPositionInSensorUnits);
+    } else {
+      motor.set(ControlMode.PercentOutput, 0);
     }
   }
 }
