@@ -15,6 +15,7 @@ import com.ctre.phoenixpro.hardware.TalonFX;
 import com.ctre.phoenixpro.signals.InvertedValue;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.config.Config;
@@ -125,6 +126,13 @@ public class SwerveModule {
     return new SwerveModuleState(driveMotorVelocity, steerMotorPosition);
   }
 
+  public SwerveModulePosition getPosition() {
+    final var steerMotorPosition = getSteerMotorPosition();
+    final var getDriveMotorPosition = getDriveMotorPosition();
+
+    return new SwerveModulePosition(getDriveMotorPosition, steerMotorPosition);
+  }
+
   public void logValues() {
     Logger.getInstance()
         .recordOutput(
@@ -159,6 +167,14 @@ public class SwerveModule {
     double rotationsBeforeGearing = steerMotor.getPosition().getValue();
     double rotations = STEER_MOTOR_GEARING_CONVERTER.beforeToAfterGearing(rotationsBeforeGearing);
     return Rotation2d.fromRotations(rotations);
+  }
+
+  private double getDriveMotorPosition() {
+    final var rotationsBeforeGearing = driveMotor.getPosition().getValue();
+    final var rotations =
+        DRIVE_MOTOR_GEARING_CONVERTER.beforeToAfterGearing(rotationsBeforeGearing);
+    final var inches = DRIVE_MOTOR_WHEEL_CONVERTER.rotationsToDistance(rotations);
+    return inches;
   }
 
   private double getDriveMotorVelocity() {

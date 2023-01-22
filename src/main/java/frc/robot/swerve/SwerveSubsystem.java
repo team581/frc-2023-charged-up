@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.util.LifecycleSubsystem;
@@ -70,6 +71,15 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   public SwerveModuleState[] getModuleStates() {
     return new SwerveModuleState[] {
       frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()
+    };
+  }
+
+  public SwerveModulePosition[] getModulePositions() {
+    return new SwerveModulePosition[] {
+      frontLeft.getPosition(),
+      frontRight.getPosition(),
+      backLeft.getPosition(),
+      backRight.getPosition()
     };
   }
 
