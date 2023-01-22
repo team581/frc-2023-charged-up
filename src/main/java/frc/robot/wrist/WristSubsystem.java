@@ -9,11 +9,11 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.config.Config;
 import frc.robot.util.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 public class WristSubsystem extends LifecycleSubsystem {
-  private static final double GEARING = 48 * 2;
   private static final double HOMED_CURRENT = 10;
   private static final Rotation2d TOLERANCE = Rotation2d.fromDegrees(2);
   private final TalonFX motor;
@@ -36,7 +36,8 @@ public class WristSubsystem extends LifecycleSubsystem {
   }
 
   public Rotation2d getAngle() {
-    return Rotation2d.fromRotations(motor.getSelectedSensorPosition() / 2048.0 / GEARING);
+    return Rotation2d.fromRotations(
+        motor.getSelectedSensorPosition() / 2048.0 / Config.WRIST_GEARING);
   }
 
   public void setAngle(Rotation2d angle) {
@@ -66,7 +67,7 @@ public class WristSubsystem extends LifecycleSubsystem {
         goToGoal = true;
       }
     } else if (goToGoal) {
-      motor.set(ControlMode.MotionMagic, goalAngle.getRotations() * 2048 * GEARING);
+      motor.set(ControlMode.MotionMagic, goalAngle.getRotations() * 2048 * Config.WRIST_GEARING);
     }
   }
 

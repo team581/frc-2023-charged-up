@@ -10,6 +10,8 @@ import frc.robot.swerve.SwerveCorner;
 import frc.robot.swerve.SwerveModuleConstants;
 
 public class Config {
+  private Config() {}
+
   public static final int CONTROLLER_PORT = 0;
 
   public static final RobotConfigKind CONFIG_KIND =
@@ -54,8 +56,8 @@ public class Config {
           Rotation2d.fromDegrees(104.58), SwerveCorner.BACK_RIGHT, false, false);
 
   public static final int ELEVATOR_MOTOR_ID = 14;
-  public static final double ELEVATOR_GEARING =
-      CONFIG_KIND == RobotConfigKind.SPIKE ? 999 : 60.0 * 2.0;
+  public static final double ELEVATOR_GEARING = IS_SPIKE ? 999 : 60.0 * 2.0;
 
   public static final int WRIST_MOTOR_ID = 16;
+  public static final double WRIST_GEARING = IS_SPIKE ? 999 : 48.0 * 2.0;
 }
