@@ -6,7 +6,6 @@ package frc.robot;
 
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
-import com.ctre.phoenixpro.hardware.TalonFX;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -28,33 +27,40 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
   private final PowerDistribution pdpLogging;
 
-  private final ImuSubsystem imu = new ImuSubsystem(new Pigeon2(Config.PIGEON_ID, "581CANivore"));
   private final SwerveModule frontLeft =
       new SwerveModule(
           Config.SWERVE_FL_CONSTANTS,
-          new TalonFX(Config.SWERVE_FL_DRIVE_MOTOR_ID, "581CANivore"),
-          new TalonFX(Config.SWERVE_FL_STEER_MOTOR_ID, "581CANivore"),
+          new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_FL_DRIVE_MOTOR_ID, "581CANivore"),
+          new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_FL_STEER_MOTOR_ID, "581CANivore"),
           new CANCoder(Config.SWERVE_FL_CANCODER_ID, "581CANivore"));
   private final SwerveModule frontRight =
       new SwerveModule(
           Config.SWERVE_FR_CONSTANTS,
-          new TalonFX(Config.SWERVE_FR_DRIVE_MOTOR_ID, "581CANivore"),
-          new TalonFX(Config.SWERVE_FR_STEER_MOTOR_ID, "581CANivore"),
+          new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_FR_DRIVE_MOTOR_ID, "581CANivore"),
+          new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_FR_STEER_MOTOR_ID, "581CANivore"),
           new CANCoder(Config.SWERVE_FR_CANCODER_ID, "581CANivore"));
   private final SwerveModule backLeft =
       new SwerveModule(
           Config.SWERVE_BL_CONSTANTS,
-          new TalonFX(Config.SWERVE_BL_DRIVE_MOTOR_ID, "581CANivore"),
-          new TalonFX(Config.SWERVE_BL_STEER_MOTOR_ID, "581CANivore"),
+          new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_BL_DRIVE_MOTOR_ID, "581CANivore"),
+          new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_BL_STEER_MOTOR_ID, "581CANivore"),
           new CANCoder(Config.SWERVE_BL_CANCODER_ID, "581CANivore"));
   private final SwerveModule backRight =
       new SwerveModule(
           Config.SWERVE_BR_CONSTANTS,
-          new TalonFX(Config.SWERVE_BR_DRIVE_MOTOR_ID, "581CANivore"),
-          new TalonFX(Config.SWERVE_BR_STEER_MOTOR_ID, "581CANivore"),
+          new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_BR_DRIVE_MOTOR_ID, "581CANivore"),
+          new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_BR_STEER_MOTOR_ID, "581CANivore"),
           new CANCoder(Config.SWERVE_BR_CANCODER_ID, "581CANivore"));
+
+  // TODO: Re-enable elevator and wrist
+  // private final ElevatorSubsystem elevator =
+  //     new ElevatorSubsystem(new TalonFX(Config.ELEVATOR_MOTOR_ID, "581CANivore"));
+  // private final WristSubsystem wrist =
+  //     new WristSubsystem(new TalonFX(Config.WRIST_MOTOR_ID, "581CANivore"));
+  private final ImuSubsystem imu = new ImuSubsystem(new Pigeon2(Config.PIGEON_ID, "581CANivore"));
   private final SwerveSubsystem swerveSubsystem =
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
+
   private final XboxController controller = new XboxController(Config.CONTROLLER_PORT);
 
   public Robot() {
@@ -91,6 +97,31 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopPeriodic() {
+    boolean buttonA = controller.getAButton();
+    boolean buttonB = controller.getBButton();
+    boolean buttonY = controller.getYButton();
+    boolean buttonX = controller.getXButton();
+    double rightTrigger = controller.getRightTriggerAxis();
+    boolean rightBumper = controller.getRightBumper();
+
+    // TODO: Re-enable elevator and wrist
+    // if (buttonX) {
+    //   elevator.startHoming();
+    //   wrist.startHoming();
+    // } else if (buttonA) {
+    //   elevator.setGoalPosition(2);
+    // } else if (buttonB) {
+    //   elevator.setGoalPosition(12);
+    //   wrist.setAngle(Rotation2d.fromDegrees(45));
+    // } else if (buttonY) {
+    //   elevator.setGoalPosition(24);
+    //   wrist.setAngle(Rotation2d.fromDegrees(90));
+    // } else if (rightTrigger > 0.3) {
+    //   wrist.setAngle(Rotation2d.fromDegrees(30));
+    // } else if (rightBumper) {
+    //   wrist.setAngle(Rotation2d.fromDegrees(135));
+    // }
+
     swerveSubsystem.driveTeleop(
         -controller.getLeftX(), controller.getLeftY(), -controller.getRightX(), true);
     if (controller.getStartButton()) {
