@@ -25,7 +25,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule {
   private static final double MAX_SPEED = 13.5;
-  private static final SimpleMotorFeedforward DRIV_SIMPLE_MOTOR_FEEDFORWARD =
+  private static final SimpleMotorFeedforward DRIVE_SIMPLE_MOTOR_FEEDFORWARD =
       new SimpleMotorFeedforward(0, 0, 0);
   private static final GearingConverter DRIVE_MOTOR_GEARING_CONVERTER =
       GearingConverter.fromReduction(Config.SWERVE_DRIVE_GEARING_REDUCTION);
@@ -33,8 +33,6 @@ public class SwerveModule {
       GearingConverter.fromReduction(Config.SWERVE_STEER_GEARING_REDUCTION);
   private static final CircleConverter DRIVE_MOTOR_WHEEL_CONVERTER =
       CircleConverter.fromDiameter(6);
-  private static final double STEER_MOTOR_TICKS_PER_ROTATION =
-      STEER_MOTOR_GEARING_CONVERTER.gearingReduction * 2048;
 
   private final SwerveModuleConstants constants;
   private final TalonFX driveMotor;
@@ -148,12 +146,13 @@ public class SwerveModule {
         .recordOutput(
             "Swerve/" + this.constants.corner.toString() + "/Steer motor commanded angle (deg)",
             this.previousAngle.getDegrees());
-    Logger.getInstance().recordOutput(this.constants.corner.toString() + "/Steer Motor Position", getSteerMotorPosition().getDegrees());
+    Logger.getInstance()
+        .recordOutput(
+            this.constants.corner.toString() + "/Steer Motor Position",
+            getSteerMotorPosition().getDegrees());
     Logger.getInstance().recordOutput(null, MAX_SPEED);
     Logger.getInstance().recordOutput(null, MAX_SPEED);
     Logger.getInstance().recordOutput(null, MAX_SPEED);
-
-
   }
 
   private Rotation2d getSteerMotorPosition() {

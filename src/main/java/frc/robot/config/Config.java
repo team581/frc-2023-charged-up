@@ -17,8 +17,6 @@ public class Config {
 
   private static final boolean IS_SPIKE = CONFIG_KIND == RobotConfigKind.SPIKE;
 
-  public static final int EXAMPLE_FIELD = IS_SPIKE ? 123 : 321;
-
   public static final int PDP_ID = 1;
   public static final ModuleType PDP_TYPE = IS_SPIKE ? ModuleType.kCTRE : ModuleType.kRev;
 
