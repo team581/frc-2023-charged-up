@@ -17,6 +17,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import frc.robot.config.Config;
 import frc.robot.util.CircleConverter;
 import frc.robot.util.CtreModuleState;
 import frc.robot.util.GearingConverter;
@@ -27,11 +28,13 @@ public class SwerveModule {
   private static final SimpleMotorFeedforward DRIV_SIMPLE_MOTOR_FEEDFORWARD =
       new SimpleMotorFeedforward(0, 0, 0);
   private static final GearingConverter DRIVE_MOTOR_GEARING_CONVERTER =
-      GearingConverter.fromReduction(10);
+      GearingConverter.fromReduction(Config.SWERVE_DRIVE_GEARING_REDUCTION);
   private static final GearingConverter STEER_MOTOR_GEARING_CONVERTER =
-      GearingConverter.fromReduction(12.8);
+      GearingConverter.fromReduction(Config.SWERVE_STEER_GEARING_REDUCTION);
   private static final CircleConverter DRIVE_MOTOR_WHEEL_CONVERTER =
       CircleConverter.fromDiameter(6);
+  private static final double STEER_MOTOR_TICKS_PER_ROTATION =
+      STEER_MOTOR_GEARING_CONVERTER.gearingReduction * 2048;
 
   private final SwerveModuleConstants constants;
   private final TalonFX driveMotor;

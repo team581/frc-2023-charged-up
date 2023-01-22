@@ -13,9 +13,7 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.imu.ImuSubsystem;
-import frc.robot.swerve.SwerveCorner;
 import frc.robot.swerve.SwerveModule;
-import frc.robot.swerve.SwerveModuleConstants;
 import frc.robot.swerve.SwerveSubsystem;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -29,7 +27,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  * project.
  */
 public class Robot extends LoggedRobot {
-  Pigeon2 pigeonImu = new Pigeon2(1, "581CANivore");
+  Pigeon2 pigeonImu = new Pigeon2(Config.PIGEON_ID, "581CANivore");
 
   ImuSubsystem imu = new ImuSubsystem(pigeonImu);
   SwerveModule frontLeft =
@@ -62,7 +60,7 @@ public class Robot extends LoggedRobot {
           new CANCoder(10, "581CANivore"));
   SwerveSubsystem swerveSubsystem =
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
-  XboxController controller = new XboxController(0);
+  XboxController controller = new XboxController(Config.CONTROLLER_PORT);
 
   public Robot() {
     // Log to a USB stick
@@ -70,7 +68,7 @@ public class Robot extends LoggedRobot {
     // Publish data to NetworkTables
     Logger.getInstance().addDataReceiver(new NT4Publisher());
     // Enables power distribution logging
-    new PowerDistribution(1, ModuleType.kCTRE);
+    new PowerDistribution(Config.PDP_ID, Config.PDP_TYPE);
 
     Logger.getInstance().start();
   }
