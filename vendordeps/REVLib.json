@@ -1,73 +1,67 @@
 {
-    "fileName": "REVLib.json",
-    "name": "REVLib",
-    "version": "2023.1.2",
-    "uuid": "3f48eb8c-50fe-43a6-9cb7-44c86353c4cb",
-    "mavenUrls": [
-        "https://maven.revrobotics.com/"
+  "javaDependencies": [{
+    "groupId": "com.revrobotics.frc",
+    "artifactId": "REVLib-java",
+    "version": "2023.1.2"
+  }],
+  "fileName": "REVLib.json",
+  "jsonUrl": "https://software-metadata.revrobotics.com/REVLib-2023.json",
+  "name": "REVLib",
+  "jniDependencies": [{
+    "validPlatforms": [
+      "windowsx86-64",
+      "windowsx86",
+      "linuxarm64",
+      "linuxx86-64",
+      "linuxathena",
+      "linuxarm32",
+      "osxuniversal"
     ],
-    "jsonUrl": "https://software-metadata.revrobotics.com/REVLib-2023.json",
-    "javaDependencies": [
-        {
-            "groupId": "com.revrobotics.frc",
-            "artifactId": "REVLib-java",
-            "version": "2023.1.2"
-        }
-    ],
-    "jniDependencies": [
-        {
-            "groupId": "com.revrobotics.frc",
-            "artifactId": "REVLib-driver",
-            "version": "2023.1.2",
-            "skipInvalidPlatforms": true,
-            "isJar": false,
-            "validPlatforms": [
-                "windowsx86-64",
-                "windowsx86",
-                "linuxarm64",
-                "linuxx86-64",
-                "linuxathena",
-                "linuxarm32",
-                "osxuniversal"
-            ]
-        }
-    ],
-    "cppDependencies": [
-        {
-            "groupId": "com.revrobotics.frc",
-            "artifactId": "REVLib-cpp",
-            "version": "2023.1.2",
-            "libName": "REVLib",
-            "headerClassifier": "headers",
-            "sharedLibrary": false,
-            "skipInvalidPlatforms": true,
-            "binaryPlatforms": [
-                "windowsx86-64",
-                "windowsx86",
-                "linuxarm64",
-                "linuxx86-64",
-                "linuxathena",
-                "linuxarm32",
-                "osxuniversal"
-            ]
-        },
-        {
-            "groupId": "com.revrobotics.frc",
-            "artifactId": "REVLib-driver",
-            "version": "2023.1.2",
-            "libName": "REVLibDriver",
-            "headerClassifier": "headers",
-            "sharedLibrary": false,
-            "skipInvalidPlatforms": true,
-            "binaryPlatforms": [
-                "windowsx86-64",
-                "windowsx86",
-                "linuxarm64",
-                "linuxx86-64",
-                "linuxathena",
-                "linuxarm32",
-                "osxuniversal"
-            ]
-        }
-    ]
+    "groupId": "com.revrobotics.frc",
+    "artifactId": "REVLib-driver",
+    "skipInvalidPlatforms": true,
+    "isJar": false,
+    "version": "2023.1.2"
+  }],
+  "mavenUrls": ["https://maven.revrobotics.com/"],
+  "cppDependencies": [
+    {
+      "groupId": "com.revrobotics.frc",
+      "libName": "REVLib",
+      "artifactId": "REVLib-cpp",
+      "skipInvalidPlatforms": true,
+      "version": "2023.1.2",
+      "headerClassifier": "headers",
+      "binaryPlatforms": [
+        "windowsx86-64",
+        "windowsx86",
+        "linuxarm64",
+        "linuxx86-64",
+        "linuxathena",
+        "linuxarm32",
+        "osxuniversal"
+      ],
+      "sharedLibrary": false
+    },
+    {
+      "groupId": "com.revrobotics.frc",
+      "libName": "REVLibDriver",
+      "artifactId": "REVLib-driver",
+      "skipInvalidPlatforms": true,
+      "version": "2023.1.2",
+      "headerClassifier": "headers",
+      "binaryPlatforms": [
+        "windowsx86-64",
+        "windowsx86",
+        "linuxarm64",
+        "linuxx86-64",
+        "linuxathena",
+        "linuxarm32",
+        "osxuniversal"
+      ],
+      "sharedLibrary": false
+    }
+  ],
+  "version": "2023.1.2",
+  "uuid": "3f48eb8c-50fe-43a6-9cb7-44c86353c4cb"
 }

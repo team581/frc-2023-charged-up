@@ -4,12 +4,15 @@
 
 package frc.robot.swerve;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.DemandType;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
-
+import com.ctre.phoenixpro.configs.CurrentLimitsConfigs;
+import com.ctre.phoenixpro.configs.MotorOutputConfigs;
+import com.ctre.phoenixpro.configs.Slot0Configs;
+import com.ctre.phoenixpro.controls.DutyCycleOut;
+import com.ctre.phoenixpro.controls.PositionVoltage;
+import com.ctre.phoenixpro.controls.VoltageOut;
+import com.ctre.phoenixpro.hardware.TalonFX;
+import com.ctre.phoenixpro.signals.InvertedValue;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -17,11 +20,10 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.util.CircleConverter;
 import frc.robot.util.CtreModuleState;
 import frc.robot.util.GearingConverter;
-import frc.robot.util.sensors.SensorUnitConverter;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule {
-  private static final double TICKS_PER_ROTATION = 12.8 * 2048;
+  private static final double MAX_SPEED = 13.5;
   private static final SimpleMotorFeedforward DRIV_SIMPLE_MOTOR_FEEDFORWARD =
       new SimpleMotorFeedforward(0, 0, 0);
   private static final GearingConverter DRIVE_MOTOR_GEARING_CONVERTER =
@@ -35,6 +37,8 @@ public class SwerveModule {
   private final TalonFX driveMotor;
   private final TalonFX steerMotor;
   private final CANCoder encoder;
+  private final VoltageOut driveMotorControl = new VoltageOut(0, true, true);
+  private final DutyCycleOut driveRequest = new DutyCycleOut(0, true, true);
   private Rotation2d previousAngle = new Rotation2d();
 
   public SwerveModule(
@@ -44,59 +48,73 @@ public class SwerveModule {
     this.steerMotor = steerMotor;
     this.encoder = encoder;
 
-    driveMotor.config_kP(0, 0);
-    driveMotor.config_kI(0, 0);
-    driveMotor.config_kD(0, 0);
-    driveMotor.config_kF(0, 0);
-    driveMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 15, 15, 0));
-    driveMotor.setInverted(this.constants.driveInversion);
+    Slot0Configs driveMotorSlot0Configs = new Slot0Configs();
+    MotorOutputConfigs driveMotorOutputConfigs = new MotorOutputConfigs();
+    CurrentLimitsConfigs driveMotorCurrentLimitsConfigs = new CurrentLimitsConfigs();
+    driveMotorSlot0Configs.kV = 0;
+    driveMotorSlot0Configs.kP = 0;
+    driveMotorSlot0Configs.kI = 0;
+    driveMotorSlot0Configs.kD = 0;
+    driveMotorCurrentLimitsConfigs.SupplyCurrentLimit = 15;
+    driveMotorCurrentLimitsConfigs.SupplyCurrentLimitEnable = true;
+    if (constants.driveInversion) {
+      driveMotorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
+    } else {
+      driveMotorOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
+    }
+    driveMotor.getConfigurator().apply(driveMotorOutputConfigs);
 
-    steerMotor.config_kP(0, 0.67);
-    steerMotor.config_kI(0, 0);
-    steerMotor.config_kD(0, 0.17);
-    steerMotor.config_kF(0, 0);
-    steerMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 15, 15, 0));
-    steerMotor.setInverted(this.constants.driveInversion);
+    Slot0Configs steerMotorSlot0Configs = new Slot0Configs();
+    MotorOutputConfigs steerMotorOutputConfigs = new MotorOutputConfigs();
+    CurrentLimitsConfigs steerMotorCurrentLimitsConfigs = new CurrentLimitsConfigs();
+    steerMotorSlot0Configs.kV = 0;
+    steerMotorSlot0Configs.kP = 0.67;
+    steerMotorSlot0Configs.kI = 0;
+    steerMotorSlot0Configs.kD = 0.17;
+    steerMotorCurrentLimitsConfigs.SupplyCurrentLimit = 15;
+    steerMotorCurrentLimitsConfigs.SupplyCurrentLimitEnable = true;
+    if (constants.angleInversion) {
+      steerMotorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
+    } else {
+      steerMotorOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
+    }
+    steerMotor.getConfigurator().apply(steerMotorOutputConfigs);
 
     resetWheelAngle();
   }
 
   public void setDesiredState(SwerveModuleState state, boolean OpenLoop) {
     final var steerMotorPosition = getSteerMotorPosition();
-
     state = CtreModuleState.optimize(state, steerMotorPosition);
+
+    final var steerMotorRequest =
+        new PositionVoltage(
+            STEER_MOTOR_GEARING_CONVERTER.afterToBeforeGearing(state.angle.getRotations()));
+    steerMotorRequest.EnableFOC = true;
+    Logger.getInstance()
+        .recordOutput(
+            "Swerve/" + this.constants.corner.toString() + "/Steer motor commanded angle",
+            steerMotorRequest.Position);
+    steerMotor.setControl(steerMotorRequest);
 
     boolean isStopped = false;
     Rotation2d angle = isStopped ? this.previousAngle : state.angle;
     this.previousAngle = angle;
-    final var rotationsBeforeGearing =
-        STEER_MOTOR_GEARING_CONVERTER.afterToBeforeGearing(
-            Units.radiansToRotations(angle.getRadians()));
-    final var sensorUnitsBeforeGearing =
-        SensorUnitConverter.talonFX.rotationsToSensorUnits(rotationsBeforeGearing);
-    steerMotor.set(ControlMode.Position, sensorUnitsBeforeGearing);
 
-    final var feetPerSecond = Units.metersToFeet(state.speedMetersPerSecond);
-    final var feetPerMinute = feetPerSecond * 60;
-    final var rotationsPerMinute = DRIVE_MOTOR_WHEEL_CONVERTER.distanceToRotations(feetPerMinute);
-    final var sensorUnitsPer100ms = SensorUnitConverter.talonFX.rotationsPerMinuteToSensorUnitsPer100ms(rotationsPerMinute);
-    final var sensorUnitsPer100msBeforeGearing =
-        SensorUnitConverter.talonFX.rotationsPerMinuteToSensorUnitsPer100ms(sensorUnitsPer100ms);
+    driveMotorControl.Output = 0;
+    driveMotor.setControl(driveMotorControl);
 
-    if (OpenLoop) {
-      driveMotor.set(
-          ControlMode.PercentOutput, state.speedMetersPerSecond / SwerveSubsystem.MAX_VELOCITY);
-    } else {
-      driveMotor.set(
-          ControlMode.Velocity,
-          sensorUnitsPer100msBeforeGearing,
-          DemandType.ArbitraryFeedForward,
-          DRIV_SIMPLE_MOTOR_FEEDFORWARD.calculate(state.speedMetersPerSecond));
-    }
+    driveRequest.Output = Units.metersToFeet(state.speedMetersPerSecond) / MAX_SPEED;
+    // if (OpenLoop) {
+    driveMotor.setControl(driveRequest);
+    // } else {
+    //   driveMotor.VelocityDutyCycle(
+    //       ControlMode.Velocity,
+    //       true,
+    //       DemandType.ArbitraryFeedForward,
+    //       DRIV_SIMPLE_MOTOR_FEEDFORWARD.calculate(state.speedMetersPerSecond));
+    // }
 
-    Logger.getInstance()
-        .recordOutput(
-            this.constants.corner.toString() + "/Open loop voltage", state.speedMetersPerSecond);
   }
 
   public SwerveModuleState getState() {
@@ -109,51 +127,55 @@ public class SwerveModule {
   public void logValues() {
     Logger.getInstance()
         .recordOutput(
-            this.constants.corner.toString() + "/Drive motor velocity (ft/sec)",
+            "Swerve/" + this.constants.corner.toString() + "/Drive motor velocity (ft/sec)",
             this.getDriveMotorVelocity());
     Logger.getInstance()
         .recordOutput(
-            this.constants.corner.toString() + "/Steer motor position (deg)",
+            "Swerve/" + this.constants.corner.toString() + "/Steer motor position (deg)",
             this.getSteerMotorPosition().getDegrees());
     Logger.getInstance()
         .recordOutput(
-            this.constants.corner.toString() + "/CANcoder position (deg)",
+            "Swerve/" + this.constants.corner.toString() + "/CANcoder position (deg)",
             this.getCancoderPosition().getDegrees());
-    Logger.getInstance().recordOutput(this.constants.corner.toString() + "/Raw CANcoder position (deg)", this.getRawCancoderPosition().getDegrees());
     Logger.getInstance()
         .recordOutput(
-            this.toString() + "/Steer motor commanded angle (deg)",
+            "Swerve/" + this.constants.corner.toString() + "/Raw CANcoder position (deg)",
+            this.getRawCancoderPosition().getDegrees());
+    Logger.getInstance()
+        .recordOutput(
+            "Swerve/" + this.constants.corner.toString() + "/Steer motor commanded angle (deg)",
             this.previousAngle.getDegrees());
+    Logger.getInstance().recordOutput(this.constants.corner.toString() + "/Steer Motor Position", getSteerMotorPosition().getDegrees());
+    Logger.getInstance().recordOutput(null, MAX_SPEED);
+    Logger.getInstance().recordOutput(null, MAX_SPEED);
+    Logger.getInstance().recordOutput(null, MAX_SPEED);
+
+
   }
 
   private Rotation2d getSteerMotorPosition() {
-    double ticksBeforeGearing = steerMotor.getSelectedSensorPosition();
-    double ticks = STEER_MOTOR_GEARING_CONVERTER.beforeToAfterGearing(ticksBeforeGearing);
-    double rotations = SensorUnitConverter.talonFX.sensorUnitsToRotations(ticks);
-    return new Rotation2d(Units.rotationsToRadians(rotations));
+    double rotationsBeforeGearing = steerMotor.getPosition().getValue();
+    double rotations = STEER_MOTOR_GEARING_CONVERTER.beforeToAfterGearing(rotationsBeforeGearing);
+    return Rotation2d.fromRotations(rotations);
   }
 
   private double getDriveMotorVelocity() {
-    final var ticksPer100msBeforeGearing = driveMotor.getSelectedSensorVelocity();
-    final var ticksPer100ms =
-        DRIVE_MOTOR_GEARING_CONVERTER.beforeToAfterGearing(ticksPer100msBeforeGearing);
-    final var rotationsPerMinute =
-        SensorUnitConverter.talonFX.sensorUnitsPer100msToRotationsPerMinute(ticksPer100ms);
-    final var feetPerMinute = DRIVE_MOTOR_WHEEL_CONVERTER.rotationsToDistance(rotationsPerMinute);
-    final var feetPerSecond = feetPerMinute / 60;
-    return feetPerSecond;
+    final var rotationsPerSecondBeforeGearing = driveMotor.getVelocity().getValue();
+    final var rotationsPerSecond =
+        DRIVE_MOTOR_GEARING_CONVERTER.beforeToAfterGearing(rotationsPerSecondBeforeGearing);
+    final var inchesPerSecond = DRIVE_MOTOR_WHEEL_CONVERTER.rotationsToDistance(rotationsPerSecond);
+    return inchesPerSecond;
   }
 
   private void resetWheelAngle() {
     final var absolutePosition = getCancoderPosition();
-    double rotations = absolutePosition.getDegrees() / 360;
-    double encoderTicks = rotations * TICKS_PER_ROTATION;
-    steerMotor.setSelectedSensorPosition(encoderTicks);
+    double rotations = absolutePosition.getRotations();
+    double rotationsBeforeGearing = STEER_MOTOR_GEARING_CONVERTER.afterToBeforeGearing(rotations);
+    steerMotor.setRotorPosition(rotationsBeforeGearing);
   }
 
   private final Rotation2d getCancoderPosition() {
-    return getRawCancoderPosition()
-        .minus(constants.angleOffset);
+    return getRawCancoderPosition().minus(constants.angleOffset);
   }
 
   private Rotation2d getRawCancoderPosition() {

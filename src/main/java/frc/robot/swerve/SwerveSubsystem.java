@@ -11,10 +11,9 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.util.LifecycleSubsystem;
-
 import org.littletonrobotics.junction.Logger;
 
-public class SwerveSubsystem extends LifecycleSubsystem{
+public class SwerveSubsystem extends LifecycleSubsystem {
   private static final Translation2d FRONT_LEFT_LOCATION = new Translation2d(0.381, 0.381);
   private static final Translation2d FRONT_RIGHT_LOCATION = new Translation2d(0.381, -0.381);
   private static final Translation2d BACK_LEFT_LOCATION = new Translation2d(-0.381, 0.381);
@@ -56,6 +55,7 @@ public class SwerveSubsystem extends LifecycleSubsystem{
     Logger.getInstance().recordOutput("Swerve/Rotational velocity", speeds.omegaRadiansPerSecond);
     Logger.getInstance().recordOutput("Swerve/Forward velocity", speeds.vxMetersPerSecond);
     Logger.getInstance().recordOutput("Swerve/Horizontal velocity", speeds.vyMetersPerSecond);
+    Logger.getInstance().recordOutput("Swerve/ModuleStates", getModuleStates());
   }
 
   public ChassisSpeeds getChassisSpeeds() {

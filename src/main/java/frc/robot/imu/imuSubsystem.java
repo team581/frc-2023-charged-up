@@ -9,7 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.LifecycleSubsystem;
 
-public class ImuSubsystem extends LifecycleSubsystem{
+public class ImuSubsystem extends LifecycleSubsystem {
   private final Pigeon2 imu;
 
   public ImuSubsystem(Pigeon2 imu) {
