@@ -45,4 +45,6 @@ public class Config {
 
   public static final int WRIST_MOTOR_ID = 16;
   public static final double WRIST_GEARING = IS_SPIKE ? 999 : 48.0 * 2.0;
+
+  public static final int INTAKE_MOTOR_ID = 999;
 }

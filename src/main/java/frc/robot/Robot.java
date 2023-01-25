@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.config.Config;
 import frc.robot.elevator.ElevatorSubsystem;
+import frc.robot.intake.IntakeSubsystem;
 import frc.robot.wrist.WristSubsystem;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -29,6 +30,8 @@ public class Robot extends LoggedRobot {
       new ElevatorSubsystem(new TalonFX(Config.ELEVATOR_MOTOR_ID, "581CANivore"));
   private final WristSubsystem wrist =
       new WristSubsystem(new TalonFX(Config.WRIST_MOTOR_ID, "581CANivore"));
+  private final IntakeSubsystem intake =
+      new IntakeSubsystem(new TalonFX(Config.INTAKE_MOTOR_ID, "581CANivore"));
   private final XboxController controller = new XboxController(Config.CONTROLLER_PORT);
 
   public Robot() {
