@@ -11,6 +11,7 @@ public class SuperstructureMotionManager extends LifecycleSubsystem{
   private final ElevatorSubsystem elevator;
   private final WristSubsystem wrist;
   private ArrayList<SuperstructurePosition> positionList = new ArrayList<SuperstructurePosition>();
+  private SuperstructurePosition currentPoint = new SuperstructurePosition(0, Rotation2d.fromDegrees(0));
 
   public SuperstructureMotionManager(ElevatorSubsystem elevator, WristSubsystem wrist) {
     this.elevator = elevator;
@@ -19,11 +20,14 @@ public class SuperstructureMotionManager extends LifecycleSubsystem{
 
   public void set(double height, Rotation2d angle) {
     positionList.add(new SuperstructurePosition(height, angle));
-
   }
 
   public boolean atGoal(SuperstructurePosition position) {
-    if (wrist.atAngle(position.angle) && )
+    if (wrist.atAngle(position.angle) && elevator.atHeight(position.height)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @Override
@@ -33,6 +37,10 @@ public class SuperstructureMotionManager extends LifecycleSubsystem{
 
   @Override
   public void enabledPeriodic() {
-
+    if (atGoal(currentPoint) && !positionList.isEmpty()) {
+      currentPoint = positionList.remove(0);
+      wrist.setAngle(currentPoint.angle);
+      elevator.setGoalPosition(currentPoint.height);
+    }
   }
 }

@@ -19,6 +19,7 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
   private boolean isHoming = false;
   private double homingCurrent = 1.5;
   private boolean goToGoal = false;
+  private static final double TOLERANCE = 0.5;
 
   public ElevatorSubsystem(TalonFX motor) {
     this.motor = motor;
@@ -46,6 +47,15 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
     double sensorUnits = motor.getSelectedSensorPosition();
     double position = sensorUnits / sensorUnitsPerElevatorInch;
     return position;
+  }
+
+  public boolean atHeight(double height) {
+    // Edit atHeight tolerance
+    if (Math.abs(getPosition() - height) < TOLERANCE) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   public void setGoalPosition(double goal) {
