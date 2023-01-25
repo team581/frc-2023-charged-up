@@ -9,12 +9,12 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 public class Config {
   private Config() {}
 
+  public static final String SERIAL_NUMBER = System.getenv("serialnum");
+
   public static final int CONTROLLER_PORT = 0;
 
-  public static final RobotConfigKind CONFIG_KIND =
-      System.getenv("serialnum") == "xxxxx" ? RobotConfigKind.TYKE : RobotConfigKind.SPIKE;
-
-  private static final boolean IS_SPIKE = CONFIG_KIND == RobotConfigKind.SPIKE;
+  // TODO: Replace placeholder with Tyke's serial number
+  public static final boolean IS_SPIKE = SERIAL_NUMBER != "xxxxx";
 
   public static final int PDP_ID = 1;
   public static final ModuleType PDP_TYPE = IS_SPIKE ? ModuleType.kCTRE : ModuleType.kRev;
