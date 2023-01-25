@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.config.Config;
 import frc.robot.elevator.ElevatorSubsystem;
+import frc.robot.generated.BuildConstants;
 import frc.robot.wrist.WristSubsystem;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -38,6 +39,25 @@ public class Robot extends LoggedRobot {
     Logger.getInstance().addDataReceiver(new NT4Publisher());
     // Enables power distribution logging
     pdpLogging = new PowerDistribution(Config.PDP_ID, Config.PDP_TYPE);
+
+    // Record metadata
+    Logger.getInstance().recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
+    Logger.getInstance().recordMetadata("RoborioSerialNumber", Config.SERIAL_NUMBER);
+    Logger.getInstance().recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
+    Logger.getInstance().recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+    Logger.getInstance().recordMetadata("GitDate", BuildConstants.GIT_DATE);
+    Logger.getInstance().recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+    switch (BuildConstants.DIRTY) {
+      case 0:
+        Logger.getInstance().recordMetadata("GitDirty", "All changes committed");
+        break;
+      case 1:
+        Logger.getInstance().recordMetadata("GitDirty", "Uncomitted changes");
+        break;
+      default:
+        Logger.getInstance().recordMetadata("GitDirty", "Unknown");
+        break;
+    }
 
     Logger.getInstance().start();
   }
