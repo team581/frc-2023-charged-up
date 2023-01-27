@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.config.Config;
+import frc.robot.controller.DriveController;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.swerve.SwerveModule;
@@ -66,7 +67,7 @@ public class Robot extends LoggedRobot {
   private final SwerveSubsystem swerveSubsystem =
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
 
-  private final XboxController controller = new XboxController(Config.CONTROLLER_PORT);
+  private final DriveController driveController = new DriveController(Config.CONTROLLER_PORT);
 
   public Robot() {
     // Log to a USB stick
@@ -102,14 +103,13 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopPeriodic() {
-    boolean buttonA = controller.getAButton();
-    boolean buttonB = controller.getBButton();
-    boolean buttonY = controller.getYButton();
-    boolean buttonX = controller.getXButton();
-    double rightTrigger = controller.getRightTriggerAxis();
-    boolean rightBumper = controller.getRightBumper();
+    boolean buttonA = driveController.getAButton();
+    boolean buttonB = driveController.getBButton();
+    boolean buttonY = driveController.getYButton();
+    boolean buttonX = driveController.getXButton();
+    double rightTrigger = driveController.getRightTriggerAxis();
+    boolean rightBumper = driveController.getRightBumper();
 
-    //TODO: Re-enable elevator and wrist
     if (buttonX) {
       elevator.startHoming();
       wrist.startHoming();
@@ -127,11 +127,11 @@ public class Robot extends LoggedRobot {
       wrist.setAngle(Rotation2d.fromDegrees(135));
     }
 
-    // swerveSubsystem.driveTeleop(
-   //     -controller.getLeftX(), controller.getLeftY(), -controller.getRightX(), true);
-    //if (controller.getStartButton()) {
-      //imu.zero();
-    //}
+    swerveSubsystem.driveTeleop(
+       -driveController.getSidewaysPercentage(), driveController.getForwardPercentage(), -driveController.getThetaPercentage(), true);
+    if (driveController.getStartButton()) {
+      imu.zero();
+    }
   }
 
   @Override

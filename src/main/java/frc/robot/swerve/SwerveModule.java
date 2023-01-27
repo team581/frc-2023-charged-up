@@ -10,6 +10,7 @@ import com.ctre.phoenixpro.configs.CurrentLimitsConfigs;
 import com.ctre.phoenixpro.configs.MotorOutputConfigs;
 import com.ctre.phoenixpro.configs.Slot0Configs;
 import com.ctre.phoenixpro.controls.DutyCycleOut;
+import com.ctre.phoenixpro.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenixpro.controls.PositionVoltage;
 import com.ctre.phoenixpro.controls.VoltageOut;
 import com.ctre.phoenixpro.hardware.TalonFX;
@@ -40,6 +41,7 @@ public class SwerveModule {
   private final TalonFX driveMotor;
   private final TalonFX steerMotor;
   private final CANCoder encoder;
+  private final PositionVoltage steerMotorControl = new PositionVoltage(0, true, 0, 0, false);
   private final VoltageOut driveMotorControl = new VoltageOut(0, true, true);
   private final DutyCycleOut driveRequest = new DutyCycleOut(0, true, true);
   private Rotation2d previousAngle = new Rotation2d();
@@ -73,7 +75,7 @@ public class SwerveModule {
     MotorOutputConfigs steerMotorOutputConfigs = new MotorOutputConfigs();
     CurrentLimitsConfigs steerMotorCurrentLimitsConfigs = new CurrentLimitsConfigs();
     ClosedLoopGeneralConfigs steerMotorClosedLoopGeneralConfigs = new ClosedLoopGeneralConfigs();
-    steerMotorClosedLoopGeneralConfigs.ContinuousWrap = true;
+    steerMotorClosedLoopGeneralConfigs.ContinuousWrap = false;
     steerMotorSlot0Configs.kV = 0;
     steerMotorSlot0Configs.kP = 0.67;
     steerMotorSlot0Configs.kI = 0;
@@ -91,23 +93,14 @@ public class SwerveModule {
     steerMotor.getConfigurator().apply(steerMotorSlot0Configs);
     steerMotor.getConfigurator().apply(steerMotorCurrentLimitsConfigs);
     steerMotor.getConfigurator().apply(steerMotorClosedLoopGeneralConfigs);
-
-    resetWheelAngle();
   }
 
   public void setDesiredState(SwerveModuleState state, boolean OpenLoop) {
     final var steerMotorPosition = getSteerMotorPosition();
     state = CtreModuleState.optimize(state, steerMotorPosition);
 
-    final var steerMotorRequest =
-        new PositionVoltage(
-            STEER_MOTOR_GEARING_CONVERTER.afterToBeforeGearing(state.angle.getRotations()));
-    steerMotorRequest.EnableFOC = true;
-    Logger.getInstance()
-        .recordOutput(
-            "Swerve/" + this.constants.corner.toString() + "/Steer motor commanded angle",
-            steerMotorRequest.Position);
-    steerMotor.setControl(steerMotorRequest);
+    double commandedSteerPosition = STEER_MOTOR_GEARING_CONVERTER.afterToBeforeGearing(state.angle.getRotations());
+    steerMotor.setControl(steerMotorControl.withPosition(commandedSteerPosition));
 
     boolean isStopped = false;
     Rotation2d angle = isStopped ? this.previousAngle : state.angle;
@@ -192,7 +185,7 @@ public class SwerveModule {
     return inchesPerSecond;
   }
 
-  private void resetWheelAngle() {
+  public void resetWheelAngle() {
     final var absolutePosition = getCancoderPosition();
     double rotations = absolutePosition.getRotations();
     double rotationsBeforeGearing = STEER_MOTOR_GEARING_CONVERTER.afterToBeforeGearing(rotations);

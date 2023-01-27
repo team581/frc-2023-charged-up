@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import frc.robot.controller.DriveController;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.util.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
@@ -42,6 +43,14 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     this.frontLeft = frontLeft;
     this.backRight = backRight;
     this.backLeft = backLeft;
+  }
+
+  @Override
+  public void disabledPeriodic() {
+    frontRight.resetWheelAngle();
+    frontLeft.resetWheelAngle();
+    backRight.resetWheelAngle();
+    backLeft.resetWheelAngle();
   }
 
   @Override
@@ -117,10 +126,4 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   public double getAngle() {
     return imu.getRobotHeading().getDegrees();
   }
-
-  @Override
-  public void disabledPeriodic() {
-
-  }
-
 }
