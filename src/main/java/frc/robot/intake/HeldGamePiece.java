@@ -4,9 +4,8 @@
 
 package frc.robot.intake;
 
-public enum IntakeMode {
-  INTAKE_CUBE,
-  INTAKE_CONE,
-  OUTTAKE,
-  STOPPED;
+public enum HeldGamePiece {
+  CUBE,
+  CONE,
+  NOTHING;
 }

@@ -10,7 +10,9 @@ import frc.robot.util.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 public class IntakeSubsystem extends LifecycleSubsystem {
-  private IntakeMode mode = IntakeMode.STOPPED_INTAKING;
+  private HeldGamePiece gamePiece = HeldGamePiece.NOTHING;
+
+  private IntakeMode mode = IntakeMode.STOPPED;
 
   private final TalonFX motor;
 
@@ -21,14 +23,32 @@ public class IntakeSubsystem extends LifecycleSubsystem {
   @Override
   public void robotPeriodic() {
     Logger.getInstance().recordOutput("Intake/Mode", mode.toString());
+    Logger.getInstance().recordOutput("Intake/HeldGamePiece", gamePiece.toString());
   }
 
   @Override
   public void enabledPeriodic() {
-    motor.set(TalonFXControlMode.PercentOutput, mode.percentage);
+    if (mode == IntakeMode.INTAKE_CUBE) {
+      motor.set(TalonFXControlMode.PercentOutput, 0.4);
+    } else if (mode == IntakeMode.INTAKE_CONE) {
+      motor.set(TalonFXControlMode.PercentOutput, -0.4);
+    } else if (mode == IntakeMode.OUTTAKE) {
+      if (gamePiece == HeldGamePiece.CUBE) {
+        motor.set(TalonFXControlMode.PercentOutput, -0.4);
+      } else if (gamePiece == HeldGamePiece.CONE) {
+        motor.set(TalonFXControlMode.PercentOutput, 0.4);
+      }
+    } else {
+      motor.set(TalonFXControlMode.PercentOutput, 0);
+    }
   }
 
   public void setMode(IntakeMode mode) {
     this.mode = mode;
+    if (mode == IntakeMode.INTAKE_CUBE) {
+      gamePiece = HeldGamePiece.CUBE;
+    } else if (mode == IntakeMode.INTAKE_CONE) {
+      gamePiece = HeldGamePiece.CONE;
+    }
   }
 }
