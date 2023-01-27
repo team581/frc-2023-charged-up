@@ -5,6 +5,8 @@
 package frc.robot.imu;
 
 import com.ctre.phoenix.sensors.Pigeon2;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.LifecycleSubsystem;
@@ -28,7 +30,7 @@ public class ImuSubsystem extends LifecycleSubsystem {
     this.imu.setYaw(0);
   }
 
-  public void setAngle(double zeroAngle) {
-    this.imu.setYaw(zeroAngle);
+  public void setAngle(Rotation2d zeroAngle) {
+    this.imu.setYaw(zeroAngle.getDegrees());
   }
 }

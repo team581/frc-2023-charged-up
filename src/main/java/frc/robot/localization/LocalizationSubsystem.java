@@ -64,4 +64,10 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
   public Pose2d getPose() {
     return poseEstimator.getEstimatedPosition();
   }
+
+
+  public void resetPose(Pose2d pose, Rotation2d gyroAngle) {
+    imu.setAngle(gyroAngle.getDegrees());
+    poseEstimator.resetPosition(imu.getRobotHeading(), swerve.getModulePositions(), pose);
+  }
 }
