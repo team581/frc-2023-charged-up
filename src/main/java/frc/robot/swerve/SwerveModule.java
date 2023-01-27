@@ -5,6 +5,7 @@
 package frc.robot.swerve;
 
 import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenixpro.configs.ClosedLoopGeneralConfigs;
 import com.ctre.phoenixpro.configs.CurrentLimitsConfigs;
 import com.ctre.phoenixpro.configs.MotorOutputConfigs;
 import com.ctre.phoenixpro.configs.Slot0Configs;
@@ -65,10 +66,14 @@ public class SwerveModule {
       driveMotorOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
     }
     driveMotor.getConfigurator().apply(driveMotorOutputConfigs);
+    driveMotor.getConfigurator().apply(driveMotorSlot0Configs);
+    driveMotor.getConfigurator().apply(driveMotorCurrentLimitsConfigs);
 
     Slot0Configs steerMotorSlot0Configs = new Slot0Configs();
     MotorOutputConfigs steerMotorOutputConfigs = new MotorOutputConfigs();
     CurrentLimitsConfigs steerMotorCurrentLimitsConfigs = new CurrentLimitsConfigs();
+    ClosedLoopGeneralConfigs steerMotorClosedLoopGeneralConfigs = new ClosedLoopGeneralConfigs();
+    steerMotorClosedLoopGeneralConfigs.ContinuousWrap = true;
     steerMotorSlot0Configs.kV = 0;
     steerMotorSlot0Configs.kP = 0.67;
     steerMotorSlot0Configs.kI = 0;
@@ -81,6 +86,11 @@ public class SwerveModule {
       steerMotorOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
     }
     steerMotor.getConfigurator().apply(steerMotorOutputConfigs);
+
+    steerMotor.getConfigurator().apply(steerMotorOutputConfigs);
+    steerMotor.getConfigurator().apply(steerMotorSlot0Configs);
+    steerMotor.getConfigurator().apply(steerMotorCurrentLimitsConfigs);
+    steerMotor.getConfigurator().apply(steerMotorClosedLoopGeneralConfigs);
 
     resetWheelAngle();
   }
@@ -102,9 +112,6 @@ public class SwerveModule {
     boolean isStopped = false;
     Rotation2d angle = isStopped ? this.previousAngle : state.angle;
     this.previousAngle = angle;
-
-    driveMotorControl.Output = 0;
-    driveMotor.setControl(driveMotorControl);
 
     driveRequest.Output = Units.metersToFeet(state.speedMetersPerSecond) / MAX_SPEED;
     // if (OpenLoop) {

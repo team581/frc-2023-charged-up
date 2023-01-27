@@ -117,4 +117,10 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   public double getAngle() {
     return imu.getRobotHeading().getDegrees();
   }
+
+  @Override
+  public void disabledPeriodic() {
+
+  }
+
 }

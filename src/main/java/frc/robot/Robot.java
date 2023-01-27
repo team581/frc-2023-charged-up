@@ -6,13 +6,18 @@ package frc.robot;
 
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.config.Config;
+import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSubsystem;
+import frc.robot.wrist.WristSubsystem;
+
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -53,10 +58,10 @@ public class Robot extends LoggedRobot {
           new CANCoder(Config.SWERVE_BR_CANCODER_ID, "581CANivore"));
 
   // TODO: Re-enable elevator and wrist
-  // private final ElevatorSubsystem elevator =
-  //     new ElevatorSubsystem(new TalonFX(Config.ELEVATOR_MOTOR_ID, "581CANivore"));
-  // private final WristSubsystem wrist =
-  //     new WristSubsystem(new TalonFX(Config.WRIST_MOTOR_ID, "581CANivore"));
+  private final ElevatorSubsystem elevator =
+      new ElevatorSubsystem(new com.ctre.phoenix.motorcontrol.can.TalonFX(Config.ELEVATOR_MOTOR_ID, "581CANivore"));
+  private final WristSubsystem wrist =
+      new WristSubsystem(new com.ctre.phoenix.motorcontrol.can.TalonFX(Config.WRIST_MOTOR_ID, "581CANivore"));
   private final ImuSubsystem imu = new ImuSubsystem(new Pigeon2(Config.PIGEON_ID, "581CANivore"));
   private final SwerveSubsystem swerveSubsystem =
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
@@ -104,29 +109,29 @@ public class Robot extends LoggedRobot {
     double rightTrigger = controller.getRightTriggerAxis();
     boolean rightBumper = controller.getRightBumper();
 
-    // TODO: Re-enable elevator and wrist
-    // if (buttonX) {
-    //   elevator.startHoming();
-    //   wrist.startHoming();
-    // } else if (buttonA) {
-    //   elevator.setGoalPosition(2);
-    // } else if (buttonB) {
-    //   elevator.setGoalPosition(12);
-    //   wrist.setAngle(Rotation2d.fromDegrees(45));
-    // } else if (buttonY) {
-    //   elevator.setGoalPosition(24);
-    //   wrist.setAngle(Rotation2d.fromDegrees(90));
-    // } else if (rightTrigger > 0.3) {
-    //   wrist.setAngle(Rotation2d.fromDegrees(30));
-    // } else if (rightBumper) {
-    //   wrist.setAngle(Rotation2d.fromDegrees(135));
-    // }
-
-    swerveSubsystem.driveTeleop(
-        -controller.getLeftX(), controller.getLeftY(), -controller.getRightX(), true);
-    if (controller.getStartButton()) {
-      imu.zero();
+    //TODO: Re-enable elevator and wrist
+    if (buttonX) {
+      elevator.startHoming();
+      wrist.startHoming();
+    } else if (buttonA) {
+      elevator.setGoalPosition(2);
+    } else if (buttonB) {
+      elevator.setGoalPosition(12);
+      wrist.setAngle(Rotation2d.fromDegrees(45));
+    } else if (buttonY) {
+      elevator.setGoalPosition(24);
+      wrist.setAngle(Rotation2d.fromDegrees(90));
+    } else if (rightTrigger > 0.3) {
+      wrist.setAngle(Rotation2d.fromDegrees(30));
+    } else if (rightBumper) {
+      wrist.setAngle(Rotation2d.fromDegrees(135));
     }
+
+    // swerveSubsystem.driveTeleop(
+   //     -controller.getLeftX(), controller.getLeftY(), -controller.getRightX(), true);
+    //if (controller.getStartButton()) {
+      //imu.zero();
+    //}
   }
 
   @Override
