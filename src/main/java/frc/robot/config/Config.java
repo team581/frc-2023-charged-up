@@ -7,17 +7,16 @@ package frc.robot.config;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 
 public class Config {
-  private Config() {}
+  private static final String TYKE_SERIAL_NUMBER = "031617f6";
+
+  public static final String SERIAL_NUMBER = System.getenv("serialnum");
 
   public static final int CONTROLLER_PORT = 0;
 
-  public static final RobotConfigKind CONFIG_KIND =
-      System.getenv("serialnum") == "xxxxx" ? RobotConfigKind.TYKE : RobotConfigKind.SPIKE;
-
-  private static final boolean IS_SPIKE = CONFIG_KIND == RobotConfigKind.SPIKE;
+  public static final boolean IS_SPIKE = !SERIAL_NUMBER.equalsIgnoreCase(TYKE_SERIAL_NUMBER);
 
   public static final int PDP_ID = 1;
-  public static final ModuleType PDP_TYPE = IS_SPIKE ? ModuleType.kCTRE : ModuleType.kRev;
+  public static final ModuleType PDP_TYPE = IS_SPIKE ? ModuleType.kRev : ModuleType.kCTRE;
 
   public static final int PIGEON_ID = 1;
 
@@ -47,4 +46,6 @@ public class Config {
   public static final double WRIST_GEARING = IS_SPIKE ? 999 : 48.0 * 2.0;
 
   public static final int INTAKE_MOTOR_ID = 999;
+
+  private Config() {}
 }
