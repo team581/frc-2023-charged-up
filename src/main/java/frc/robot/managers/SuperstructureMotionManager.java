@@ -13,7 +13,8 @@ import java.util.ArrayList;
 public class SuperstructureMotionManager extends LifecycleSubsystem {
   private final ElevatorSubsystem elevator;
   private final WristSubsystem wrist;
-  private final ArrayList<SuperstructurePosition> positionList = new ArrayList<SuperstructurePosition>();
+  private final ArrayList<SuperstructurePosition> positionList =
+      new ArrayList<SuperstructurePosition>();
   private SuperstructurePosition currentPoint =
       new SuperstructurePosition(0, Rotation2d.fromDegrees(0));
 
