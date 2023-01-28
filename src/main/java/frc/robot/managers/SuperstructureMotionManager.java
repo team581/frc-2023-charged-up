@@ -38,6 +38,7 @@ public class SuperstructureMotionManager extends LifecycleSubsystem {
       positionList.add(new SuperstructurePosition(elevator.getHeight(), Rotation2d.fromDegrees(30)));
       positionList.add(new SuperstructurePosition(goalHeight, Rotation2d.fromDegrees(30)));
     }
+    // TODO: Make elevator & wrist move to goal position in fewest movements
 
     positionList.add(new SuperstructurePosition(goalHeight, goalAngle));
   }
