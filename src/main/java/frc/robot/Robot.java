@@ -7,11 +7,13 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.config.Config;
 import frc.robot.elevator.ElevatorSubsystem;
+import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
+import frc.robot.intake.commands.IntakeCommand;
 import frc.robot.wrist.WristSubsystem;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -32,7 +34,8 @@ public class Robot extends LoggedRobot {
       new WristSubsystem(new TalonFX(Config.WRIST_MOTOR_ID, "581CANivore"));
   private final IntakeSubsystem intake =
       new IntakeSubsystem(new TalonFX(Config.INTAKE_MOTOR_ID, "581CANivore"));
-  private final XboxController controller = new XboxController(Config.CONTROLLER_PORT);
+  private final CommandXboxController controller =
+      new CommandXboxController(Config.CONTROLLER_PORT);
 
   public Robot() {
     // Log to a USB stick
@@ -68,12 +71,10 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopPeriodic() {
-    boolean buttonA = controller.getAButton();
-    boolean buttonB = controller.getBButton();
-    boolean buttonY = controller.getYButton();
-    boolean buttonX = controller.getXButton();
-    double rightTrigger = controller.getRightTriggerAxis();
-    boolean rightBumper = controller.getRightBumper();
+    boolean buttonA = controller.a().getAsBoolean();
+    boolean buttonB = controller.b().getAsBoolean();
+    boolean buttonY = controller.y().getAsBoolean();
+    boolean buttonX = controller.x().getAsBoolean();
 
     if (buttonX) {
       elevator.startHoming();
@@ -86,11 +87,11 @@ public class Robot extends LoggedRobot {
     } else if (buttonY) {
       elevator.setGoalPosition(24);
       wrist.setAngle(Rotation2d.fromDegrees(90));
-    } else if (rightTrigger > 0.3) {
-      wrist.setAngle(Rotation2d.fromDegrees(30));
-    } else if (rightBumper) {
-      wrist.setAngle(Rotation2d.fromDegrees(135));
     }
+
+    controller.rightTrigger().whileTrue(new IntakeCommand(intake, IntakeMode.OUTTAKE));
+    controller.leftTrigger().whileTrue(new IntakeCommand(intake, IntakeMode.INTAKE_CUBE));
+    controller.leftBumper().whileTrue(new IntakeCommand(intake, IntakeMode.INTAKE_CONE));
   }
 
   @Override

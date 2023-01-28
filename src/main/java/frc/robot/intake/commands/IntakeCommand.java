@@ -4,11 +4,11 @@
 
 package frc.robot.intake.commands;
 
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
 
-public class IntakeCommand extends InstantCommand {
+public class IntakeCommand extends CommandBase {
   private final IntakeSubsystem intakeSubsystem;
   private final IntakeMode mode;
 
@@ -21,5 +21,15 @@ public class IntakeCommand extends InstantCommand {
   @Override
   public void initialize() {
     intakeSubsystem.setMode(mode);
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    intakeSubsystem.setMode(IntakeMode.STOPPED);
+  }
+
+  @Override
+  public boolean isFinished() {
+    return false;
   }
 }
