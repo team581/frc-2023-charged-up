@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.config.Config;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.generated.BuildConstants;
+import frc.robot.managers.SuperstructureMotionManager;
 import frc.robot.wrist.WristSubsystem;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -30,6 +31,8 @@ public class Robot extends LoggedRobot {
       new ElevatorSubsystem(new TalonFX(Config.ELEVATOR_MOTOR_ID, "581CANivore"));
   private final WristSubsystem wrist =
       new WristSubsystem(new TalonFX(Config.WRIST_MOTOR_ID, "581CANivore"));
+  private final SuperstructureMotionManager superstructureMotionManager =
+      new SuperstructureMotionManager(elevator, wrist);
   private final XboxController controller = new XboxController(Config.CONTROLLER_PORT);
 
   public Robot() {
@@ -96,17 +99,20 @@ public class Robot extends LoggedRobot {
       elevator.startHoming();
       wrist.startHoming();
     } else if (buttonA) {
-      elevator.setGoalPosition(2);
+      superstructureMotionManager.set(
+          1, Rotation2d.fromDegrees(5)); // Original: height 1 and degrees 5
     } else if (buttonB) {
-      elevator.setGoalPosition(12);
-      wrist.setAngle(Rotation2d.fromDegrees(45));
+      superstructureMotionManager.set(
+          16, Rotation2d.fromDegrees(20)); // Original: height 12 and degrees 65
     } else if (buttonY) {
-      elevator.setGoalPosition(24);
-      wrist.setAngle(Rotation2d.fromDegrees(90));
+      superstructureMotionManager.set(
+          32, Rotation2d.fromDegrees(20)); // Original: height 24 and degrees 95
     } else if (rightTrigger > 0.3) {
-      wrist.setAngle(Rotation2d.fromDegrees(30));
+      superstructureMotionManager.set(
+          32, Rotation2d.fromDegrees(100)); // Original: height 1 and degrees 35
     } else if (rightBumper) {
-      wrist.setAngle(Rotation2d.fromDegrees(135));
+      superstructureMotionManager.set(
+          1, Rotation2d.fromDegrees(125)); // Original: height 1 and degrees 125
     }
   }
 
