@@ -42,7 +42,7 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
     this.isHoming = true;
   }
 
-  public double getPosition() {
+  public double getHeight() {
     // Read talon sensor, convert to inches
     double sensorUnits = motor.getSelectedSensorPosition();
     double position = sensorUnits / sensorUnitsPerElevatorInch;
@@ -51,7 +51,7 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
 
   public boolean atHeight(double height) {
     // Edit atHeight tolerance
-    if (Math.abs(getPosition() - height) < TOLERANCE) {
+    if (Math.abs(getHeight() - height) < TOLERANCE) {
       return true;
     } else {
       return false;
@@ -66,7 +66,7 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
 
   @Override
   public void robotPeriodic() {
-    Logger.getInstance().recordOutput("Elevator/Position", getPosition());
+    Logger.getInstance().recordOutput("Elevator/Position", getHeight());
     Logger.getInstance().recordOutput("Elevator/Current", motor.getSupplyCurrent());
     Logger.getInstance().recordOutput("Elevator/GoalPosition", goalPositionInInches);
     Logger.getInstance().recordOutput("Elevator/Homing", isHoming);
