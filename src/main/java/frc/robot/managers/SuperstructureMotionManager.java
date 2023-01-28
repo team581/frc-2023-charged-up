@@ -23,13 +23,20 @@ public class SuperstructureMotionManager extends LifecycleSubsystem {
   }
 
   public void set(double goalHeight, Rotation2d goalAngle) {
-    double wristRange = 90;
+    double wristRange = 25;
     double goalDegrees = goalAngle.getDegrees();
+    double wristAngle = wrist.getAngle().getDegrees();
+
+    boolean wristGoalInCollisionArea = goalDegrees < wristRange;
+    boolean currentWristAngleInCollisionArea = wristAngle < wristRange;
+    boolean leavingBumperArea = goalHeight > 25 && elevator.getHeight() < 25;
+    boolean goingToBumperArea = goalHeight < 25 && elevator.getHeight() > 25;
+
     positionList.clear();
 
-    if (goalDegrees < wristRange && ((goalHeight > 10 && elevator.getHeight() < 10) || (goalHeight < 10 && elevator.getHeight() > 10))) {
-      positionList.add(new SuperstructurePosition(elevator.getHeight(), Rotation2d.fromDegrees(135)));
-      positionList.add(new SuperstructurePosition(goalHeight, Rotation2d.fromDegrees(135)));
+    if ((wristGoalInCollisionArea || currentWristAngleInCollisionArea) && (leavingBumperArea || goingToBumperArea)) {
+      positionList.add(new SuperstructurePosition(elevator.getHeight(), Rotation2d.fromDegrees(30)));
+      positionList.add(new SuperstructurePosition(goalHeight, Rotation2d.fromDegrees(30)));
     }
 
     positionList.add(new SuperstructurePosition(goalHeight, goalAngle));

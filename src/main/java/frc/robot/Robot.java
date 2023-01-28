@@ -77,13 +77,13 @@ public class Robot extends LoggedRobot {
     } else if (buttonA) {
       superstructureMotionManager.set(1, Rotation2d.fromDegrees(5)); // Original: height 1 and degrees 5
     } else if (buttonB) {
-      superstructureMotionManager.set(9, Rotation2d.fromDegrees(30)); // Original: height 12 and degrees 65
+      superstructureMotionManager.set(16, Rotation2d.fromDegrees(20)); // Original: height 12 and degrees 65
     } else if (buttonY) {
-      superstructureMotionManager.set(24, Rotation2d.fromDegrees(30)); // Original: height 24 and degrees 95
+      superstructureMotionManager.set(32, Rotation2d.fromDegrees(20)); // Original: height 24 and degrees 95
     } else if (rightTrigger > 0.3) {
-      superstructureMotionManager.set(24 , Rotation2d.fromDegrees(100)); // Original: height 1 and degrees 35
+      superstructureMotionManager.set(32, Rotation2d.fromDegrees(100)); // Original: height 1 and degrees 35
     } else if (rightBumper) {
-      superstructureMotionManager.set(1 , Rotation2d.fromDegrees(125));// Original: height 1 and degrees 125
+      superstructureMotionManager.set(1, Rotation2d.fromDegrees(125));// Original: height 1 and degrees 125
     }
   }
 
