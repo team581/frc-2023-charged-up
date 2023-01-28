@@ -8,7 +8,9 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.autos.Autos;
 import frc.robot.config.Config;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
@@ -65,6 +67,10 @@ public class Robot extends LoggedRobot {
       new LocalizationSubsystem(swerveSubsystem, imu);
   private final XboxController controller = new XboxController(Config.CONTROLLER_PORT);
 
+  private final Autos autos = new Autos(localizationSubsystem, swerveSubsystem);
+
+  private final Command autoCommand = autos.getAutoCommand();
+
   public Robot() {
 
     // Log to a USB stick
@@ -90,13 +96,17 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void autonomousInit() {}
+  public void autonomousInit() {
+    CommandScheduler.getInstance().schedule(autoCommand);
+  }
 
   @Override
   public void autonomousPeriodic() {}
 
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    autoCommand.cancel();
+  }
 
   @Override
   public void teleopPeriodic() {
