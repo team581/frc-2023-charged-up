@@ -5,13 +5,19 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.Pigeon2;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.config.Config;
+import frc.robot.controller.DriveController;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.generated.BuildConstants;
+import frc.robot.imu.ImuSubsystem;
 import frc.robot.managers.SuperstructureMotionManager;
+import frc.robot.swerve.SwerveModule;
+import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.wrist.WristSubsystem;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -26,13 +32,43 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  */
 public class Robot extends LoggedRobot {
   private final PowerDistribution pdpLogging;
+
+  private final SwerveModule frontLeft =
+      new SwerveModule(
+          Config.SWERVE_FL_CONSTANTS,
+          new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_FL_DRIVE_MOTOR_ID, "581CANivore"),
+          new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_FL_STEER_MOTOR_ID, "581CANivore"),
+          new CANCoder(Config.SWERVE_FL_CANCODER_ID, "581CANivore"));
+  private final SwerveModule frontRight =
+      new SwerveModule(
+          Config.SWERVE_FR_CONSTANTS,
+          new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_FR_DRIVE_MOTOR_ID, "581CANivore"),
+          new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_FR_STEER_MOTOR_ID, "581CANivore"),
+          new CANCoder(Config.SWERVE_FR_CANCODER_ID, "581CANivore"));
+  private final SwerveModule backLeft =
+      new SwerveModule(
+          Config.SWERVE_BL_CONSTANTS,
+          new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_BL_DRIVE_MOTOR_ID, "581CANivore"),
+          new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_BL_STEER_MOTOR_ID, "581CANivore"),
+          new CANCoder(Config.SWERVE_BL_CANCODER_ID, "581CANivore"));
+  private final SwerveModule backRight =
+      new SwerveModule(
+          Config.SWERVE_BR_CONSTANTS,
+          new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_BR_DRIVE_MOTOR_ID, "581CANivore"),
+          new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_BR_STEER_MOTOR_ID, "581CANivore"),
+          new CANCoder(Config.SWERVE_BR_CANCODER_ID, "581CANivore"));
+
   private final ElevatorSubsystem elevator =
       new ElevatorSubsystem(new TalonFX(Config.ELEVATOR_MOTOR_ID, "581CANivore"));
   private final WristSubsystem wrist =
       new WristSubsystem(new TalonFX(Config.WRIST_MOTOR_ID, "581CANivore"));
   private final SuperstructureMotionManager superstructureMotionManager =
       new SuperstructureMotionManager(elevator, wrist);
-  private final XboxController controller = new XboxController(Config.CONTROLLER_PORT);
+  private final ImuSubsystem imu = new ImuSubsystem(new Pigeon2(Config.PIGEON_ID, "581CANivore"));
+  private final SwerveSubsystem swerve =
+      new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
+
+  private final DriveController driveController = new DriveController(Config.CONTROLLER_PORT);
 
   public Robot() {
     // Log to a USB stick
@@ -88,20 +124,31 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopPeriodic() {
-    boolean stowed = controller.getAButton();
-    boolean node1 = controller.getBButton();
-    boolean node2FacingInward = controller.getYButton();
-    boolean homing = controller.getXButton();
-    double node2FacingOutward = controller.getRightTriggerAxis();
-    boolean intaking = controller.getRightBumper();
-
-    // TODO: Use commands instead of buttons - backport some changes from the intake branch
-    // (CommandXboxController)
+    boolean stowed = driveController.a().getAsBoolean();
+    boolean node1 = driveController.b().getAsBoolean();
+    boolean node2FacingInward = driveController.y().getAsBoolean();
+    boolean homing = driveController.x().getAsBoolean();
+    boolean node2FacingOutward = driveController.rightTrigger().getAsBoolean();
+    boolean intaking = driveController.rightBumper().getAsBoolean();
 
     if (homing) {
       elevator.startHoming();
       wrist.startHoming();
     }
+
+    boolean openLoop = !driveController.start().getAsBoolean();
+    swerve.driveTeleop(
+        -driveController.getSidewaysPercentage(),
+        driveController.getForwardPercentage(),
+        -driveController.getThetaPercentage(),
+        true,
+        openLoop);
+    // If backButton is pressed then closed loop
+    if (driveController.back().getAsBoolean()) {
+      imu.zero();
+    }
+    Logger.getInstance().recordOutput("MenuButtons/Imu", driveController.back().getAsBoolean());
+    Logger.getInstance().recordOutput("MenuButtons/ClosedLoop", !openLoop);
   }
 
   @Override
