@@ -168,7 +168,7 @@ public class SwerveModule {
             this.previousAngle.getDegrees());
     Logger.getInstance()
         .recordOutput(
-            this.constants.corner.toString() + "/Steer Motor Position",
+            "Swerve/" + this.constants.corner.toString() + "/Steer Motor Position",
             getSteerMotorPosition().getDegrees());
     Logger.getInstance()
         .recordOutput(

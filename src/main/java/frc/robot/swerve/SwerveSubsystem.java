@@ -46,6 +46,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
   @Override
   public void disabledPeriodic() {
+    // TODO: This causes constants loop overruns when it runs during disabled
     frontRight.resetWheelAngle();
     frontLeft.resetWheelAngle();
     backRight.resetWheelAngle();
@@ -61,9 +62,9 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     this.backLeft.logValues();
     this.backRight.logValues();
 
-    Logger.getInstance().recordOutput("Swerve/Rotational velocity", speeds.omegaRadiansPerSecond);
-    Logger.getInstance().recordOutput("Swerve/Forward velocity", speeds.vxMetersPerSecond);
-    Logger.getInstance().recordOutput("Swerve/Horizontal velocity", speeds.vyMetersPerSecond);
+    Logger.getInstance().recordOutput("Swerve/RotationalVelocity", speeds.omegaRadiansPerSecond);
+    Logger.getInstance().recordOutput("Swerve/ForwardVelocity", speeds.vxMetersPerSecond);
+    Logger.getInstance().recordOutput("Swerve/HorizontalVelocity", speeds.vyMetersPerSecond);
     Logger.getInstance().recordOutput("Swerve/ModuleStates", getModuleStates());
   }
 
@@ -93,7 +94,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
   public void setChassisSpeeds(ChassisSpeeds speeds, boolean openLoop) {
     final var moduleStates = KINEMATICS.toSwerveModuleStates(speeds);
-    Logger.getInstance().recordOutput("Swerve", moduleStates);
+    Logger.getInstance().recordOutput("Swerve/GoalModuleStates", moduleStates);
     frontLeft.setDesiredState(moduleStates[0], openLoop);
     frontRight.setDesiredState(moduleStates[1], openLoop);
     backLeft.setDesiredState(moduleStates[2], openLoop);
@@ -106,9 +107,9 @@ public class SwerveSubsystem extends LifecycleSubsystem {
       double thetaPercentage,
       boolean fieldRelative,
       boolean openLoop) {
-    Logger.getInstance().recordOutput("Sideways percentage", sidewaysPercentage);
-    Logger.getInstance().recordOutput("Forward percentage", forwardPercentage);
-    Logger.getInstance().recordOutput("Theta percentage", thetaPercentage);
+    Logger.getInstance().recordOutput("Swerve/SidewaysPercentage", sidewaysPercentage);
+    Logger.getInstance().recordOutput("Swerve/ForwardPercentage", forwardPercentage);
+    Logger.getInstance().recordOutput("Swerve/ThetaPercentage", thetaPercentage);
 
     Translation2d robotTranslation =
         new Translation2d(forwardPercentage, -1 * sidewaysPercentage).times(MAX_VELOCITY);

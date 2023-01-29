@@ -15,6 +15,7 @@ import org.littletonrobotics.junction.Logger;
 public class ElevatorSubsystem extends LifecycleSubsystem {
   private final TalonFX motor;
   private double goalPositionInInches = 0;
+  // TODO: Use Config.ELEVATOR_GEARING here
   private double sensorUnitsPerElevatorInch = 40960 / (1.75 * Math.PI);
   private boolean isHoming = false;
   private double homingCurrent = 1.5;
