@@ -18,7 +18,7 @@ public class WristSubsystem extends LifecycleSubsystem {
   private static final Rotation2d TOLERANCE = Rotation2d.fromDegrees(2);
   private final TalonFX motor;
   private Rotation2d goalAngle = new Rotation2d();
-  private boolean homing = false;
+  private boolean isHoming = false;
   private boolean goToGoal = false;
 
   public WristSubsystem(TalonFX motor) {
@@ -50,13 +50,17 @@ public class WristSubsystem extends LifecycleSubsystem {
   }
 
   public void startHoming() {
-    homing = true;
+    isHoming = true;
     goToGoal = false;
+  }
+
+  public boolean isHoming() {
+    return isHoming;
   }
 
   @Override
   public void enabledPeriodic() {
-    if (homing) {
+    if (isHoming) {
       motor.set(TalonFXControlMode.PercentOutput, 0.15);
 
       if (motor.getStatorCurrent() > HOMED_CURRENT) {
@@ -64,7 +68,7 @@ public class WristSubsystem extends LifecycleSubsystem {
         motor.setSelectedSensorPosition(
             Rotation2d.fromDegrees(133.0).getRotations() * 2048.0 * Config.WRIST_GEARING);
         setAngle(Rotation2d.fromDegrees(80));
-        homing = false;
+        isHoming = false;
         goToGoal = true;
       }
     } else if (goToGoal) {
@@ -76,7 +80,7 @@ public class WristSubsystem extends LifecycleSubsystem {
   public void robotPeriodic() {
     Logger.getInstance().recordOutput("Wrist/Angle", getAngle().getDegrees());
     Logger.getInstance().recordOutput("Wrist/GoalAngle", goalAngle.getDegrees());
-    Logger.getInstance().recordOutput("Wrist/Homing", homing);
+    Logger.getInstance().recordOutput("Wrist/Homing", isHoming);
     Logger.getInstance().recordOutput("Wrist/Current", motor.getStatorCurrent());
     Logger.getInstance().recordOutput("Wrist/GoToGoal", goToGoal);
     Logger.getInstance().recordOutput("Wrist/Voltage", motor.getMotorOutputVoltage());
