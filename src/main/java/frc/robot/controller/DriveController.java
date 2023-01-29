@@ -4,13 +4,9 @@
 
 package frc.robot.controller;
 
-import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
-public class DriveController extends ButtonController {
-  private final SlewRateLimiter xLimiter = new SlewRateLimiter(7);
-  private final SlewRateLimiter yLimiter = new SlewRateLimiter(7);
-  private final SlewRateLimiter thetaLimiter = new SlewRateLimiter(7);
-
+public class DriveController extends CommandXboxController {
   public DriveController(int port) {
     super(port);
   }
@@ -22,16 +18,16 @@ public class DriveController extends ButtonController {
 
   /** The rotation across the robot's x-axis as a percentage (<code>-1 <= x <= 1</code>) */
   public double getSidewaysPercentage() {
-    return joystickScale(xLimiter.calculate(getLeftX()));
+    return joystickScale(getLeftX());
   }
 
   /** The translation across the robot's y-axis as a percentage (<code>-1 <= x <= 1</code>) */
   public double getForwardPercentage() {
-    return joystickScale(yLimiter.calculate(getLeftY()));
+    return joystickScale(-1 * getLeftY());
   }
 
   /** The rotation about the robot's z-axis as a percentage (<code>-1 <= x <= 1</code>) */
   public double getThetaPercentage() {
-    return joystickScale(thetaLimiter.calculate(getRightX()));
+    return joystickScale(getRightX());
   }
 }

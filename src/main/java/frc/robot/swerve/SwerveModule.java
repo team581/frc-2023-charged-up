@@ -4,13 +4,12 @@
 
 package frc.robot.swerve;
 
-import com.ctre.phoenixpro.configs.TalonFXConfiguration;
 import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenixpro.StatusCode;
 import com.ctre.phoenixpro.configs.ClosedLoopGeneralConfigs;
 import com.ctre.phoenixpro.configs.CurrentLimitsConfigs;
 import com.ctre.phoenixpro.configs.MotorOutputConfigs;
 import com.ctre.phoenixpro.configs.Slot0Configs;
+import com.ctre.phoenixpro.configs.TalonFXConfiguration;
 import com.ctre.phoenixpro.controls.DutyCycleOut;
 import com.ctre.phoenixpro.controls.PositionVoltage;
 import com.ctre.phoenixpro.controls.VelocityDutyCycle;
@@ -46,8 +45,7 @@ public class SwerveModule {
   private final CANCoder encoder;
   private final PositionVoltage steerMotorControl = new PositionVoltage(0, true, 0, 0, false);
   private final DutyCycleOut openLoopRequest = new DutyCycleOut(0, false, false);
-  private final VelocityDutyCycle closedLoopRequest =
-      new VelocityDutyCycle(0, false, 0, 0, false);
+  private final VelocityDutyCycle closedLoopRequest = new VelocityDutyCycle(0, false, 0, 0, false);
   private Rotation2d previousAngle = new Rotation2d();
 
   public SwerveModule(
@@ -57,7 +55,7 @@ public class SwerveModule {
     this.steerMotor = steerMotor;
     this.encoder = encoder;
 
-     Slot0Configs driveMotorSlot0Configs = new Slot0Configs();
+    Slot0Configs driveMotorSlot0Configs = new Slot0Configs();
     com.ctre.phoenixpro.configs.TalonFXConfiguration configs = new TalonFXConfiguration();
     MotorOutputConfigs driveMotorOutputConfigs = new MotorOutputConfigs();
     CurrentLimitsConfigs driveMotorCurrentLimitsConfigs = new CurrentLimitsConfigs();
@@ -120,13 +118,14 @@ public class SwerveModule {
     boolean isStopped = false;
     Rotation2d angle = isStopped ? this.previousAngle : state.angle;
     this.previousAngle = angle;
-      var wheelRotationsPerSecond =
-          DRIVE_MOTOR_WHEEL_CONVERTER.distanceToRotations(state.speedMetersPerSecond);
-      var motorRotationsPerSecond =
-          DRIVE_MOTOR_GEARING_CONVERTER.gearingToMotor(wheelRotationsPerSecond);
-      closedLoopRequest.Velocity = motorRotationsPerSecond;
-      driveMotor.setControl(closedLoopRequest);
-    // Logger.getInstance().recordOutput("Menu buttons/" + this.constants.corner.toString() + " Closed Loop Request", closedLoopRequest.Velocity);
+    var wheelRotationsPerSecond =
+        DRIVE_MOTOR_WHEEL_CONVERTER.distanceToRotations(state.speedMetersPerSecond);
+    var motorRotationsPerSecond =
+        DRIVE_MOTOR_GEARING_CONVERTER.gearingToMotor(wheelRotationsPerSecond);
+    closedLoopRequest.Velocity = motorRotationsPerSecond;
+    driveMotor.setControl(closedLoopRequest);
+    // Logger.getInstance().recordOutput("Menu buttons/" + this.constants.corner.toString() + "
+    // Closed Loop Request", closedLoopRequest.Velocity);
   }
 
   public SwerveModuleState getState() {
@@ -166,12 +165,12 @@ public class SwerveModule {
             this.previousAngle.getDegrees());
     Logger.getInstance()
         .recordOutput(
-            this.constants.corner.toString() + "/Steer Motor Position",
+            "Swerve/" + this.constants.corner.toString() + "/Steer Motor Position",
             getSteerMotorPosition().getDegrees());
-    Logger.getInstance().recordOutput(this.constants.corner.toString() + "/Drive Motor FF", driveMotor.getClosedLoopFeedForward().getValue());
-    Logger.getInstance().recordOutput(null, MAX_SPEED);
-    Logger.getInstance().recordOutput(null, MAX_SPEED);
-    Logger.getInstance().recordOutput(null, MAX_SPEED);
+    Logger.getInstance()
+        .recordOutput(
+            "Swerve/" + this.constants.corner.toString() + "/Drive Motor FF",
+            driveMotor.getClosedLoopFeedForward().getValue());
   }
 
   private Rotation2d getSteerMotorPosition() {
