@@ -14,7 +14,7 @@ import frc.robot.util.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 public class WristSubsystem extends LifecycleSubsystem {
-  private static final double HOMED_CURRENT = 10;
+  private static final double HOMED_CURRENT = 15;
   private static final Rotation2d TOLERANCE = Rotation2d.fromDegrees(2);
   private final TalonFX motor;
   private Rotation2d goalAngle = new Rotation2d();
@@ -57,12 +57,13 @@ public class WristSubsystem extends LifecycleSubsystem {
   @Override
   public void enabledPeriodic() {
     if (homing) {
-      motor.set(TalonFXControlMode.PercentOutput, -0.075);
+      motor.set(TalonFXControlMode.PercentOutput, 0.15);
 
       if (motor.getStatorCurrent() > HOMED_CURRENT) {
         motor.set(TalonFXControlMode.PercentOutput, 0);
-        motor.setSelectedSensorPosition(0);
-        setAngle(Rotation2d.fromDegrees(10));
+        motor.setSelectedSensorPosition(
+            Rotation2d.fromDegrees(133.0).getRotations() * 2048.0 * Config.WRIST_GEARING);
+        setAngle(Rotation2d.fromDegrees(80));
         homing = false;
         goToGoal = true;
       }

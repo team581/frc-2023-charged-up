@@ -5,7 +5,6 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -89,31 +88,19 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopPeriodic() {
-    boolean buttonA = controller.getAButton();
-    boolean buttonB = controller.getBButton();
-    boolean buttonY = controller.getYButton();
-    boolean buttonX = controller.getXButton();
-    double rightTrigger = controller.getRightTriggerAxis();
-    boolean rightBumper = controller.getRightBumper();
+    boolean stowed = controller.getAButton();
+    boolean node1 = controller.getBButton();
+    boolean node2FacingInward = controller.getYButton();
+    boolean homing = controller.getXButton();
+    double node2FacingOutward = controller.getRightTriggerAxis();
+    boolean intaking = controller.getRightBumper();
 
-    if (buttonX) {
+    // TODO: Use commands instead of buttons - backport some changes from the intake branch
+    // (CommandXboxController)
+
+    if (homing) {
       elevator.startHoming();
       wrist.startHoming();
-    } else if (buttonA) {
-      superstructureMotionManager.set(
-          1, Rotation2d.fromDegrees(5)); // Original: height 1 and degrees 5
-    } else if (buttonB) {
-      superstructureMotionManager.set(
-          16, Rotation2d.fromDegrees(20)); // Original: height 12 and degrees 65
-    } else if (buttonY) {
-      superstructureMotionManager.set(
-          32, Rotation2d.fromDegrees(20)); // Original: height 24 and degrees 95
-    } else if (rightTrigger > 0.3) {
-      superstructureMotionManager.set(
-          32, Rotation2d.fromDegrees(100)); // Original: height 1 and degrees 35
-    } else if (rightBumper) {
-      superstructureMotionManager.set(
-          1, Rotation2d.fromDegrees(125)); // Original: height 1 and degrees 125
     }
   }
 
