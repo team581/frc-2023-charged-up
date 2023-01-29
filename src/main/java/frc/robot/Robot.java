@@ -131,10 +131,26 @@ public class Robot extends LoggedRobot {
         .x()
         .onTrue(new WristHomingCommand(wrist).alongWith(new ElevatorHomingCommand(elevator)));
 
-    driveController.leftTrigger().onTrue(new SuperstructureMotionManagerCommand(superstructureMotionManager, Positions.INTAKING_CONE));
-    driveController.leftBumper().onTrue(new SuperstructureMotionManagerCommand(superstructureMotionManager, Positions.CONE_NODE_MID));
-    driveController.rightTrigger().onTrue(new SuperstructureMotionManagerCommand(superstructureMotionManager, Positions.INTAKING_CUBE));
-    driveController.rightBumper().onTrue(new SuperstructureMotionManagerCommand(superstructureMotionManager, Positions.CUBE_NODE_MID));
+    driveController
+        .leftTrigger()
+        .onTrue(
+            new SuperstructureMotionManagerCommand(
+                superstructureMotionManager, Positions.INTAKING_CONE));
+    driveController
+        .leftBumper()
+        .onTrue(
+            new SuperstructureMotionManagerCommand(
+                superstructureMotionManager, Positions.CONE_NODE_MID));
+    driveController
+        .rightTrigger()
+        .onTrue(
+            new SuperstructureMotionManagerCommand(
+                superstructureMotionManager, Positions.INTAKING_CUBE));
+    driveController
+        .rightBumper()
+        .onTrue(
+            new SuperstructureMotionManagerCommand(
+                superstructureMotionManager, Positions.CUBE_NODE_MID));
 
     boolean openLoop = !driveController.start().getAsBoolean();
     swerve.driveTeleop(
