@@ -24,22 +24,22 @@ public class SuperstructureMotionManager extends LifecycleSubsystem {
   }
 
   public void set(SuperstructurePosition goalPosition) {
-    double wristRange = 25;
+    double wristRange = 13;
     double goalDegrees = goalPosition.angle.getDegrees();
     double wristAngle = wrist.getAngle().getDegrees();
 
     boolean wristGoalInCollisionArea = goalDegrees < wristRange;
     boolean currentWristAngleInCollisionArea = wristAngle < wristRange;
-    boolean leavingBumperArea = goalPosition.height > 25 && elevator.getHeight() < 25;
-    boolean goingToBumperArea = goalPosition.height < 25 && elevator.getHeight() > 25;
+    boolean leavingBumperArea = goalPosition.height > 26 && elevator.getHeight() < 26;
+    boolean goingToBumperArea = goalPosition.height < 26 && elevator.getHeight() > 26;
 
     positionList.clear();
 
     if ((wristGoalInCollisionArea || currentWristAngleInCollisionArea)
         && (leavingBumperArea || goingToBumperArea)) {
       positionList.add(
-          new SuperstructurePosition(elevator.getHeight(), Rotation2d.fromDegrees(30)));
-      positionList.add(new SuperstructurePosition(goalPosition.height, Rotation2d.fromDegrees(30)));
+          new SuperstructurePosition(elevator.getHeight(), Rotation2d.fromDegrees(60)));
+      positionList.add(new SuperstructurePosition(goalPosition.height, Rotation2d.fromDegrees(60)));
     }
     // TODO: Make elevator & wrist move to goal position in fewest movements
 
