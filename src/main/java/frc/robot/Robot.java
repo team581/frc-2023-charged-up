@@ -12,12 +12,14 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
 import frc.robot.elevator.ElevatorSubsystem;
+import frc.robot.elevator.commands.ElevatorHomingCommand;
 import frc.robot.generated.BuildConstants;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.managers.SuperstructureMotionManager;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.wrist.WristSubsystem;
+import frc.robot.wrist.commands.WristHomingCommand;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -123,17 +125,10 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopPeriodic() {
-    boolean stowed = driveController.a().getAsBoolean();
-    boolean node1 = driveController.b().getAsBoolean();
-    boolean node2FacingInward = driveController.y().getAsBoolean();
-    boolean homing = driveController.x().getAsBoolean();
-    boolean node2FacingOutward = driveController.rightTrigger().getAsBoolean();
-    boolean intaking = driveController.rightBumper().getAsBoolean();
 
-    if (homing) {
-      elevator.startHoming();
-      wrist.startHoming();
-    }
+    driveController
+        .x()
+        .onTrue(new WristHomingCommand(wrist).alongWith(new ElevatorHomingCommand(elevator)));
 
     boolean openLoop = !driveController.start().getAsBoolean();
     swerve.driveTeleop(
