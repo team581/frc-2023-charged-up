@@ -6,10 +6,8 @@ package frc.robot;
 
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
@@ -18,6 +16,8 @@ import frc.robot.imu.ImuSubsystem;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.wrist.WristSubsystem;
+
+import java.lang.ModuleLayer.Controller;
 
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -60,9 +60,11 @@ public class Robot extends LoggedRobot {
 
   // TODO: Re-enable elevator and wrist
   private final ElevatorSubsystem elevator =
-      new ElevatorSubsystem(new com.ctre.phoenix.motorcontrol.can.TalonFX(Config.ELEVATOR_MOTOR_ID, "581CANivore"));
+      new ElevatorSubsystem(
+          new com.ctre.phoenix.motorcontrol.can.TalonFX(Config.ELEVATOR_MOTOR_ID, "581CANivore"));
   private final WristSubsystem wrist =
-      new WristSubsystem(new com.ctre.phoenix.motorcontrol.can.TalonFX(Config.WRIST_MOTOR_ID, "581CANivore"));
+      new WristSubsystem(
+          new com.ctre.phoenix.motorcontrol.can.TalonFX(Config.WRIST_MOTOR_ID, "581CANivore"));
   private final ImuSubsystem imu = new ImuSubsystem(new Pigeon2(Config.PIGEON_ID, "581CANivore"));
   private final SwerveSubsystem swerveSubsystem =
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
@@ -127,11 +129,19 @@ public class Robot extends LoggedRobot {
       wrist.setAngle(Rotation2d.fromDegrees(135));
     }
 
+    boolean openLoop = !driveController.getStartButton();
     swerveSubsystem.driveTeleop(
-       -driveController.getSidewaysPercentage(), driveController.getForwardPercentage(), -driveController.getThetaPercentage(), true);
-    if (driveController.getStartButton()) {
+        -driveController.getSidewaysPercentage(),
+        driveController.getForwardPercentage(),
+        -driveController.getThetaPercentage(),
+        true,
+        openLoop);
+        //If backButton is pressed then closed loop
+    if (driveController.getBackButton()) {
       imu.zero();
     }
+      Logger.getInstance().recordOutput("Menu buttons Imu", driveController.getBackButton());
+      Logger.getInstance().recordOutput("Menu buttons/ Closed Loop", driveController.getStartButton());
   }
 
   @Override

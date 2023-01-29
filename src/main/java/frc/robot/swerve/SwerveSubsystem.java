@@ -105,7 +105,8 @@ public class SwerveSubsystem extends LifecycleSubsystem {
       double sidewaysPercentage,
       double forwardPercentage,
       double thetaPercentage,
-      boolean fieldRelative) {
+      boolean fieldRelative,
+      boolean openLoop) {
     Logger.getInstance().recordOutput("Sideways percentage", sidewaysPercentage);
     Logger.getInstance().recordOutput("Forward percentage", forwardPercentage);
     Logger.getInstance().recordOutput("Theta percentage", thetaPercentage);
@@ -120,7 +121,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
             fieldRelative ? imu.getRobotHeading() : new Rotation2d());
     SwerveModuleState[] moduleStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_VELOCITY);
-    setChassisSpeeds(KINEMATICS.toChassisSpeeds(moduleStates), true);
+    setChassisSpeeds(KINEMATICS.toChassisSpeeds(moduleStates), openLoop);
   }
 
   public double getAngle() {
