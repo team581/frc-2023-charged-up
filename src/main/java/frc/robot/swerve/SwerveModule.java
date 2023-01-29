@@ -63,6 +63,7 @@ public class SwerveModule {
     driveMotorSlot0Configs.kI = 0;
     driveMotorSlot0Configs.kD = 0;
     driveMotorSlot0Configs.kV = 0;
+    driveMotorSlot0Configs.kS = 0;
     driveMotorCurrentLimitsConfigs.SupplyCurrentLimit = 15;
     driveMotorCurrentLimitsConfigs.SupplyCurrentLimitEnable = true;
     if (constants.driveInversion) {
@@ -92,6 +93,7 @@ public class SwerveModule {
     steerMotorSlot0Configs.kP = 0.67;
     steerMotorSlot0Configs.kI = 0;
     steerMotorSlot0Configs.kD = 0.17;
+    driveMotorSlot0Configs.kS = 0;
     steerMotorCurrentLimitsConfigs.SupplyCurrentLimit = 15;
     steerMotorCurrentLimitsConfigs.SupplyCurrentLimitEnable = true;
     if (constants.angleInversion) {
