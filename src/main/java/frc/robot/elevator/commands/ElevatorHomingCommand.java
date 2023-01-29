@@ -26,10 +26,10 @@ public class ElevatorHomingCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-   if (!elevator.isHoming()) {
-    return true;
-   } else {
-    return false;
-   }
+    if (!elevator.isHoming()) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
