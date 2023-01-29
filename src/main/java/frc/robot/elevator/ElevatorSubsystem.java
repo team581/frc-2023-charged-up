@@ -43,6 +43,10 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
     this.isHoming = true;
   }
 
+  public boolean isHoming() {
+    return isHoming;
+  }
+
   public double getHeight() {
     // Read talon sensor, convert to inches
     double sensorUnits = motor.getSelectedSensorPosition();
