@@ -67,38 +67,18 @@ public class SwerveModule {
     driveMotorConfigs.Voltage.PeakForwardVoltage = 12;
     driveMotorConfigs.Voltage.PeakReverseVoltage = -12;
 
-    CurrentLimitsConfigs driveMotorCurrentLimitsConfigs = new CurrentLimitsConfigs();
-    driveMotorCurrentLimitsConfigs.SupplyCurrentLimit = 15;
-    driveMotorCurrentLimitsConfigs.SupplyCurrentLimitEnable = true;
+    driveMotorConfigs.CurrentLimits.SupplyCurrentLimit = 15;
+    driveMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    MotorOutputConfigs driveMotorOutputConfigs = new MotorOutputConfigs();
     if (constants.driveInversion) {
-      driveMotorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
+      driveMotorConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     } else {
-      driveMotorOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
+      driveMotorConfigs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     }
 
     StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
       status = driveMotor.getConfigurator().apply(driveMotorConfigs);
-      if (status.isOK()) break;
-    }
-    if (!status.isOK()) {
-      System.out.println("Could not apply configs, error code: " + status.toString());
-    }
-
-    status = StatusCode.StatusCodeNotInitialized;
-    for (int i = 0; i < 5; ++i) {
-      status = driveMotor.getConfigurator().apply(driveMotorOutputConfigs);
-      if (status.isOK()) break;
-    }
-    if (!status.isOK()) {
-      System.out.println("Could not apply configs, error code: " + status.toString());
-    }
-
-    status = StatusCode.StatusCodeNotInitialized;
-    for (int i = 0; i < 5; ++i) {
-      status = driveMotor.getConfigurator().apply(driveMotorCurrentLimitsConfigs);
       if (status.isOK()) break;
     }
     if (!status.isOK()) {
