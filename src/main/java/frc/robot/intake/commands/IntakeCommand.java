@@ -5,6 +5,7 @@
 package frc.robot.intake.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.intake.HeldGamePiece;
 import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
 
@@ -30,6 +31,10 @@ public class IntakeCommand extends CommandBase {
 
   @Override
   public boolean isFinished() {
+    if (intakeSubsystem.getGamePiece() == HeldGamePiece.NOTHING) {
+      return true;
+    } else {
     return false;
+    }
   }
 }

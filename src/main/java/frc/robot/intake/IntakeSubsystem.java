@@ -34,29 +34,32 @@ public class IntakeSubsystem extends LifecycleSubsystem {
   public void robotPeriodic() {
     Logger.getInstance().recordOutput("Intake/Mode", mode.toString());
     Logger.getInstance().recordOutput("Intake/HeldGamePiece", gamePiece.toString());
+    Logger.getInstance().recordOutput("Intake/Current", motor.getStatorCurrent());
   }
 
   @Override
   public void enabledPeriodic() {
     if (mode == IntakeMode.INTAKE_CUBE) {
-      motor.configStatorCurrentLimit(INTAKE_CUBE_CURRENT_LIMIT);
       motor.set(TalonFXControlMode.PercentOutput, 0.4);
       if (motor.getStatorCurrent() > 10) {
         gamePiece = HeldGamePiece.CUBE;
       }
     } else if (mode == IntakeMode.INTAKE_CONE) {
-      motor.configStatorCurrentLimit(INTAKE_CONE_CURRENT_LIMIT);
       motor.set(TalonFXControlMode.PercentOutput, -0.4);
       if (motor.getStatorCurrent() > 20) {
         gamePiece = HeldGamePiece.CONE;
       }
     } else if (mode == IntakeMode.OUTTAKE) {
       if (gamePiece == HeldGamePiece.CUBE) {
-        motor.configStatorCurrentLimit(OUTTAKE_CUBE_CURRENT_LIMIT);
         motor.set(TalonFXControlMode.PercentOutput, -0.4);
+          if (motor.getStatorCurrent() < 5) {
+            gamePiece = HeldGamePiece.NOTHING;
+          }
       } else if (gamePiece == HeldGamePiece.CONE) {
-        motor.configStatorCurrentLimit(OUTTAKE_CONE_CURRENT_LIMIT);
         motor.set(TalonFXControlMode.PercentOutput, 0.4);
+          if (motor.getStatorCurrent() < 5) {
+            gamePiece = HeldGamePiece.NOTHING;
+          }
       }
     } else {
       motor.set(TalonFXControlMode.PercentOutput, 0);
@@ -65,6 +68,18 @@ public class IntakeSubsystem extends LifecycleSubsystem {
 
   public void setMode(IntakeMode mode) {
     this.mode = mode;
+
+    if (mode == IntakeMode.INTAKE_CUBE) {
+      motor.configStatorCurrentLimit(INTAKE_CUBE_CURRENT_LIMIT);
+    } else if (mode == IntakeMode.INTAKE_CONE) {
+      motor.configStatorCurrentLimit(INTAKE_CONE_CURRENT_LIMIT);
+    } else if (mode == IntakeMode.OUTTAKE) {
+      if (gamePiece == HeldGamePiece.CUBE) {
+        motor.configStatorCurrentLimit(OUTTAKE_CUBE_CURRENT_LIMIT);
+      } else if (gamePiece == HeldGamePiece.CONE) {
+        motor.configStatorCurrentLimit(OUTTAKE_CONE_CURRENT_LIMIT);
+      }
+    }
   }
 
   public HeldGamePiece getGamePiece() {
