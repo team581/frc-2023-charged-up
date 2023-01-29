@@ -65,8 +65,8 @@ public class SwerveModule {
     driveMotorConfigs.Slot0.kV = 0.0;
     driveMotorConfigs.Slot0.kS = 0.0;
 
-    configs.Voltage.PeakForwardVoltage = 12;
-    configs.Voltage.PeakReverseVoltage = -12;
+    driveMotorConfigs.Voltage.PeakForwardVoltage = 12;
+    driveMotorConfigs.Voltage.PeakReverseVoltage = -12;
 
     CurrentLimitsConfigs driveMotorCurrentLimitsConfigs = new CurrentLimitsConfigs();
     driveMotorCurrentLimitsConfigs.SupplyCurrentLimit = 15;
@@ -149,7 +149,7 @@ public class SwerveModule {
         DRIVE_MOTOR_GEARING_CONVERTER.gearingToMotor(wheelRotationsPerSecond);
 
     this.commandedDriveVelocity = motorRotationsPerSecond;
-    driveMotor.setControl(driveVoltageClosedLoopRequest.withVelocity(this.motorRotationsPerSecond));
+    driveMotor.setControl(driveVoltageClosedLoopRequest.withVelocity(motorRotationsPerSecond));
   }
 
   public SwerveModuleState getState() {
