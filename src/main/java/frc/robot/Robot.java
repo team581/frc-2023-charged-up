@@ -13,14 +13,11 @@ import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.generated.BuildConstants;
-import frc.robot.managers.SuperstructureMotionManager;
 import frc.robot.imu.ImuSubsystem;
+import frc.robot.managers.SuperstructureMotionManager;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.wrist.WristSubsystem;
-
-import java.lang.ModuleLayer.Controller;
-
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -68,7 +65,7 @@ public class Robot extends LoggedRobot {
       new WristSubsystem(
           new com.ctre.phoenix.motorcontrol.can.TalonFX(Config.WRIST_MOTOR_ID, "581CANivore"));
   private final SuperstructureMotionManager superstructureMotionManager =
-          new SuperstructureMotionManager(elevator, wrist);
+      new SuperstructureMotionManager(elevator, wrist);
   private final ImuSubsystem imu = new ImuSubsystem(new Pigeon2(Config.PIGEON_ID, "581CANivore"));
   private final SwerveSubsystem swerveSubsystem =
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
@@ -163,12 +160,13 @@ public class Robot extends LoggedRobot {
         -driveController.getThetaPercentage(),
         true,
         openLoop);
-        //If backButton is pressed then closed loop
+    // If backButton is pressed then closed loop
     if (driveController.getBackButton()) {
       imu.zero();
     }
-      Logger.getInstance().recordOutput("Menu buttons Imu", driveController.getBackButton());
-      Logger.getInstance().recordOutput("Menu buttons/ Closed Loop", driveController.getStartButton());
+    Logger.getInstance().recordOutput("Menu buttons Imu", driveController.getBackButton());
+    Logger.getInstance()
+        .recordOutput("Menu buttons/ Closed Loop", driveController.getStartButton());
   }
 
   @Override

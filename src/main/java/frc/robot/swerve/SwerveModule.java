@@ -4,16 +4,14 @@
 
 package frc.robot.swerve;
 
-import com.ctre.phoenixpro.configs.TalonFXConfiguration;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenixpro.StatusCode;
 import com.ctre.phoenixpro.configs.ClosedLoopGeneralConfigs;
 import com.ctre.phoenixpro.configs.CurrentLimitsConfigs;
 import com.ctre.phoenixpro.configs.MotorOutputConfigs;
 import com.ctre.phoenixpro.configs.Slot0Configs;
-import com.ctre.phoenixpro.controls.DutyCycleOut;
+import com.ctre.phoenixpro.configs.TalonFXConfiguration;
 import com.ctre.phoenixpro.controls.PositionVoltage;
-import com.ctre.phoenixpro.controls.VelocityDutyCycle;
 import com.ctre.phoenixpro.controls.VelocityVoltage;
 import com.ctre.phoenixpro.hardware.TalonFX;
 import com.ctre.phoenixpro.signals.InvertedValue;
@@ -46,7 +44,8 @@ public class SwerveModule {
   private final TalonFX steerMotor;
   private final CANCoder encoder;
   private final PositionVoltage steerMotorControl = new PositionVoltage(0, true, 0, 0, false);
-  private final VelocityVoltage driveVoltageClosedLoopRequest = new VelocityVoltage(0, true, 0, 0, false);
+  private final VelocityVoltage driveVoltageClosedLoopRequest =
+      new VelocityVoltage(0, true, 0, 0, false);
   private Rotation2d previousAngle = new Rotation2d();
   private double commandedDriveVelocity = 0;
 
@@ -80,29 +79,29 @@ public class SwerveModule {
     }
 
     StatusCode status = StatusCode.StatusCodeNotInitialized;
-    for (int i = 0; i < 5; ++i){
+    for (int i = 0; i < 5; ++i) {
       status = driveMotor.getConfigurator().apply(driveMotorConfigs);
       if (status.isOK()) break;
     }
-    if(!status.isOK()) {
+    if (!status.isOK()) {
       System.out.println("Could not apply configs, error code: " + status.toString());
     }
 
     status = StatusCode.StatusCodeNotInitialized;
-    for (int i = 0; i < 5; ++i){
+    for (int i = 0; i < 5; ++i) {
       status = driveMotor.getConfigurator().apply(driveMotorOutputConfigs);
       if (status.isOK()) break;
     }
-    if(!status.isOK()) {
+    if (!status.isOK()) {
       System.out.println("Could not apply configs, error code: " + status.toString());
     }
 
     status = StatusCode.StatusCodeNotInitialized;
-    for (int i = 0; i < 5; ++i){
+    for (int i = 0; i < 5; ++i) {
       status = driveMotor.getConfigurator().apply(driveMotorCurrentLimitsConfigs);
       if (status.isOK()) break;
     }
-    if(!status.isOK()) {
+    if (!status.isOK()) {
       System.out.println("Could not apply configs, error code: " + status.toString());
     }
 
@@ -191,11 +190,20 @@ public class SwerveModule {
         .recordOutput(
             this.constants.corner.toString() + "/Steer Motor Position",
             getSteerMotorPosition().getDegrees());
-    Logger.getInstance().recordOutput(this.constants.corner.toString() + "/Drive Motor FF", driveMotor.getClosedLoopFeedForward().getValue());
-    Logger.getInstance().recordOutput(this.constants.corner.toString() + "/Drive Motor Reference", driveMotor.getClosedLoopReference().getValue());
-    Logger.getInstance().recordOutput(
-      "Swerve/" + this.constants.corner.toString() + "/Drive Motor Commanded Velocity (motor rot/sec)",
-      this.commandedDriveVelocity);
+    Logger.getInstance()
+        .recordOutput(
+            this.constants.corner.toString() + "/Drive Motor FF",
+            driveMotor.getClosedLoopFeedForward().getValue());
+    Logger.getInstance()
+        .recordOutput(
+            this.constants.corner.toString() + "/Drive Motor Reference",
+            driveMotor.getClosedLoopReference().getValue());
+    Logger.getInstance()
+        .recordOutput(
+            "Swerve/"
+                + this.constants.corner.toString()
+                + "/Drive Motor Commanded Velocity (motor rot/sec)",
+            this.commandedDriveVelocity);
     Logger.getInstance().recordOutput(null, MAX_SPEED);
     Logger.getInstance().recordOutput(null, MAX_SPEED);
   }
