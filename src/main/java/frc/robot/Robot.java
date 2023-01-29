@@ -16,6 +16,7 @@ import frc.robot.elevator.commands.ElevatorHomingCommand;
 import frc.robot.generated.BuildConstants;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.managers.SuperstructureMotionManager;
+import frc.robot.managers.commands.SuperstructureMotionManagerCommand;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.wrist.WristSubsystem;
@@ -129,6 +130,11 @@ public class Robot extends LoggedRobot {
     driveController
         .x()
         .onTrue(new WristHomingCommand(wrist).alongWith(new ElevatorHomingCommand(elevator)));
+
+    driveController.leftTrigger().onTrue(new SuperstructureMotionManagerCommand(superstructureMotionManager, Positions.INTAKING_CONE));
+    driveController.leftBumper().onTrue(new SuperstructureMotionManagerCommand(superstructureMotionManager, Positions.CONE_NODE_MID));
+    driveController.rightTrigger().onTrue(new SuperstructureMotionManagerCommand(superstructureMotionManager, Positions.INTAKING_CUBE));
+    driveController.rightBumper().onTrue(new SuperstructureMotionManagerCommand(superstructureMotionManager, Positions.CUBE_NODE_MID));
 
     boolean openLoop = !driveController.start().getAsBoolean();
     swerve.driveTeleop(
