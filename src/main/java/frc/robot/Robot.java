@@ -137,9 +137,9 @@ public class Robot extends LoggedRobot {
 
     boolean openLoop = !driveController.start().getAsBoolean();
     swerve.driveTeleop(
-        -driveController.getSidewaysPercentage(),
+        driveController.getSidewaysPercentage(),
         driveController.getForwardPercentage(),
-        -driveController.getThetaPercentage(),
+        driveController.getThetaPercentage(),
         true,
         openLoop);
     // If backButton is pressed then closed loop

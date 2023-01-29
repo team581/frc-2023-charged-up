@@ -73,6 +73,12 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     final var frontRightState = frontRight.getState();
     final var backLeftState = backLeft.getState();
     final var backRightState = backRight.getState();
+
+    Logger.getInstance().recordOutput("Chassis Speeds/ front left", frontLeftState);
+    Logger.getInstance().recordOutput("Chassis Speeds/ front right", frontRightState);
+    Logger.getInstance().recordOutput("Chassis Speeds/ back left", backLeftState);
+    Logger.getInstance().recordOutput("Chassis Speeds/ back right", backRightState);
+
     return KINEMATICS.toChassisSpeeds(
         frontLeftState, frontRightState, backLeftState, backRightState);
   }
@@ -99,6 +105,11 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     frontRight.setDesiredState(moduleStates[1], openLoop);
     backLeft.setDesiredState(moduleStates[2], openLoop);
     backRight.setDesiredState(moduleStates[3], openLoop);
+
+    Logger.getInstance().recordOutput("Chassis Speeds/ Actual /Omega Radians Per Second", speeds.omegaRadiansPerSecond);
+    Logger.getInstance().recordOutput("Chassis Speeds/ Actual / vx mps", speeds.vxMetersPerSecond);
+    Logger.getInstance().recordOutput("Chassis Speeds/ Actual / vy mps", speeds.vyMetersPerSecond);
+
   }
 
   public void driveTeleop(
@@ -112,12 +123,12 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     Logger.getInstance().recordOutput("Swerve/ThetaPercentage", thetaPercentage);
 
     Translation2d robotTranslation =
-        new Translation2d(forwardPercentage, -1 * sidewaysPercentage).times(MAX_VELOCITY);
+        new Translation2d(forwardPercentage, sidewaysPercentage).times(MAX_VELOCITY);
     ChassisSpeeds chassisSpeeds =
         ChassisSpeeds.fromFieldRelativeSpeeds(
             robotTranslation.getX(),
             robotTranslation.getY(),
-            -1 * thetaPercentage * MAX_ANGULAR_VELOCITY,
+            thetaPercentage * MAX_ANGULAR_VELOCITY,
             fieldRelative ? imu.getRobotHeading() : new Rotation2d());
     SwerveModuleState[] moduleStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_VELOCITY);

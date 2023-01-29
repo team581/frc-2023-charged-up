@@ -61,7 +61,7 @@ public class SwerveModule {
     driveMotorConfigs.Slot0.kP = 0.0;
     driveMotorConfigs.Slot0.kI = 0.0;
     driveMotorConfigs.Slot0.kD = 0.0;
-    driveMotorConfigs.Slot0.kV = 0.0;
+    driveMotorConfigs.Slot0.kV = 0.1;
     driveMotorConfigs.Slot0.kS = 0.0;
 
     driveMotorConfigs.Voltage.PeakForwardVoltage = 12;

@@ -23,7 +23,7 @@ public class DriveController extends CommandXboxController {
 
   /** The translation across the robot's y-axis as a percentage (<code>-1 <= x <= 1</code>) */
   public double getForwardPercentage() {
-    return joystickScale(-1 * getLeftY());
+    return joystickScale(getLeftY());
   }
 
   /** The rotation about the robot's z-axis as a percentage (<code>-1 <= x <= 1</code>) */
