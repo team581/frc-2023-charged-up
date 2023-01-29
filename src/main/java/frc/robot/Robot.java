@@ -76,7 +76,6 @@ public class Robot extends LoggedRobot {
   private final DriveController driveController = new DriveController(Config.CONTROLLER_PORT);
 
   public Robot() {
-
     // Log to a USB stick
     Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/"));
     // Publish data to NetworkTables
