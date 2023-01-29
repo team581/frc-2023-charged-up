@@ -12,24 +12,20 @@ public class Positions {
       new SuperstructurePosition(1, Rotation2d.fromDegrees(10));
 
   public static final SuperstructurePosition INTAKING_CUBE =
-      new SuperstructurePosition(0, Rotation2d.fromDegrees(0));
-  public static final SuperstructurePosition OUTTAKING_CUBE =
-      new SuperstructurePosition(0, Rotation2d.fromDegrees(0));
-  public static final SuperstructurePosition CUBE_NODE_HYBRID =
-      new SuperstructurePosition(0, Rotation2d.fromDegrees(0));
+      new SuperstructurePosition(3, Rotation2d.fromDegrees(130));
   public static final SuperstructurePosition CUBE_NODE_LOW =
-      new SuperstructurePosition(0, Rotation2d.fromDegrees(0));
+      new SuperstructurePosition(4, Rotation2d.fromDegrees(127));
+  public static final SuperstructurePosition CUBE_NODE_MID =
+      new SuperstructurePosition(17, Rotation2d.fromDegrees(121));
   public static final SuperstructurePosition CUBE_NODE_HIGH =
-      new SuperstructurePosition(0, Rotation2d.fromDegrees(0));
+      new SuperstructurePosition(28, Rotation2d.fromDegrees(132));
 
   public static final SuperstructurePosition INTAKING_CONE =
-      new SuperstructurePosition(0, Rotation2d.fromDegrees(0));
-  public static final SuperstructurePosition OUTTAKING_CONE =
-      new SuperstructurePosition(0, Rotation2d.fromDegrees(0));
-  public static final SuperstructurePosition CONE_NODE_HYBRID =
-      new SuperstructurePosition(0, Rotation2d.fromDegrees(0));
+      new SuperstructurePosition(7, Rotation2d.fromDegrees(158));
   public static final SuperstructurePosition CONE_NODE_LOW =
-      new SuperstructurePosition(0, Rotation2d.fromDegrees(0));
+      new SuperstructurePosition(10, Rotation2d.fromDegrees(162));
+  public static final SuperstructurePosition CONE_NODE_MID =
+      new SuperstructurePosition(25, Rotation2d.fromDegrees(150));
   public static final SuperstructurePosition CONE_NODE_HIGH =
-      new SuperstructurePosition(0, Rotation2d.fromDegrees(0));
+      new SuperstructurePosition(31, Rotation2d.fromDegrees(130));
 }
