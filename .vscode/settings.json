@@ -1,5 +1,6 @@
 {
   "[gradle]": {"editor.defaultFormatter": "richardwillis.vscode-spotless-gradle"},
+  "java.debug.settings.onBuildFailureProceed": true,
   "java.test.config": [{
     "workingDirectory": "${workspaceFolder}/build/jni/release",
     "name": "WPIlibUnitTests",

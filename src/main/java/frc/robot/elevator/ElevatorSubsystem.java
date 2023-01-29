@@ -15,10 +15,12 @@ import org.littletonrobotics.junction.Logger;
 public class ElevatorSubsystem extends LifecycleSubsystem {
   private final TalonFX motor;
   private double goalPositionInInches = 0;
+  // TODO: Use Config.ELEVATOR_GEARING here
   private double sensorUnitsPerElevatorInch = 40960 / (1.75 * Math.PI);
   private boolean isHoming = false;
   private double homingCurrent = 1.5;
   private boolean goToGoal = false;
+  private static final double TOLERANCE = 0.5;
 
   public ElevatorSubsystem(TalonFX motor) {
     this.motor = motor;
@@ -41,11 +43,24 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
     this.isHoming = true;
   }
 
-  public double getPosition() {
+  public boolean isHoming() {
+    return isHoming;
+  }
+
+  public double getHeight() {
     // Read talon sensor, convert to inches
     double sensorUnits = motor.getSelectedSensorPosition();
     double position = sensorUnits / sensorUnitsPerElevatorInch;
     return position;
+  }
+
+  public boolean atHeight(double height) {
+    // Edit atHeight tolerance
+    if (Math.abs(getHeight() - height) < TOLERANCE) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   public void setGoalPosition(double goal) {
@@ -56,7 +71,7 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
 
   @Override
   public void robotPeriodic() {
-    Logger.getInstance().recordOutput("Elevator/Position", getPosition());
+    Logger.getInstance().recordOutput("Elevator/Position", getHeight());
     Logger.getInstance().recordOutput("Elevator/Current", motor.getSupplyCurrent());
     Logger.getInstance().recordOutput("Elevator/GoalPosition", goalPositionInInches);
     Logger.getInstance().recordOutput("Elevator/Homing", isHoming);
