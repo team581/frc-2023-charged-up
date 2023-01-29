@@ -12,14 +12,11 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
 import frc.robot.elevator.ElevatorSubsystem;
-<<<<<<< HEAD
 import frc.robot.generated.BuildConstants;
 import frc.robot.managers.SuperstructureMotionManager;
-=======
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSubsystem;
->>>>>>> swerve
 import frc.robot.wrist.WristSubsystem;
 
 import java.lang.ModuleLayer.Controller;
@@ -68,20 +65,15 @@ public class Robot extends LoggedRobot {
       new ElevatorSubsystem(
           new com.ctre.phoenix.motorcontrol.can.TalonFX(Config.ELEVATOR_MOTOR_ID, "581CANivore"));
   private final WristSubsystem wrist =
-<<<<<<< HEAD
-      new WristSubsystem(new TalonFX(Config.WRIST_MOTOR_ID, "581CANivore"));
-  private final SuperstructureMotionManager superstructureMotionManager =
-      new SuperstructureMotionManager(elevator, wrist);
-  private final XboxController controller = new XboxController(Config.CONTROLLER_PORT);
-=======
       new WristSubsystem(
           new com.ctre.phoenix.motorcontrol.can.TalonFX(Config.WRIST_MOTOR_ID, "581CANivore"));
+  private final SuperstructureMotionManager superstructureMotionManager =
+          new SuperstructureMotionManager(elevator, wrist);
   private final ImuSubsystem imu = new ImuSubsystem(new Pigeon2(Config.PIGEON_ID, "581CANivore"));
   private final SwerveSubsystem swerveSubsystem =
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
 
   private final DriveController driveController = new DriveController(Config.CONTROLLER_PORT);
->>>>>>> swerve
 
   public Robot() {
     // Log to a USB stick

@@ -14,6 +14,7 @@ import com.ctre.phoenixpro.configs.Slot0Configs;
 import com.ctre.phoenixpro.controls.DutyCycleOut;
 import com.ctre.phoenixpro.controls.PositionVoltage;
 import com.ctre.phoenixpro.controls.VelocityDutyCycle;
+import com.ctre.phoenixpro.controls.VelocityVoltage;
 import com.ctre.phoenixpro.hardware.TalonFX;
 import com.ctre.phoenixpro.signals.InvertedValue;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -45,10 +46,9 @@ public class SwerveModule {
   private final TalonFX steerMotor;
   private final CANCoder encoder;
   private final PositionVoltage steerMotorControl = new PositionVoltage(0, true, 0, 0, false);
-  private final DutyCycleOut openLoopRequest = new DutyCycleOut(0, false, false);
-  private final VelocityDutyCycle closedLoopRequest =
-      new VelocityDutyCycle(0, false, 0, 0, false);
+  private final VelocityVoltage driveVoltageClosedLoopRequest = new VelocityVoltage(0, true, 0, 0, false);
   private Rotation2d previousAngle = new Rotation2d();
+  private double commandedDriveVelocity = 0;
 
   public SwerveModule(
       SwerveModuleConstants constants, TalonFX driveMotor, TalonFX steerMotor, CANCoder encoder) {
@@ -57,33 +57,54 @@ public class SwerveModule {
     this.steerMotor = steerMotor;
     this.encoder = encoder;
 
-     Slot0Configs driveMotorSlot0Configs = new Slot0Configs();
-    com.ctre.phoenixpro.configs.TalonFXConfiguration configs = new TalonFXConfiguration();
-    MotorOutputConfigs driveMotorOutputConfigs = new MotorOutputConfigs();
+    com.ctre.phoenixpro.configs.TalonFXConfiguration driveMotorConfigs = new TalonFXConfiguration();
+
+    driveMotorConfigs.Slot0.kP = 0.0;
+    driveMotorConfigs.Slot0.kI = 0.0;
+    driveMotorConfigs.Slot0.kD = 0.0;
+    driveMotorConfigs.Slot0.kV = 0.0;
+    driveMotorConfigs.Slot0.kS = 0.0;
+
+    configs.Voltage.PeakForwardVoltage = 12;
+    configs.Voltage.PeakReverseVoltage = -12;
+
     CurrentLimitsConfigs driveMotorCurrentLimitsConfigs = new CurrentLimitsConfigs();
-    driveMotorSlot0Configs.kP = 0;
-    driveMotorSlot0Configs.kI = 0;
-    driveMotorSlot0Configs.kD = 0;
-    driveMotorSlot0Configs.kV = 0;
     driveMotorCurrentLimitsConfigs.SupplyCurrentLimit = 15;
     driveMotorCurrentLimitsConfigs.SupplyCurrentLimitEnable = true;
+
+    MotorOutputConfigs driveMotorOutputConfigs = new MotorOutputConfigs();
     if (constants.driveInversion) {
       driveMotorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
     } else {
       driveMotorOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
     }
-    driveMotor.getConfigurator().apply(driveMotorOutputConfigs);
-    driveMotor.getConfigurator().apply(driveMotorSlot0Configs);
-    driveMotor.getConfigurator().apply(driveMotorCurrentLimitsConfigs);
 
-    // StatusCode status = StatusCode.StatusCodeNotInitialized;
-    // for (int i = 0; i < 5; ++i) {
-    //   driveMotor.getConfigurator().apply(configs);
-    //   if (status.isOK()) break;
-    // }
-    //   if (!status.isOK()) {
-    //     System.out.println("Could not apply conigs, eror code:" + status.toString());
-    //   }
+    StatusCode status = StatusCode.StatusCodeNotInitialized;
+    for (int i = 0; i < 5; ++i){
+      status = driveMotor.getConfigurator().apply(driveMotorConfigs);
+      if (status.isOK()) break;
+    }
+    if(!status.isOK()) {
+      System.out.println("Could not apply configs, error code: " + status.toString());
+    }
+
+    status = StatusCode.StatusCodeNotInitialized;
+    for (int i = 0; i < 5; ++i){
+      status = driveMotor.getConfigurator().apply(driveMotorOutputConfigs);
+      if (status.isOK()) break;
+    }
+    if(!status.isOK()) {
+      System.out.println("Could not apply configs, error code: " + status.toString());
+    }
+
+    status = StatusCode.StatusCodeNotInitialized;
+    for (int i = 0; i < 5; ++i){
+      status = driveMotor.getConfigurator().apply(driveMotorCurrentLimitsConfigs);
+      if (status.isOK()) break;
+    }
+    if(!status.isOK()) {
+      System.out.println("Could not apply configs, error code: " + status.toString());
+    }
 
     Slot0Configs steerMotorSlot0Configs = new Slot0Configs();
     MotorOutputConfigs steerMotorOutputConfigs = new MotorOutputConfigs();
@@ -94,6 +115,7 @@ public class SwerveModule {
     steerMotorSlot0Configs.kP = 0.67;
     steerMotorSlot0Configs.kI = 0;
     steerMotorSlot0Configs.kD = 0.17;
+    steerMotorSlot0Configs.kS = 0.0;
     steerMotorCurrentLimitsConfigs.SupplyCurrentLimit = 15;
     steerMotorCurrentLimitsConfigs.SupplyCurrentLimitEnable = true;
     if (constants.angleInversion) {
@@ -120,13 +142,14 @@ public class SwerveModule {
     boolean isStopped = false;
     Rotation2d angle = isStopped ? this.previousAngle : state.angle;
     this.previousAngle = angle;
-      var wheelRotationsPerSecond =
-          DRIVE_MOTOR_WHEEL_CONVERTER.distanceToRotations(state.speedMetersPerSecond);
-      var motorRotationsPerSecond =
-          DRIVE_MOTOR_GEARING_CONVERTER.gearingToMotor(wheelRotationsPerSecond);
-      closedLoopRequest.Velocity = motorRotationsPerSecond;
-      driveMotor.setControl(closedLoopRequest);
-    // Logger.getInstance().recordOutput("Menu buttons/" + this.constants.corner.toString() + " Closed Loop Request", closedLoopRequest.Velocity);
+
+    var wheelRotationsPerSecond =
+        DRIVE_MOTOR_WHEEL_CONVERTER.distanceToRotations(state.speedMetersPerSecond);
+    var motorRotationsPerSecond =
+        DRIVE_MOTOR_GEARING_CONVERTER.gearingToMotor(wheelRotationsPerSecond);
+
+    this.commandedDriveVelocity = motorRotationsPerSecond;
+    driveMotor.setControl(driveVoltageClosedLoopRequest.withVelocity(this.motorRotationsPerSecond));
   }
 
   public SwerveModuleState getState() {
@@ -169,7 +192,10 @@ public class SwerveModule {
             this.constants.corner.toString() + "/Steer Motor Position",
             getSteerMotorPosition().getDegrees());
     Logger.getInstance().recordOutput(this.constants.corner.toString() + "/Drive Motor FF", driveMotor.getClosedLoopFeedForward().getValue());
-    Logger.getInstance().recordOutput(null, MAX_SPEED);
+    Logger.getInstance().recordOutput(this.constants.corner.toString() + "/Drive Motor Reference", driveMotor.getClosedLoopReference().getValue());
+    Logger.getInstance().recordOutput(
+      "Swerve/" + this.constants.corner.toString() + "/Drive Motor Commanded Velocity (motor rot/sec)",
+      this.commandedDriveVelocity);
     Logger.getInstance().recordOutput(null, MAX_SPEED);
     Logger.getInstance().recordOutput(null, MAX_SPEED);
   }

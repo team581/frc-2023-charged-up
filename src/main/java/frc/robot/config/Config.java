@@ -16,13 +16,7 @@ public class Config {
 
   public static final int CONTROLLER_PORT = 0;
 
-<<<<<<< HEAD
   public static final boolean IS_SPIKE = !SERIAL_NUMBER.equalsIgnoreCase(TYKE_SERIAL_NUMBER);
-=======
-  public static final RobotConfigKind CONFIG_KIND = RobotConfigKind.TYKE;
-
-  private static final boolean IS_SPIKE = CONFIG_KIND == RobotConfigKind.SPIKE;
->>>>>>> swerve
 
   public static final int PDP_ID = 1;
   public static final ModuleType PDP_TYPE = IS_SPIKE ? ModuleType.kRev : ModuleType.kCTRE;
@@ -61,14 +55,10 @@ public class Config {
           Rotation2d.fromDegrees(104.58), SwerveCorner.BACK_RIGHT, false, false);
 
   public static final int ELEVATOR_MOTOR_ID = 14;
-  public static final double ELEVATOR_GEARING = 60.0;
+  public static final double ELEVATOR_GEARING = IS_SPIKE ? 999 : 60.0 * 2.0;
 
   public static final int WRIST_MOTOR_ID = 16;
-<<<<<<< HEAD
   public static final double WRIST_GEARING = IS_SPIKE ? 999 : 48.0 * 2.0;
 
   private Config() {}
-=======
-  public static final double WRIST_GEARING = 48.0;
->>>>>>> swerve
 }
