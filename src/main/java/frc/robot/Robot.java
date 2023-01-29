@@ -7,7 +7,6 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.config.Config;
@@ -124,31 +123,16 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopPeriodic() {
-    boolean buttonA = driveController.a().getAsBoolean();
-    boolean buttonB = driveController.b().getAsBoolean();
-    boolean buttonY = driveController.y().getAsBoolean();
-    boolean buttonX = driveController.x().getAsBoolean();
-    double rightTrigger = driveController.getRightTriggerAxis();
-    boolean rightBumper = driveController.rightBumper().getAsBoolean();
+    boolean stowed = driveController.a().getAsBoolean();
+    boolean node1 = driveController.b().getAsBoolean();
+    boolean node2FacingInward = driveController.y().getAsBoolean();
+    boolean homing = driveController.x().getAsBoolean();
+    boolean node2FacingOutward = driveController.rightTrigger().getAsBoolean();
+    boolean intaking = driveController.rightBumper().getAsBoolean();
 
-    if (buttonX) {
+    if (homing) {
       elevator.startHoming();
       wrist.startHoming();
-    } else if (buttonA) {
-      superstructureMotionManager.set(
-          1, Rotation2d.fromDegrees(5)); // Original: height 1 and degrees 5
-    } else if (buttonB) {
-      superstructureMotionManager.set(
-          16, Rotation2d.fromDegrees(20)); // Original: height 12 and degrees 65
-    } else if (buttonY) {
-      superstructureMotionManager.set(
-          32, Rotation2d.fromDegrees(20)); // Original: height 24 and degrees 95
-    } else if (rightTrigger > 0.3) {
-      superstructureMotionManager.set(
-          32, Rotation2d.fromDegrees(100)); // Original: height 1 and degrees 35
-    } else if (rightBumper) {
-      superstructureMotionManager.set(
-          1, Rotation2d.fromDegrees(125)); // Original: height 1 and degrees 125
     }
 
     boolean openLoop = !driveController.start().getAsBoolean();
