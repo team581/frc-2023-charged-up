@@ -32,9 +32,9 @@ public class IntakeCommand extends CommandBase {
   @Override
   public boolean isFinished() {
     if (intakeSubsystem.getGamePiece() == HeldGamePiece.NOTHING) {
-      return true;
+      return false;
     } else {
-    return false;
+      return true;
     }
   }
 }

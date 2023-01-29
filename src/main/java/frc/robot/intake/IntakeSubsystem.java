@@ -52,14 +52,14 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     } else if (mode == IntakeMode.OUTTAKE) {
       if (gamePiece == HeldGamePiece.CUBE) {
         motor.set(TalonFXControlMode.PercentOutput, -0.4);
-          if (motor.getStatorCurrent() < 5) {
-            gamePiece = HeldGamePiece.NOTHING;
-          }
+        if (motor.getStatorCurrent() < 5) {
+          gamePiece = HeldGamePiece.NOTHING;
+        }
       } else if (gamePiece == HeldGamePiece.CONE) {
         motor.set(TalonFXControlMode.PercentOutput, 0.4);
-          if (motor.getStatorCurrent() < 5) {
-            gamePiece = HeldGamePiece.NOTHING;
-          }
+        if (motor.getStatorCurrent() < 5) {
+          gamePiece = HeldGamePiece.NOTHING;
+        }
       }
     } else {
       motor.set(TalonFXControlMode.PercentOutput, 0);
