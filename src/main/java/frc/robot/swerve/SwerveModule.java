@@ -6,10 +6,6 @@ package frc.robot.swerve;
 
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenixpro.StatusCode;
-import com.ctre.phoenixpro.configs.ClosedLoopGeneralConfigs;
-import com.ctre.phoenixpro.configs.CurrentLimitsConfigs;
-import com.ctre.phoenixpro.configs.MotorOutputConfigs;
-import com.ctre.phoenixpro.configs.Slot0Configs;
 import com.ctre.phoenixpro.configs.TalonFXConfiguration;
 import com.ctre.phoenixpro.controls.PositionVoltage;
 import com.ctre.phoenixpro.controls.VelocityVoltage;
@@ -52,59 +48,51 @@ public class SwerveModule {
     this.steerMotor = steerMotor;
     this.encoder = encoder;
 
-    com.ctre.phoenixpro.configs.TalonFXConfiguration driveMotorConfigs = new TalonFXConfiguration();
+    TalonFXConfiguration driveMotorConfig = new TalonFXConfiguration();
 
-    driveMotorConfigs.Slot0.kP = Config.SWERVE_DRIVE_KP;
-    driveMotorConfigs.Slot0.kI = Config.SWERVE_DRIVE_KI;
-    driveMotorConfigs.Slot0.kD = Config.SWERVE_DRIVE_KD;
-    driveMotorConfigs.Slot0.kV = Config.SWERVE_DRIVE_KV;
-    driveMotorConfigs.Slot0.kS = Config.SWERVE_DRIVE_KS;
+    driveMotorConfig.Slot0.kP = Config.SWERVE_DRIVE_KP;
+    driveMotorConfig.Slot0.kI = Config.SWERVE_DRIVE_KI;
+    driveMotorConfig.Slot0.kD = Config.SWERVE_DRIVE_KD;
+    driveMotorConfig.Slot0.kV = Config.SWERVE_DRIVE_KV;
+    driveMotorConfig.Slot0.kS = Config.SWERVE_DRIVE_KS;
 
-    driveMotorConfigs.Voltage.PeakForwardVoltage = 12;
-    driveMotorConfigs.Voltage.PeakReverseVoltage = -12;
+    driveMotorConfig.Voltage.PeakForwardVoltage = 12;
+    driveMotorConfig.Voltage.PeakReverseVoltage = -12;
 
-    driveMotorConfigs.CurrentLimits.SupplyCurrentLimit = 35;
-    driveMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+    driveMotorConfig.CurrentLimits.SupplyCurrentLimit = 35;
+    driveMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     if (constants.driveInversion) {
-      driveMotorConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+      driveMotorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     } else {
-      driveMotorConfigs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+      driveMotorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     }
 
     StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
-      status = driveMotor.getConfigurator().apply(driveMotorConfigs);
+      status = driveMotor.getConfigurator().apply(driveMotorConfig);
       if (status.isOK()) break;
     }
     if (!status.isOK()) {
       System.out.println("Could not apply configs, error code: " + status.toString());
     }
 
-    Slot0Configs steerMotorSlot0Configs = new Slot0Configs();
-    MotorOutputConfigs steerMotorOutputConfigs = new MotorOutputConfigs();
-    CurrentLimitsConfigs steerMotorCurrentLimitsConfigs = new CurrentLimitsConfigs();
-    ClosedLoopGeneralConfigs steerMotorClosedLoopGeneralConfigs = new ClosedLoopGeneralConfigs();
-    steerMotorClosedLoopGeneralConfigs.ContinuousWrap = false;
-    steerMotorSlot0Configs.kV = Config.SWERVE_STEER_KV;
-    steerMotorSlot0Configs.kP = Config.SWERVE_STEER_KP;
-    steerMotorSlot0Configs.kI = Config.SWERVE_STEER_KI;
-    steerMotorSlot0Configs.kD = Config.SWERVE_STEER_KD;
-    steerMotorSlot0Configs.kS = Config.SWERVE_STEER_KS;
-    steerMotorCurrentLimitsConfigs.SupplyCurrentLimit = 35;
-    steerMotorCurrentLimitsConfigs.SupplyCurrentLimitEnable = true;
-    steerMotorOutputConfigs.DutyCycleNeutralDeadband = 0;
+    TalonFXConfiguration steerMotorConfig = new TalonFXConfiguration();
+    steerMotorConfig.ClosedLoopGeneral.ContinuousWrap = false;
+    steerMotorConfig.Slot0.kV = Config.SWERVE_STEER_KV;
+    steerMotorConfig.Slot0.kP = Config.SWERVE_STEER_KP;
+    steerMotorConfig.Slot0.kI = Config.SWERVE_STEER_KI;
+    steerMotorConfig.Slot0.kD = Config.SWERVE_STEER_KD;
+    steerMotorConfig.Slot0.kS = Config.SWERVE_STEER_KS;
+    steerMotorConfig.CurrentLimits.SupplyCurrentLimit = 35;
+    steerMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    steerMotorConfig.MotorOutput.DutyCycleNeutralDeadband = 0;
     if (constants.angleInversion) {
-      steerMotorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
+      steerMotorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     } else {
-      steerMotorOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
+      steerMotorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     }
-    steerMotor.getConfigurator().apply(steerMotorOutputConfigs);
-
-    steerMotor.getConfigurator().apply(steerMotorOutputConfigs);
-    steerMotor.getConfigurator().apply(steerMotorSlot0Configs);
-    steerMotor.getConfigurator().apply(steerMotorCurrentLimitsConfigs);
-    steerMotor.getConfigurator().apply(steerMotorClosedLoopGeneralConfigs);
+    steerMotor.getConfigurator().apply(steerMotorConfig);
   }
 
   public void setDesiredState(SwerveModuleState state, boolean OpenLoop) {
