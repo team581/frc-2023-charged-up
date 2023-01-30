@@ -55,17 +55,17 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
   @Override
   public void robotPeriodic() {
-    ChassisSpeeds speeds = getChassisSpeeds();
-
     this.frontLeft.logValues();
     this.frontRight.logValues();
     this.backLeft.logValues();
     this.backRight.logValues();
 
-    Logger.getInstance().recordOutput("Swerve/RotationalVelocity", speeds.omegaRadiansPerSecond);
-    Logger.getInstance().recordOutput("Swerve/ForwardVelocity", speeds.vxMetersPerSecond);
-    Logger.getInstance().recordOutput("Swerve/HorizontalVelocity", speeds.vyMetersPerSecond);
     Logger.getInstance().recordOutput("Swerve/ModuleStates", getModuleStates());
+    ChassisSpeeds chassisSpeeds = getChassisSpeeds();
+    Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/X", chassisSpeeds.vxMetersPerSecond);
+    Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/Y", chassisSpeeds.vyMetersPerSecond);
+    Logger.getInstance()
+        .recordOutput("Swerve/ChassisSpeeds/Omega", chassisSpeeds.omegaRadiansPerSecond);
   }
 
   public ChassisSpeeds getChassisSpeeds() {
@@ -73,6 +73,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     final var frontRightState = frontRight.getState();
     final var backLeftState = backLeft.getState();
     final var backRightState = backRight.getState();
+
     return KINEMATICS.toChassisSpeeds(
         frontLeftState, frontRightState, backLeftState, backRightState);
   }
@@ -112,19 +113,15 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     Logger.getInstance().recordOutput("Swerve/ThetaPercentage", thetaPercentage);
 
     Translation2d robotTranslation =
-        new Translation2d(forwardPercentage, -1 * sidewaysPercentage).times(MAX_VELOCITY);
+        new Translation2d(forwardPercentage, sidewaysPercentage).times(MAX_VELOCITY);
     ChassisSpeeds chassisSpeeds =
         ChassisSpeeds.fromFieldRelativeSpeeds(
             robotTranslation.getX(),
             robotTranslation.getY(),
-            -1 * thetaPercentage * MAX_ANGULAR_VELOCITY,
+            thetaPercentage * MAX_ANGULAR_VELOCITY,
             fieldRelative ? imu.getRobotHeading() : new Rotation2d());
     SwerveModuleState[] moduleStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_VELOCITY);
     setChassisSpeeds(KINEMATICS.toChassisSpeeds(moduleStates), openLoop);
-  }
-
-  public double getAngle() {
-    return imu.getRobotHeading().getDegrees();
   }
 }

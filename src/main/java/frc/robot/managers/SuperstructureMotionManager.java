@@ -4,6 +4,7 @@
 
 package frc.robot.managers;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Positions;
 import frc.robot.elevator.ElevatorSubsystem;
@@ -24,26 +25,27 @@ public class SuperstructureMotionManager extends LifecycleSubsystem {
   }
 
   public void set(SuperstructurePosition goalPosition) {
-    double wristRange = 25;
+    double wristRange = 13;
     double goalDegrees = goalPosition.angle.getDegrees();
     double wristAngle = wrist.getAngle().getDegrees();
 
     boolean wristGoalInCollisionArea = goalDegrees < wristRange;
     boolean currentWristAngleInCollisionArea = wristAngle < wristRange;
-    boolean leavingBumperArea = goalPosition.height > 25 && elevator.getHeight() < 25;
-    boolean goingToBumperArea = goalPosition.height < 25 && elevator.getHeight() > 25;
+    double goalHeight = MathUtil.clamp(goalPosition.height, 0.5, 24);
+    boolean leavingBumperArea = goalHeight > 26 && elevator.getHeight() < 26;
+    boolean goingToBumperArea = goalHeight < 26 && elevator.getHeight() > 26;
 
     positionList.clear();
 
     if ((wristGoalInCollisionArea || currentWristAngleInCollisionArea)
         && (leavingBumperArea || goingToBumperArea)) {
       positionList.add(
-          new SuperstructurePosition(elevator.getHeight(), Rotation2d.fromDegrees(30)));
-      positionList.add(new SuperstructurePosition(goalPosition.height, Rotation2d.fromDegrees(30)));
+          new SuperstructurePosition(elevator.getHeight(), Rotation2d.fromDegrees(50)));
+      positionList.add(new SuperstructurePosition(goalHeight, Rotation2d.fromDegrees(50)));
     }
     // TODO: Make elevator & wrist move to goal position in fewest movements
 
-    positionList.add(new SuperstructurePosition(goalPosition.height, goalPosition.angle));
+    positionList.add(new SuperstructurePosition(goalHeight, goalPosition.angle));
   }
 
   public boolean atGoal(SuperstructurePosition position) {
