@@ -74,11 +74,6 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     final var backLeftState = backLeft.getState();
     final var backRightState = backRight.getState();
 
-    Logger.getInstance().recordOutput("Chassis Speeds/ front left", frontLeftState);
-    Logger.getInstance().recordOutput("Chassis Speeds/ front right", frontRightState);
-    Logger.getInstance().recordOutput("Chassis Speeds/ back left", backLeftState);
-    Logger.getInstance().recordOutput("Chassis Speeds/ back right", backRightState);
-
     return KINEMATICS.toChassisSpeeds(
         frontLeftState, frontRightState, backLeftState, backRightState);
   }
@@ -106,9 +101,9 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     backLeft.setDesiredState(moduleStates[2], openLoop);
     backRight.setDesiredState(moduleStates[3], openLoop);
 
-    Logger.getInstance().recordOutput("Chassis Speeds/ Actual /Omega Radians Per Second", speeds.omegaRadiansPerSecond);
-    Logger.getInstance().recordOutput("Chassis Speeds/ Actual / vx mps", speeds.vxMetersPerSecond);
-    Logger.getInstance().recordOutput("Chassis Speeds/ Actual / vy mps", speeds.vyMetersPerSecond);
+    Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/Omega", speeds.omegaRadiansPerSecond);
+    Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/X", speeds.vxMetersPerSecond);
+    Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/Y", speeds.vyMetersPerSecond);
 
   }
 
