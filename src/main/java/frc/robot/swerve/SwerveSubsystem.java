@@ -104,7 +104,6 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/Omega", speeds.omegaRadiansPerSecond);
     Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/X", speeds.vxMetersPerSecond);
     Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/Y", speeds.vyMetersPerSecond);
-
   }
 
   public void driveTeleop(
