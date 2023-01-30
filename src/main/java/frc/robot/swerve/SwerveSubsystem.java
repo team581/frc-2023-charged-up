@@ -55,17 +55,17 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
   @Override
   public void robotPeriodic() {
-    ChassisSpeeds speeds = getChassisSpeeds();
-
     this.frontLeft.logValues();
     this.frontRight.logValues();
     this.backLeft.logValues();
     this.backRight.logValues();
 
-    Logger.getInstance().recordOutput("Swerve/RotationalVelocity", speeds.omegaRadiansPerSecond);
-    Logger.getInstance().recordOutput("Swerve/ForwardVelocity", speeds.vxMetersPerSecond);
-    Logger.getInstance().recordOutput("Swerve/HorizontalVelocity", speeds.vyMetersPerSecond);
     Logger.getInstance().recordOutput("Swerve/ModuleStates", getModuleStates());
+    ChassisSpeeds chassisSpeeds = getChassisSpeeds();
+    Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/X", chassisSpeeds.vxMetersPerSecond);
+    Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/Y", chassisSpeeds.vyMetersPerSecond);
+    Logger.getInstance()
+        .recordOutput("Swerve/ChassisSpeeds/Omega", chassisSpeeds.omegaRadiansPerSecond);
   }
 
   public ChassisSpeeds getChassisSpeeds() {
@@ -100,10 +100,6 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     frontRight.setDesiredState(moduleStates[1], openLoop);
     backLeft.setDesiredState(moduleStates[2], openLoop);
     backRight.setDesiredState(moduleStates[3], openLoop);
-
-    Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/Omega", speeds.omegaRadiansPerSecond);
-    Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/X", speeds.vxMetersPerSecond);
-    Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/Y", speeds.vyMetersPerSecond);
   }
 
   public void driveTeleop(
@@ -127,9 +123,5 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     SwerveModuleState[] moduleStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_VELOCITY);
     setChassisSpeeds(KINEMATICS.toChassisSpeeds(moduleStates), openLoop);
-  }
-
-  public double getAngle() {
-    return imu.getRobotHeading().getDegrees();
   }
 }

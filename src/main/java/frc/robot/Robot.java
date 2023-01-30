@@ -142,12 +142,9 @@ public class Robot extends LoggedRobot {
         driveController.getThetaPercentage(),
         true,
         openLoop);
-    // If backButton is pressed then closed loop
     if (driveController.back().getAsBoolean()) {
       imu.zero();
     }
-    Logger.getInstance().recordOutput("MenuButtons/Imu", driveController.back().getAsBoolean());
-    Logger.getInstance().recordOutput("MenuButtons/ClosedLoop", !openLoop);
   }
 
   @Override
