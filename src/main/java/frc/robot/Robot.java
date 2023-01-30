@@ -151,6 +151,11 @@ public class Robot extends LoggedRobot {
         .onTrue(
             new SuperstructureMotionManagerCommand(
                 superstructureMotionManager, Positions.CUBE_NODE_MID));
+    driveController
+        .a()
+        .onTrue(
+            new SuperstructureMotionManagerCommand(
+                superstructureMotionManager, Positions.FULL_EXTENSION));
 
     boolean openLoop = !driveController.start().getAsBoolean();
     swerve.driveTeleop(

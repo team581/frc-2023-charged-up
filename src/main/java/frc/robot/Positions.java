@@ -10,6 +10,8 @@ import frc.robot.managers.SuperstructurePosition;
 public class Positions {
   public static final SuperstructurePosition STOWED =
       new SuperstructurePosition(1, Rotation2d.fromDegrees(10));
+  public static final SuperstructurePosition FULL_EXTENSION =
+      new SuperstructurePosition(32, Rotation2d.fromDegrees(10));
 
   public static final SuperstructurePosition INTAKING_CUBE =
       new SuperstructurePosition(3, Rotation2d.fromDegrees(130));
