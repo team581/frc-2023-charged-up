@@ -38,8 +38,8 @@ public class SuperstructureMotionManager extends LifecycleSubsystem {
     if ((wristGoalInCollisionArea || currentWristAngleInCollisionArea)
         && (leavingBumperArea || goingToBumperArea)) {
       positionList.add(
-          new SuperstructurePosition(elevator.getHeight(), Rotation2d.fromDegrees(60)));
-      positionList.add(new SuperstructurePosition(goalPosition.height, Rotation2d.fromDegrees(60)));
+          new SuperstructurePosition(elevator.getHeight(), Rotation2d.fromDegrees(50)));
+      positionList.add(new SuperstructurePosition(goalPosition.height, Rotation2d.fromDegrees(50)));
     }
     // TODO: Make elevator & wrist move to goal position in fewest movements
 
