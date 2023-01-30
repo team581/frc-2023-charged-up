@@ -172,9 +172,9 @@ public class Robot extends LoggedRobot {
       imu.zero();
     }
 
-    controller.rightTrigger().whileTrue(new IntakeCommand(intake, IntakeMode.OUTTAKE));
-    controller.leftTrigger().whileTrue(new IntakeCommand(intake, IntakeMode.INTAKE_CUBE));
-    controller.leftBumper().whileTrue(new IntakeCommand(intake, IntakeMode.INTAKE_CONE));
+    driveController.rightTrigger().whileTrue(new IntakeCommand(intake, IntakeMode.OUTTAKE));
+    driveController.leftTrigger().whileTrue(new IntakeCommand(intake, IntakeMode.INTAKE_CUBE));
+    driveController.leftBumper().whileTrue(new IntakeCommand(intake, IntakeMode.INTAKE_CONE));
   }
 
   @Override
