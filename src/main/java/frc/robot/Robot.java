@@ -159,17 +159,14 @@ public class Robot extends LoggedRobot {
 
     boolean openLoop = !driveController.start().getAsBoolean();
     swerve.driveTeleop(
-        -driveController.getSidewaysPercentage(),
+        driveController.getSidewaysPercentage(),
         driveController.getForwardPercentage(),
-        -driveController.getThetaPercentage(),
+        driveController.getThetaPercentage(),
         true,
         openLoop);
-    // If backButton is pressed then closed loop
     if (driveController.back().getAsBoolean()) {
       imu.zero();
     }
-    Logger.getInstance().recordOutput("MenuButtons/Imu", driveController.back().getAsBoolean());
-    Logger.getInstance().recordOutput("MenuButtons/ClosedLoop", !openLoop);
   }
 
   @Override

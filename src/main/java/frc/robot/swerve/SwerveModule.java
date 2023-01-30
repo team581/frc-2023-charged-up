@@ -61,7 +61,7 @@ public class SwerveModule {
     driveMotorConfigs.Slot0.kP = 0.0;
     driveMotorConfigs.Slot0.kI = 0.0;
     driveMotorConfigs.Slot0.kD = 0.0;
-    driveMotorConfigs.Slot0.kV = 0.0;
+    driveMotorConfigs.Slot0.kV = 0.1;
     driveMotorConfigs.Slot0.kS = 0.0;
 
     driveMotorConfigs.Voltage.PeakForwardVoltage = 12;
@@ -172,11 +172,11 @@ public class SwerveModule {
             getSteerMotorPosition().getDegrees());
     Logger.getInstance()
         .recordOutput(
-            this.constants.corner.toString() + "/Drive Motor FF",
+            "Swerve/" + this.constants.corner.toString() + "/Drive Motor FF",
             driveMotor.getClosedLoopFeedForward().getValue());
     Logger.getInstance()
         .recordOutput(
-            this.constants.corner.toString() + "/Drive Motor Reference",
+            "Swerve/" + this.constants.corner.toString() + "/Drive Motor Reference",
             driveMotor.getClosedLoopReference().getValue());
     Logger.getInstance()
         .recordOutput(
@@ -184,8 +184,6 @@ public class SwerveModule {
                 + this.constants.corner.toString()
                 + "/Drive Motor Commanded Velocity (motor rot/sec)",
             this.commandedDriveVelocity);
-    Logger.getInstance().recordOutput(null, MAX_SPEED);
-    Logger.getInstance().recordOutput(null, MAX_SPEED);
   }
 
   private Rotation2d getSteerMotorPosition() {
