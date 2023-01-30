@@ -20,7 +20,7 @@ public class SuperstructureMotionManagerCommand extends CommandBase {
 
   @Override
   public void initialize() {
-    manager.set(position.height, position.angle);
+    manager.set(position);
   }
 
   @Override
