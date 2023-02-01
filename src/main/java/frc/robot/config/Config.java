@@ -57,6 +57,8 @@ public class Config {
 
   public static final int ELEVATOR_MOTOR_ID = 14;
   public static final double ELEVATOR_GEARING = IS_SPIKE ? 999 : 60.0 * 2.0;
+  public static final double ELEVATOR_MIN_HEIGHT = 0.5;
+  public static final double ELEVATOR_MAX_HEIGHT = IS_SPIKE ? 26 : 24;
 
   public static final int WRIST_MOTOR_ID = 16;
   public static final double WRIST_GEARING = IS_SPIKE ? 999 : 48.0 * 2.0;

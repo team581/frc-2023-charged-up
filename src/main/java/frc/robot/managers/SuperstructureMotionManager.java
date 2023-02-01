@@ -7,6 +7,7 @@ package frc.robot.managers;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Positions;
+import frc.robot.config.Config;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.util.LifecycleSubsystem;
 import frc.robot.wrist.WristSubsystem;
@@ -31,7 +32,7 @@ public class SuperstructureMotionManager extends LifecycleSubsystem {
 
     boolean wristGoalInCollisionArea = goalDegrees < wristRange;
     boolean currentWristAngleInCollisionArea = wristAngle < wristRange;
-    double goalHeight = MathUtil.clamp(goalPosition.height, 0.5, 24);
+    double goalHeight = MathUtil.clamp(goalPosition.height, Config.ELEVATOR_MIN_HEIGHT, Config.ELEVATOR_MAX_HEIGHT);
     boolean leavingBumperArea = goalHeight > 26 && elevator.getHeight() < 26;
     boolean goingToBumperArea = goalHeight < 26 && elevator.getHeight() > 26;
 
