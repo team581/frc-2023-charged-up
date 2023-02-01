@@ -17,6 +17,7 @@ import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.elevator.commands.ElevatorHomingCommand;
 import frc.robot.generated.BuildConstants;
 import frc.robot.imu.ImuSubsystem;
+import frc.robot.intake.IntakeSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.managers.SuperstructureMotionManager;
 import frc.robot.managers.commands.SuperstructureMotionManagerCommand;
@@ -67,6 +68,8 @@ public class Robot extends LoggedRobot {
       new ElevatorSubsystem(new TalonFX(Config.ELEVATOR_MOTOR_ID, "581CANivore"));
   private final WristSubsystem wrist =
       new WristSubsystem(new TalonFX(Config.WRIST_MOTOR_ID, "581CANivore"));
+  private final IntakeSubsystem intake =
+      new IntakeSubsystem(new TalonFX(Config.INTAKE_MOTOR_ID, "581CANivore"));
   private final SuperstructureMotionManager superstructureMotionManager =
       new SuperstructureMotionManager(elevator, wrist);
   private final ImuSubsystem imu = new ImuSubsystem(new Pigeon2(Config.PIGEON_ID, "581CANivore"));
@@ -138,7 +141,6 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopPeriodic() {
-
     driveController
         .x()
         .onTrue(new WristHomingCommand(wrist).alongWith(new ElevatorHomingCommand(elevator)));
