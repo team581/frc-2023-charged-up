@@ -171,10 +171,6 @@ public class Robot extends LoggedRobot {
     if (driveController.back().getAsBoolean()) {
       imu.zero();
     }
-
-    driveController.rightTrigger().whileTrue(new IntakeCommand(intake, IntakeMode.OUTTAKE));
-    driveController.leftTrigger().whileTrue(new IntakeCommand(intake, IntakeMode.INTAKE_CUBE));
-    driveController.leftBumper().whileTrue(new IntakeCommand(intake, IntakeMode.INTAKE_CONE));
   }
 
   @Override
