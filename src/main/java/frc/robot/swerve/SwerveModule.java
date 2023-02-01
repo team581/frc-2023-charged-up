@@ -49,7 +49,6 @@ public class SwerveModule {
   private Rotation2d previousAngle = new Rotation2d();
   private double commandedDriveVelocity = 0;
 
-
   public SwerveModule(
       SwerveModuleConstants constants, TalonFX driveMotor, TalonFX steerMotor, CANCoder encoder) {
     this.constants = constants;
