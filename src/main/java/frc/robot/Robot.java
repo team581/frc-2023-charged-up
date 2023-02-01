@@ -72,12 +72,11 @@ public class Robot extends LoggedRobot {
   private final ImuSubsystem imu = new ImuSubsystem(new Pigeon2(Config.PIGEON_ID, "581CANivore"));
   private final SwerveSubsystem swerve =
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
-  private final LocalizationSubsystem localizationSubsystem =
-      new LocalizationSubsystem(swerve, imu);
+  private final LocalizationSubsystem localization = new LocalizationSubsystem(swerve, imu);
 
   private final DriveController driveController = new DriveController(Config.CONTROLLER_PORT);
 
-  private final Autos autos = new Autos(localizationSubsystem, swerveSubsystem);
+  private final Autos autos = new Autos(localization, swerve);
 
   private final Command autoCommand = autos.getAutoCommand();
 
