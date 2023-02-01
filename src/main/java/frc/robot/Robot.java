@@ -8,7 +8,9 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.autos.Autos;
 import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
 import frc.robot.elevator.ElevatorSubsystem;
@@ -70,10 +72,13 @@ public class Robot extends LoggedRobot {
   private final ImuSubsystem imu = new ImuSubsystem(new Pigeon2(Config.PIGEON_ID, "581CANivore"));
   private final SwerveSubsystem swerve =
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
-  private final LocalizationSubsystem localizationSubsystem =
-      new LocalizationSubsystem(swerve, imu);
+  private final LocalizationSubsystem localization = new LocalizationSubsystem(swerve, imu);
 
   private final DriveController driveController = new DriveController(Config.CONTROLLER_PORT);
+
+  private final Autos autos = new Autos(localization, swerve);
+
+  private final Command autoCommand = autos.getAutoCommand();
 
   public Robot() {
     // Log to a USB stick
@@ -119,13 +124,17 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void autonomousInit() {}
+  public void autonomousInit() {
+    CommandScheduler.getInstance().schedule(autoCommand);
+  }
 
   @Override
   public void autonomousPeriodic() {}
 
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    autoCommand.cancel();
+  }
 
   @Override
   public void teleopPeriodic() {

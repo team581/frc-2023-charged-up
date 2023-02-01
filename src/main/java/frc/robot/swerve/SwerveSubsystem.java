@@ -95,6 +95,10 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
   public void setChassisSpeeds(ChassisSpeeds speeds, boolean openLoop) {
     final var moduleStates = KINEMATICS.toSwerveModuleStates(speeds);
+    setModuleStates(moduleStates, openLoop);
+  }
+
+  public void setModuleStates(SwerveModuleState[] moduleStates, boolean openLoop) {
     Logger.getInstance().recordOutput("Swerve/GoalModuleStates", moduleStates);
     frontLeft.setDesiredState(moduleStates[0], openLoop);
     frontRight.setDesiredState(moduleStates[1], openLoop);
