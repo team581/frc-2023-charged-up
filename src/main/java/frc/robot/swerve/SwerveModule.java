@@ -61,7 +61,7 @@ public class SwerveModule {
     driveMotorConfigs.Slot0.kP = 0.0;
     driveMotorConfigs.Slot0.kI = 0.0;
     driveMotorConfigs.Slot0.kD = 0.0;
-    driveMotorConfigs.Slot0.kV = 0.1;
+    driveMotorConfigs.Slot0.kV = 2.2;
     driveMotorConfigs.Slot0.kS = 0.0;
 
     driveMotorConfigs.Voltage.PeakForwardVoltage = 12;
@@ -127,7 +127,7 @@ public class SwerveModule {
     var motorRotationsPerSecond =
         DRIVE_MOTOR_GEARING_CONVERTER.gearingToMotor(wheelRotationsPerSecond);
 
-    this.commandedDriveVelocity = motorRotationsPerSecond;
+    this.commandedDriveVelocity = state.speedMetersPerSecond;
     driveMotor.setControl(driveVoltageClosedLoopRequest.withVelocity(motorRotationsPerSecond));
   }
 
@@ -148,7 +148,7 @@ public class SwerveModule {
   public void logValues() {
     Logger.getInstance()
         .recordOutput(
-            "Swerve/" + this.constants.corner.toString() + "/Drive motor velocity (ft/sec)",
+            "Swerve/" + this.constants.corner.toString() + "/Drive motor velocity (meters per/sec)",
             this.getDriveMotorVelocity());
     Logger.getInstance()
         .recordOutput(
@@ -182,7 +182,7 @@ public class SwerveModule {
         .recordOutput(
             "Swerve/"
                 + this.constants.corner.toString()
-                + "/Drive Motor Commanded Velocity (motor rot/sec)",
+                + "/Drive Motor Commanded Velocity (meters/sec)",
             this.commandedDriveVelocity);
   }
 

@@ -83,6 +83,7 @@ public class Robot extends LoggedRobot {
 
   private final Command autoCommand = autos.getAutoCommand();
 
+
   public Robot() {
     // Log to a USB stick
     Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/"));
@@ -136,7 +137,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
-    autoCommand.cancel();
+   // autoCommand.cancel();
   }
 
   @Override
@@ -171,7 +172,7 @@ public class Robot extends LoggedRobot {
             new SuperstructureMotionManagerCommand(
                 superstructureMotionManager, Positions.FULL_EXTENSION));
 
-    boolean openLoop = !driveController.start().getAsBoolean();
+    boolean openLoop = false; //!driveController.start().getAsBoolean();
     swerve.driveTeleop(
         driveController.getSidewaysPercentage(),
         driveController.getForwardPercentage(),
