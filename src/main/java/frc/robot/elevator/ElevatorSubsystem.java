@@ -9,7 +9,6 @@ import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-
 import edu.wpi.first.math.MathUtil;
 import frc.robot.config.Config;
 import frc.robot.util.LifecycleSubsystem;
@@ -68,7 +67,8 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
 
   public void setGoalPosition(double goal) {
     // Save goal position
-    this.goalPositionInInches = MathUtil.clamp(goal, Config.ELEVATOR_MIN_HEIGHT, Config.ELEVATOR_MAX_HEIGHT);
+    this.goalPositionInInches =
+        MathUtil.clamp(goal, Config.ELEVATOR_MIN_HEIGHT, Config.ELEVATOR_MAX_HEIGHT);
     goToGoal = true;
   }
 
