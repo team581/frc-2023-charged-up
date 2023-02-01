@@ -82,6 +82,25 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     }
   }
 
+  public boolean atGoal(IntakeMode goal) {
+    if (mode != goal) {
+      return false;
+    }
+    if (mode == IntakeMode.OUTTAKE) {
+      return gamePiece == HeldGamePiece.NOTHING;
+    }
+    if (mode == IntakeMode.STOPPED) {
+      return true;
+    }
+    if (mode == IntakeMode.INTAKE_CUBE) {
+      return gamePiece == HeldGamePiece.CUBE;
+    }
+    if (mode == IntakeMode.INTAKE_CONE) {
+      return gamePiece == HeldGamePiece.CONE;
+    }
+    return false;
+  }
+
   public HeldGamePiece getGamePiece() {
     return gamePiece;
   }
