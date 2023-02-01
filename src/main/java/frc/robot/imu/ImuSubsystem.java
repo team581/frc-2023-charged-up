@@ -28,7 +28,7 @@ public class ImuSubsystem extends LifecycleSubsystem {
     this.imu.setYaw(0);
   }
 
-  public void setAngle(double zeroAngle) {
-    this.imu.setYaw(zeroAngle);
+  public void setAngle(Rotation2d zeroAngle) {
+    this.imu.setYaw(zeroAngle.getDegrees());
   }
 }

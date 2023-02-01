@@ -19,7 +19,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   private static final Translation2d FRONT_RIGHT_LOCATION = new Translation2d(0.381, -0.381);
   private static final Translation2d BACK_LEFT_LOCATION = new Translation2d(-0.381, 0.381);
   private static final Translation2d BACK_RIGHT_LOCATION = new Translation2d(-0.381, -0.381);
-  private static final SwerveDriveKinematics KINEMATICS =
+  public static final SwerveDriveKinematics KINEMATICS =
       new SwerveDriveKinematics(
           FRONT_LEFT_LOCATION, FRONT_RIGHT_LOCATION, BACK_LEFT_LOCATION, BACK_RIGHT_LOCATION);
   public static final double MAX_VELOCITY = 4.5;
@@ -95,6 +95,10 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
   public void setChassisSpeeds(ChassisSpeeds speeds, boolean openLoop) {
     final var moduleStates = KINEMATICS.toSwerveModuleStates(speeds);
+    setModuleStates(moduleStates, openLoop);
+  }
+
+  public void setModuleStates(SwerveModuleState[] moduleStates, boolean openLoop) {
     Logger.getInstance().recordOutput("Swerve/GoalModuleStates", moduleStates);
     frontLeft.setDesiredState(moduleStates[0], openLoop);
     frontRight.setDesiredState(moduleStates[1], openLoop);
