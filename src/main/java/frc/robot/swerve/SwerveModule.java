@@ -67,7 +67,7 @@ public class SwerveModule {
     driveMotorConfigs.Voltage.PeakForwardVoltage = 12;
     driveMotorConfigs.Voltage.PeakReverseVoltage = -12;
 
-    driveMotorConfigs.CurrentLimits.SupplyCurrentLimit = 15;
+    driveMotorConfigs.CurrentLimits.SupplyCurrentLimit = 35;
     driveMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     if (constants.driveInversion) {
@@ -95,7 +95,7 @@ public class SwerveModule {
     steerMotorSlot0Configs.kI = 0;
     steerMotorSlot0Configs.kD = 0.17;
     steerMotorSlot0Configs.kS = 0.0;
-    steerMotorCurrentLimitsConfigs.SupplyCurrentLimit = 15;
+    steerMotorCurrentLimitsConfigs.SupplyCurrentLimit = 35;
     steerMotorCurrentLimitsConfigs.SupplyCurrentLimitEnable = true;
     if (constants.angleInversion) {
       steerMotorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
@@ -118,7 +118,7 @@ public class SwerveModule {
         STEER_MOTOR_GEARING_CONVERTER.gearingToMotor(state.angle.getRotations());
     steerMotor.setControl(steerMotorControl.withPosition(commandedSteerPosition));
 
-    boolean isStopped = false;
+    boolean isStopped = Math.abs(state.speedMetersPerSecond) <= MAX_SPEED * 0.01;
     Rotation2d angle = isStopped ? this.previousAngle : state.angle;
     this.previousAngle = angle;
 
