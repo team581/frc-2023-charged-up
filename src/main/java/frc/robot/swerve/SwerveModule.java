@@ -118,7 +118,9 @@ public class SwerveModule {
         STEER_MOTOR_GEARING_CONVERTER.gearingToMotor(state.angle.getRotations());
     steerMotor.setControl(steerMotorControl.withPosition(commandedSteerPosition));
 
-    boolean isStopped = Math.abs(state.speedMetersPerSecond) <= SwerveSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.01;
+    boolean isStopped =
+        Math.abs(state.speedMetersPerSecond)
+            <= SwerveSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.01;
     Rotation2d angle = isStopped ? this.previousAngle : state.angle;
     this.previousAngle = angle;
 
