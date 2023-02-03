@@ -11,14 +11,9 @@ import frc.robot.util.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 public class IntakeSubsystem extends LifecycleSubsystem {
-  private static final StatorCurrentLimitConfiguration INTAKE_CUBE_CURRENT_LIMIT =
-      new StatorCurrentLimitConfiguration(false, 40, 40, 1);
-  private static final StatorCurrentLimitConfiguration INTAKE_CONE_CURRENT_LIMIT =
-      new StatorCurrentLimitConfiguration(false, 40, 40, 1);
-  private static final StatorCurrentLimitConfiguration OUTTAKE_CUBE_CURRENT_LIMIT =
-      new StatorCurrentLimitConfiguration(false, 40, 40, 1);
-  private static final StatorCurrentLimitConfiguration OUTTAKE_CONE_CURRENT_LIMIT =
-      new StatorCurrentLimitConfiguration(false, 40, 40, 1);
+  private static final StatorCurrentLimitConfiguration CURRENT_LIMIT =
+      new StatorCurrentLimitConfiguration(false, 5, 10, 0.2);
+
   // numbers above are placeholders for current limits
   private HeldGamePiece gamePiece = HeldGamePiece.NOTHING;
 
@@ -28,6 +23,8 @@ public class IntakeSubsystem extends LifecycleSubsystem {
 
   public IntakeSubsystem(TalonFX motor) {
     this.motor = motor;
+    motor.setInverted(true);
+    motor.configStatorCurrentLimit(CURRENT_LIMIT);
   }
 
   @Override
@@ -39,24 +36,25 @@ public class IntakeSubsystem extends LifecycleSubsystem {
 
   @Override
   public void enabledPeriodic() {
+    // TODO: Tune voltages and currents
     if (mode == IntakeMode.INTAKE_CUBE) {
-      motor.set(TalonFXControlMode.PercentOutput, 0.4);
+      motor.set(TalonFXControlMode.PercentOutput, 0.2);
       if (motor.getStatorCurrent() > 10) {
         gamePiece = HeldGamePiece.CUBE;
       }
     } else if (mode == IntakeMode.INTAKE_CONE) {
-      motor.set(TalonFXControlMode.PercentOutput, -0.4);
+      motor.set(TalonFXControlMode.PercentOutput, -0.2);
       if (motor.getStatorCurrent() > 20) {
         gamePiece = HeldGamePiece.CONE;
       }
     } else if (mode == IntakeMode.OUTTAKE) {
       if (gamePiece == HeldGamePiece.CUBE) {
-        motor.set(TalonFXControlMode.PercentOutput, -0.4);
+        motor.set(TalonFXControlMode.PercentOutput, -0.2);
         if (motor.getStatorCurrent() < 5) {
           gamePiece = HeldGamePiece.NOTHING;
         }
       } else if (gamePiece == HeldGamePiece.CONE) {
-        motor.set(TalonFXControlMode.PercentOutput, 0.4);
+        motor.set(TalonFXControlMode.PercentOutput, 0.2);
         if (motor.getStatorCurrent() < 5) {
           gamePiece = HeldGamePiece.NOTHING;
         }
@@ -68,18 +66,6 @@ public class IntakeSubsystem extends LifecycleSubsystem {
 
   public void setMode(IntakeMode mode) {
     this.mode = mode;
-
-    if (mode == IntakeMode.INTAKE_CUBE) {
-      motor.configStatorCurrentLimit(INTAKE_CUBE_CURRENT_LIMIT);
-    } else if (mode == IntakeMode.INTAKE_CONE) {
-      motor.configStatorCurrentLimit(INTAKE_CONE_CURRENT_LIMIT);
-    } else if (mode == IntakeMode.OUTTAKE) {
-      if (gamePiece == HeldGamePiece.CUBE) {
-        motor.configStatorCurrentLimit(OUTTAKE_CUBE_CURRENT_LIMIT);
-      } else if (gamePiece == HeldGamePiece.CONE) {
-        motor.configStatorCurrentLimit(OUTTAKE_CONE_CURRENT_LIMIT);
-      }
-    }
   }
 
   public boolean atGoal(IntakeMode goal) {
