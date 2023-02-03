@@ -71,14 +71,20 @@ public class Config {
   public static final double SWERVE_STEER_KD = IS_SPIKE ? 0.0 : 0.0;
   public static final double SWERVE_STEER_KS = IS_SPIKE ? 0.0 : 0.0;
 
+  public static final int SWERVE_DRIVE_VOLTAGE_PEAK_FORWARD_VOLTAGE = IS_SPIKE ? 12 : 0;
+  public static final int SWERVE_DRIVE_VOLTAGE_PEAK_REVERSE_VOLTAGE = IS_SPIKE ? -12 : 0;
+  public static final double SWERVE_DRIVE_CURRENT_LIMIT = IS_SPIKE ? 35 : 0;
+  public static final boolean SWERVE_DRIVE_LIMITS_ENABLE = IS_SPIKE ? true : true ;
+
   public static final double SWERVE_DRIVE_KP = IS_SPIKE ? 0.01 : 0.0;
   public static final double SWERVE_DRIVE_KI = IS_SPIKE ? 0.0 : 0.0;
   public static final double SWERVE_DRIVE_KD = IS_SPIKE ? 0.0 : 0.0;
   public static final double SWERVE_DRIVE_KV = IS_SPIKE ? 0.117 : 0.0;
   public static final double SWERVE_DRIVE_KS = IS_SPIKE ? 0.0 : 0.0;
 
-
-
+  public static final double STEER_MOTOR_LIMITS = IS_SPIKE ? 35 : 0.0;
+  public static final boolean SWERVE_MOTOR_LIMITS_ENABLED = IS_SPIKE ? true : true;
+  public static final double STEER_MOTOR_OUTPUT_CONFIGS = IS_SPIKE ? 0 : 0;
 
   private Config() {}
 }
