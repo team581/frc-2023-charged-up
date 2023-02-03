@@ -19,7 +19,7 @@ public class Config {
 
   public static final int CONTROLLER_PORT = 0;
 
-  public static final int PDP_ID = 1;
+  public static final int PDP_ID = IS_SPIKE ? 1 : 0;
   public static final ModuleType PDP_TYPE = IS_SPIKE ? ModuleType.kRev : ModuleType.kCTRE;
 
   public static final int PIGEON_ID = 1;
