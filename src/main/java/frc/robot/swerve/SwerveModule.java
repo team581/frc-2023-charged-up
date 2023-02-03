@@ -27,7 +27,6 @@ import frc.robot.util.GearingConverter;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule {
-  private static final double MAX_SPEED = 13.5;
   private static final SimpleMotorFeedforward DRIVE_SIMPLE_MOTOR_FEEDFORWARD =
       new SimpleMotorFeedforward(0, 0, 0);
 
@@ -58,10 +57,10 @@ public class SwerveModule {
 
     com.ctre.phoenixpro.configs.TalonFXConfiguration driveMotorConfigs = new TalonFXConfiguration();
 
-    driveMotorConfigs.Slot0.kP = 0.0;
+    driveMotorConfigs.Slot0.kP = 0.01;
     driveMotorConfigs.Slot0.kI = 0.0;
     driveMotorConfigs.Slot0.kD = 0.0;
-    driveMotorConfigs.Slot0.kV = 2.2;
+    driveMotorConfigs.Slot0.kV = 0.117;
     driveMotorConfigs.Slot0.kS = 0.0;
 
     driveMotorConfigs.Voltage.PeakForwardVoltage = 12;
@@ -90,13 +89,14 @@ public class SwerveModule {
     CurrentLimitsConfigs steerMotorCurrentLimitsConfigs = new CurrentLimitsConfigs();
     ClosedLoopGeneralConfigs steerMotorClosedLoopGeneralConfigs = new ClosedLoopGeneralConfigs();
     steerMotorClosedLoopGeneralConfigs.ContinuousWrap = false;
-    steerMotorSlot0Configs.kV = 0;
-    steerMotorSlot0Configs.kP = 0.67;
+    steerMotorSlot0Configs.kV = 0.0;
+    steerMotorSlot0Configs.kP = 3.0;
     steerMotorSlot0Configs.kI = 0;
-    steerMotorSlot0Configs.kD = 0.17;
+    steerMotorSlot0Configs.kD = 0.0;
     steerMotorSlot0Configs.kS = 0.0;
     steerMotorCurrentLimitsConfigs.SupplyCurrentLimit = 35;
     steerMotorCurrentLimitsConfigs.SupplyCurrentLimitEnable = true;
+    steerMotorOutputConfigs.DutyCycleNeutralDeadband = 0;
     if (constants.angleInversion) {
       steerMotorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
     } else {
@@ -118,7 +118,7 @@ public class SwerveModule {
         STEER_MOTOR_GEARING_CONVERTER.gearingToMotor(state.angle.getRotations());
     steerMotor.setControl(steerMotorControl.withPosition(commandedSteerPosition));
 
-    boolean isStopped = Math.abs(state.speedMetersPerSecond) <= MAX_SPEED * 0.01;
+    boolean isStopped = Math.abs(state.speedMetersPerSecond) <= SwerveSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.01;
     Rotation2d angle = isStopped ? this.previousAngle : state.angle;
     this.previousAngle = angle;
 
@@ -127,13 +127,13 @@ public class SwerveModule {
     var motorRotationsPerSecond =
         DRIVE_MOTOR_GEARING_CONVERTER.gearingToMotor(wheelRotationsPerSecond);
 
-    this.commandedDriveVelocity = state.speedMetersPerSecond;
+    this.commandedDriveVelocity = state.speedMetersPerSecond * 39.37;
     driveMotor.setControl(driveVoltageClosedLoopRequest.withVelocity(motorRotationsPerSecond));
   }
 
   public SwerveModuleState getState() {
     final var steerMotorPosition = getSteerMotorPosition();
-    final var driveMotorVelocity = getDriveMotorVelocity();
+    final var driveMotorVelocity = getDriveMotorVelocity() / 39.37;
 
     return new SwerveModuleState(driveMotorVelocity, steerMotorPosition);
   }
@@ -148,7 +148,7 @@ public class SwerveModule {
   public void logValues() {
     Logger.getInstance()
         .recordOutput(
-            "Swerve/" + this.constants.corner.toString() + "/Drive motor velocity (meters per/sec)",
+            "Swerve/" + this.constants.corner.toString() + "/Drive motor velocity (inches per/sec)",
             this.getDriveMotorVelocity());
     Logger.getInstance()
         .recordOutput(
@@ -182,7 +182,7 @@ public class SwerveModule {
         .recordOutput(
             "Swerve/"
                 + this.constants.corner.toString()
-                + "/Drive Motor Commanded Velocity (meters/sec)",
+                + "/Drive Motor Commanded Velocity (inches/sec)",
             this.commandedDriveVelocity);
   }
 
@@ -204,7 +204,8 @@ public class SwerveModule {
     final var rotationsPerSecondBeforeGearing = driveMotor.getVelocity().getValue();
     final var rotationsPerSecond =
         DRIVE_MOTOR_GEARING_CONVERTER.beforeToAfterGearing(rotationsPerSecondBeforeGearing);
-    final var inchesPerSecond = DRIVE_MOTOR_WHEEL_CONVERTER.rotationsToDistance(rotationsPerSecond);
+    final var metersPerSecond = DRIVE_MOTOR_WHEEL_CONVERTER.rotationsToDistance(rotationsPerSecond);
+    final var inchesPerSecond = metersPerSecond * 39.37;
     return inchesPerSecond;
   }
 

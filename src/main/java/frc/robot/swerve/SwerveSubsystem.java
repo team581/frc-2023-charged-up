@@ -22,7 +22,8 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   public static final SwerveDriveKinematics KINEMATICS =
       new SwerveDriveKinematics(
           FRONT_LEFT_LOCATION, FRONT_RIGHT_LOCATION, BACK_LEFT_LOCATION, BACK_RIGHT_LOCATION);
-  public static final double MAX_VELOCITY = 4.5;
+  public static final double MAX_VELOCITY_INCHES_PER_SECOND = 127;
+  public static final double MAX_VELOCITY_METERS_PER_SECOND = MAX_VELOCITY_INCHES_PER_SECOND / 39.37;
   public static final double MAX_ANGULAR_VELOCITY = 20;
 
   private final ImuSubsystem imu;
@@ -117,7 +118,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     Logger.getInstance().recordOutput("Swerve/ThetaPercentage", thetaPercentage);
 
     Translation2d robotTranslation =
-        new Translation2d(forwardPercentage, sidewaysPercentage).times(MAX_VELOCITY);
+        new Translation2d(forwardPercentage, sidewaysPercentage).times(MAX_VELOCITY_METERS_PER_SECOND);
     ChassisSpeeds chassisSpeeds =
         ChassisSpeeds.fromFieldRelativeSpeeds(
             robotTranslation.getX(),
@@ -125,7 +126,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
             thetaPercentage * MAX_ANGULAR_VELOCITY,
             fieldRelative ? imu.getRobotHeading() : new Rotation2d());
     SwerveModuleState[] moduleStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_VELOCITY);
+    SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_VELOCITY_METERS_PER_SECOND);
     setChassisSpeeds(KINEMATICS.toChassisSpeeds(moduleStates), openLoop);
   }
 }
