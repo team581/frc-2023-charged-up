@@ -65,5 +65,20 @@ public class Config {
 
   public static final int INTAKE_MOTOR_ID = 17;
 
+  public static final double SWERVE_STEER_KV = IS_SPIKE ? 0.0 : 0.0;
+  public static final double SWERVE_STEER_KP = IS_SPIKE ? 3.0 : 0.0;
+  public static final double SWERVE_STEER_KI = IS_SPIKE ? 0.0 : 0.0;
+  public static final double SWERVE_STEER_KD = IS_SPIKE ? 0.0 : 0.0;
+  public static final double SWERVE_STEER_KS = IS_SPIKE ? 0.0 : 0.0;
+
+  public static final double SWERVE_DRIVE_KP = IS_SPIKE ? 0.01 : 0.0;
+  public static final double SWERVE_DRIVE_KI = IS_SPIKE ? 0.0 : 0.0;
+  public static final double SWERVE_DRIVE_KD = IS_SPIKE ? 0.0 : 0.0;
+  public static final double SWERVE_DRIVE_KV = IS_SPIKE ? 0.117 : 0.0;
+  public static final double SWERVE_DRIVE_KS = IS_SPIKE ? 0.0 : 0.0;
+
+
+
+
   private Config() {}
 }
