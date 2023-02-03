@@ -32,7 +32,8 @@ public class SuperstructureMotionManager extends LifecycleSubsystem {
 
     boolean wristGoalInCollisionArea = goalDegrees < wristRange;
     boolean currentWristAngleInCollisionArea = wristAngle < wristRange;
-    double goalHeight = MathUtil.clamp(goalPosition.height, Config.ELEVATOR_MIN_HEIGHT, Config.ELEVATOR_MAX_HEIGHT);
+    double goalHeight =
+        MathUtil.clamp(goalPosition.height, Config.ELEVATOR_MIN_HEIGHT, Config.ELEVATOR_MAX_HEIGHT);
     boolean leavingBumperArea = goalHeight > 26 && elevator.getHeight() < 26;
     boolean goingToBumperArea = goalHeight < 26 && elevator.getHeight() > 26;
 
