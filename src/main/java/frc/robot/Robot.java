@@ -17,7 +17,9 @@ import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.elevator.commands.ElevatorHomingCommand;
 import frc.robot.generated.BuildConstants;
 import frc.robot.imu.ImuSubsystem;
+import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
+import frc.robot.intake.commands.IntakeCommand;
 import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.managers.SuperstructureMotionManager;
 import frc.robot.managers.commands.SuperstructureMotionManagerCommand;
@@ -112,6 +114,8 @@ public class Robot extends LoggedRobot {
     }
 
     Logger.getInstance().start();
+
+    configureButtonBindings();
   }
 
   /**
@@ -120,6 +124,69 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotInit() {}
+
+  private void configureButtonBindings() {
+    // Home superstructure
+    driveController
+        .x()
+        .onTrue(
+            new ElevatorHomingCommand(elevator)
+                .andThen(new WristHomingCommand(wrist))
+                .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
+
+    // Intake cone
+    driveController
+        .leftTrigger()
+        .onTrue(
+            new SuperstructureMotionManagerCommand(
+                    superstructureMotionManager, Positions.INTAKING_CONE)
+                .alongWith(new IntakeCommand(intake, IntakeMode.INTAKE_CONE)))
+        .onFalse(
+            new SuperstructureMotionManagerCommand(superstructureMotionManager, Positions.STOWED)
+                .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
+    // Score cone
+    driveController
+        .leftBumper()
+        .onTrue(
+            new IntakeCommand(intake, IntakeMode.STOPPED)
+                .andThen(
+                    new SuperstructureMotionManagerCommand(
+                        superstructureMotionManager, Positions.CONE_NODE_LOW))
+                .andThen(new IntakeCommand(intake, IntakeMode.OUTTAKE)))
+        .onFalse(
+            new SuperstructureMotionManagerCommand(superstructureMotionManager, Positions.STOWED)
+                .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
+    // Intake cube
+    driveController
+        .rightTrigger()
+        .onTrue(
+            new SuperstructureMotionManagerCommand(
+                    superstructureMotionManager, Positions.INTAKING_CUBE)
+                .alongWith(new IntakeCommand(intake, IntakeMode.INTAKE_CUBE)))
+        .onFalse(
+            new SuperstructureMotionManagerCommand(superstructureMotionManager, Positions.STOWED)
+                .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
+    // Intake cube
+    driveController
+        .rightBumper()
+        .onTrue(
+            new IntakeCommand(intake, IntakeMode.STOPPED)
+                .andThen(
+                    new SuperstructureMotionManagerCommand(
+                        superstructureMotionManager, Positions.CUBE_NODE_LOW))
+                .andThen(new IntakeCommand(intake, IntakeMode.OUTTAKE)))
+        .onFalse(
+            new SuperstructureMotionManagerCommand(superstructureMotionManager, Positions.STOWED)
+                .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
+    // Full elevator extension
+    driveController
+        .a()
+        .onTrue(
+            new SuperstructureMotionManagerCommand(
+                superstructureMotionManager, Positions.FULL_EXTENSION))
+        .onFalse(
+            new SuperstructureMotionManagerCommand(superstructureMotionManager, Positions.STOWED));
+  }
 
   @Override
   public void robotPeriodic() {
@@ -136,41 +203,11 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
-    // autoCommand.cancel();
+    autoCommand.cancel();
   }
 
   @Override
   public void teleopPeriodic() {
-    driveController
-        .x()
-        .onTrue(new WristHomingCommand(wrist).alongWith(new ElevatorHomingCommand(elevator)));
-
-    driveController
-        .leftTrigger()
-        .onTrue(
-            new SuperstructureMotionManagerCommand(
-                superstructureMotionManager, Positions.INTAKING_CONE));
-    driveController
-        .leftBumper()
-        .onTrue(
-            new SuperstructureMotionManagerCommand(
-                superstructureMotionManager, Positions.CONE_NODE_MID));
-    driveController
-        .rightTrigger()
-        .onTrue(
-            new SuperstructureMotionManagerCommand(
-                superstructureMotionManager, Positions.INTAKING_CUBE));
-    driveController
-        .rightBumper()
-        .onTrue(
-            new SuperstructureMotionManagerCommand(
-                superstructureMotionManager, Positions.CUBE_NODE_MID));
-    driveController
-        .a()
-        .onTrue(
-            new SuperstructureMotionManagerCommand(
-                superstructureMotionManager, Positions.FULL_EXTENSION));
-
     boolean openLoop = false; // !driveController.start().getAsBoolean();
     swerve.driveTeleop(
         driveController.getSidewaysPercentage(),
