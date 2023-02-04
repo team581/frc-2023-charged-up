@@ -88,7 +88,9 @@ public class Robot extends LoggedRobot {
    * initialization code.
    */
   @Override
-  public void robotInit() {}
+  public void robotInit() {
+
+  }
 
   @Override
   public void robotPeriodic() {

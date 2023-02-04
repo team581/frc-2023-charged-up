@@ -8,10 +8,12 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.util.LifecycleSubsystem;
@@ -25,6 +27,7 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
 
   private final SwerveDrivePoseEstimator poseEstimator;
   private final SwerveDriveOdometry odometry;
+  private Pose2d startPose;
 
   public LocalizationSubsystem(SwerveSubsystem swerve, ImuSubsystem imu) {
     this.swerve = swerve;
@@ -42,13 +45,20 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
     odometry =
         new SwerveDriveOdometry(
             SwerveSubsystem.KINEMATICS, imu.getRobotHeading(), swerve.getModulePositions());
+
+    startPose = new Pose2d(new Translation2d(582, 15), imu.getRobotHeading());
+  }
+
+  @Override
+  public void teleopInit() {
+    resetPose(startPose, imu.getRobotHeading());
   }
 
   @Override
   public void robotPeriodic() {
     update();
 
-    Logger.getInstance().recordOutput("Localization/RobotPose", getPose());
+    Logger.getInstance().recordOutput("Localization/CombinedPose", getPose());
     Logger.getInstance().recordOutput("Localization/OdometryPose", odometry.getPoseMeters());
   }
 
@@ -60,7 +70,7 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
     double[] rawPose =
         NetworkTableInstance.getDefault()
             .getTable("limelight")
-            .getEntry("botpose")
+            .getEntry("botpose_wpiblue")
             .getDoubleArray(emptyArray);
 
     if (rawPose.length > 0) {
@@ -81,5 +91,6 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
   public void resetPose(Pose2d pose, Rotation2d gyroAngle) {
     imu.setAngle(gyroAngle);
     poseEstimator.resetPosition(imu.getRobotHeading(), swerve.getModulePositions(), pose);
+    odometry.resetPosition(imu.getRobotHeading(), swerve.getModulePositions(), pose);
   }
 }

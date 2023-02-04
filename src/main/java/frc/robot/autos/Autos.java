@@ -30,7 +30,7 @@ public class Autos {
   }
 
   public Command getAutoCommand() {
-    return autoChooser.get();
+    return new InstantCommand();
   }
 
   private Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
