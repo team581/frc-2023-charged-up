@@ -33,28 +33,28 @@ public class Config {
   public static final SwerveModuleConstants SWERVE_FL_CONSTANTS =
       new SwerveModuleConstants(
           Rotation2d.fromDegrees(117.19), SwerveCorner.FRONT_LEFT, false, false);
-// -62.84
+  // -62.84
   public static final int SWERVE_FR_DRIVE_MOTOR_ID = 6;
   public static final int SWERVE_FR_STEER_MOTOR_ID = 7;
   public static final int SWERVE_FR_CANCODER_ID = 12;
   public static final SwerveModuleConstants SWERVE_FR_CONSTANTS =
       new SwerveModuleConstants(
           Rotation2d.fromDegrees(32.2), SwerveCorner.FRONT_RIGHT, false, false);
-// -147.8
+  // -147.8
   public static final int SWERVE_BL_DRIVE_MOTOR_ID = 4;
   public static final int SWERVE_BL_STEER_MOTOR_ID = 5;
   public static final int SWERVE_BL_CANCODER_ID = 11;
   public static final SwerveModuleConstants SWERVE_BL_CONSTANTS =
       new SwerveModuleConstants(
           Rotation2d.fromDegrees(-101.25), SwerveCorner.BACK_LEFT, false, false);
-// 78.75
+  // 78.75
   public static final int SWERVE_BR_DRIVE_MOTOR_ID = 2;
   public static final int SWERVE_BR_STEER_MOTOR_ID = 3;
   public static final int SWERVE_BR_CANCODER_ID = 10;
   public static final SwerveModuleConstants SWERVE_BR_CONSTANTS =
       new SwerveModuleConstants(
           Rotation2d.fromDegrees(-75.42), SwerveCorner.BACK_RIGHT, false, false);
-//104.58
+  // 104.58
   public static final int ELEVATOR_MOTOR_ID = 14;
   public static final double ELEVATOR_GEARING = IS_SPIKE ? 999 : 60.0 * 2.0;
   public static final double ELEVATOR_MIN_HEIGHT = 0.5;
@@ -74,7 +74,7 @@ public class Config {
   public static final int SWERVE_DRIVE_VOLTAGE_PEAK_FORWARD_VOLTAGE = IS_SPIKE ? 12 : 0;
   public static final int SWERVE_DRIVE_VOLTAGE_PEAK_REVERSE_VOLTAGE = IS_SPIKE ? -12 : 0;
   public static final double SWERVE_DRIVE_CURRENT_LIMIT = IS_SPIKE ? 35 : 0;
-  public static final boolean SWERVE_DRIVE_LIMITS_ENABLE = IS_SPIKE ? true : true ;
+  public static final boolean SWERVE_DRIVE_LIMITS_ENABLE = IS_SPIKE ? true : true;
 
   public static final double SWERVE_DRIVE_KP = IS_SPIKE ? 0.01 : 0.0;
   public static final double SWERVE_DRIVE_KI = IS_SPIKE ? 0.0 : 0.0;
