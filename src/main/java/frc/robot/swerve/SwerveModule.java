@@ -129,13 +129,13 @@ public class SwerveModule {
     var motorRotationsPerSecond =
         DRIVE_MOTOR_GEARING_CONVERTER.gearingToMotor(wheelRotationsPerSecond);
 
-    this.commandedDriveVelocity = state.speedMetersPerSecond * 39.37;
+    this.commandedDriveVelocity = Units.metersToInches(state.speedMetersPerSecond);
     driveMotor.setControl(driveVoltageClosedLoopRequest.withVelocity(motorRotationsPerSecond));
   }
 
   public SwerveModuleState getState() {
     final var steerMotorPosition = getSteerMotorPosition();
-    final var driveMotorVelocity = getDriveMotorVelocity() / 39.37;
+    final var driveMotorVelocity = Units.inchesToMeters(getDriveMotorVelocity());
 
     return new SwerveModuleState(driveMotorVelocity, steerMotorPosition);
   }
