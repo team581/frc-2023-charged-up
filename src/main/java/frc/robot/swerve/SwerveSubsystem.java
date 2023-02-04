@@ -128,5 +128,8 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     SwerveModuleState[] moduleStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_VELOCITY_METERS_PER_SECOND);
     setChassisSpeeds(KINEMATICS.toChassisSpeeds(moduleStates), openLoop);
+
+    Logger.getInstance().recordOutput("Swerve/getX", robotTranslation.getX());
+    Logger.getInstance().recordOutput("Swerve/getY", robotTranslation.getY());
   }
 }
