@@ -19,7 +19,7 @@ public class Config {
 
   public static final int CONTROLLER_PORT = 0;
 
-  public static final int PDP_ID = 1;
+  public static final int PDP_ID = IS_SPIKE ? 1 : 0;
   public static final ModuleType PDP_TYPE = IS_SPIKE ? ModuleType.kRev : ModuleType.kCTRE;
 
   public static final int PIGEON_ID = 1;
@@ -58,7 +58,7 @@ public class Config {
   public static final int ELEVATOR_MOTOR_ID = 14;
   public static final double ELEVATOR_GEARING = IS_SPIKE ? 999 : 60.0 * 2.0;
   public static final double ELEVATOR_MIN_HEIGHT = 0.5;
-  public static final double ELEVATOR_MAX_HEIGHT = IS_SPIKE ? 26 : 24;
+  public static final double ELEVATOR_MAX_HEIGHT = IS_SPIKE ? 26 : 12;
 
   public static final int WRIST_MOTOR_ID = 16;
   public static final double WRIST_GEARING = IS_SPIKE ? 999 : 48.0 * 2.0;
