@@ -13,12 +13,16 @@ public class DriveController extends CommandXboxController {
 
   /** Scale a joystick value. */
   private static double joystickScale(double x) {
+    if (Math.abs(x) < 0.075) {
+      return 0;
+    }
+
     return Math.signum(x) * Math.pow(x, 2);
   }
 
   /** The rotation across the robot's x-axis as a percentage (<code>-1 <= x <= 1</code>) */
   public double getSidewaysPercentage() {
-    return joystickScale(getLeftX());
+    return joystickScale(-1 * getLeftX());
   }
 
   /** The translation across the robot's y-axis as a percentage (<code>-1 <= x <= 1</code>) */
@@ -28,6 +32,6 @@ public class DriveController extends CommandXboxController {
 
   /** The rotation about the robot's z-axis as a percentage (<code>-1 <= x <= 1</code>) */
   public double getThetaPercentage() {
-    return joystickScale(getRightX());
+    return joystickScale(-1 * getRightX());
   }
 }
