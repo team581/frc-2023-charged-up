@@ -14,7 +14,7 @@ public class Positions {
       new SuperstructurePosition(32, Rotation2d.fromDegrees(10));
 
   public static final SuperstructurePosition INTAKING_CUBE =
-      new SuperstructurePosition(3, Rotation2d.fromDegrees(130));
+      new SuperstructurePosition(3.5, Rotation2d.fromDegrees(130));
   public static final SuperstructurePosition CUBE_NODE_LOW =
       new SuperstructurePosition(4, Rotation2d.fromDegrees(127));
   public static final SuperstructurePosition CUBE_NODE_MID =
