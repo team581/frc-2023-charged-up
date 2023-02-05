@@ -139,9 +139,9 @@ public class SwerveModule {
 
   public SwerveModulePosition getPosition() {
     final var steerMotorPosition = getSteerMotorPosition();
-    final var getDriveMotorPosition = Units.inchesToMeters(getDriveMotorPosition());
+    final var driveMotorPosition = getDriveMotorPosition();
 
-    return new SwerveModulePosition(getDriveMotorPosition, steerMotorPosition);
+    return new SwerveModulePosition(driveMotorPosition, steerMotorPosition);
   }
 
   public void logValues() {
@@ -195,8 +195,9 @@ public class SwerveModule {
     final var rotationsBeforeGearing = driveMotor.getPosition().getValue();
     final var rotations =
         DRIVE_MOTOR_GEARING_CONVERTER.beforeToAfterGearing(rotationsBeforeGearing);
-    final var inches = DRIVE_MOTOR_WHEEL_CONVERTER.rotationsToDistance(rotations);
-    return inches;
+
+    final var meters = DRIVE_MOTOR_WHEEL_CONVERTER.rotationsToDistance(rotations);
+    return meters;
   }
 
   private double getDriveMotorVelocity() {
