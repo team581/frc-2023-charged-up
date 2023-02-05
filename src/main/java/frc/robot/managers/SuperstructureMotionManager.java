@@ -14,8 +14,8 @@ import frc.robot.wrist.WristSubsystem;
 import java.util.ArrayList;
 
 public class SuperstructureMotionManager extends LifecycleSubsystem {
-  private final ElevatorSubsystem elevator;
-  private final WristSubsystem wrist;
+  public final ElevatorSubsystem elevator;
+  public final WristSubsystem wrist;
   private final ArrayList<SuperstructurePosition> positionList =
       new ArrayList<SuperstructurePosition>();
   private SuperstructurePosition currentPoint = Positions.STOWED;
