@@ -4,18 +4,30 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.autos.Autos;
+import frc.robot.autos.Autos;
 import frc.robot.config.Config;
+import frc.robot.controller.DriveController;
+import frc.robot.elevator.ElevatorSubsystem;
+import frc.robot.elevator.commands.ElevatorHomingCommand;
+import frc.robot.generated.BuildConstants;
 import frc.robot.imu.ImuSubsystem;
+import frc.robot.intake.IntakeMode;
+import frc.robot.intake.IntakeSubsystem;
+import frc.robot.intake.commands.IntakeCommand;
 import frc.robot.localization.LocalizationSubsystem;
+import frc.robot.managers.SuperstructureMotionManager;
+import frc.robot.managers.commands.SuperstructureMotionManagerCommand;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSubsystem;
+import frc.robot.wrist.WristSubsystem;
+import frc.robot.wrist.commands.WristHomingCommand;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -55,19 +67,22 @@ public class Robot extends LoggedRobot {
           new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_BR_STEER_MOTOR_ID, "581CANivore"),
           new CANCoder(Config.SWERVE_BR_CANCODER_ID, "581CANivore"));
 
-  // TODO: Re-enable elevator and wrist
-  // private final ElevatorSubsystem elevator =
-  //     new ElevatorSubsystem(new TalonFX(Config.ELEVATOR_MOTOR_ID, "581CANivore"));
-  // private final WristSubsystem wrist =
-  //     new WristSubsystem(new TalonFX(Config.WRIST_MOTOR_ID, "581CANivore"));
+  private final ElevatorSubsystem elevator =
+      new ElevatorSubsystem(new TalonFX(Config.ELEVATOR_MOTOR_ID, "581CANivore"));
+  private final WristSubsystem wrist =
+      new WristSubsystem(new TalonFX(Config.WRIST_MOTOR_ID, "581CANivore"));
+  private final IntakeSubsystem intake =
+      new IntakeSubsystem(new TalonFX(Config.INTAKE_MOTOR_ID, "581CANivore"));
+  private final SuperstructureMotionManager superstructureMotionManager =
+      new SuperstructureMotionManager(elevator, wrist);
   private final ImuSubsystem imu = new ImuSubsystem(new Pigeon2(Config.PIGEON_ID, "581CANivore"));
-  private final SwerveSubsystem swerveSubsystem =
+  private final SwerveSubsystem swerve =
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
-  private final LocalizationSubsystem localizationSubsystem =
-      new LocalizationSubsystem(swerveSubsystem, imu);
-  private final XboxController controller = new XboxController(Config.CONTROLLER_PORT);
+  private final LocalizationSubsystem localization = new LocalizationSubsystem(swerve, imu);
 
-  private final Autos autos = new Autos(localizationSubsystem, swerveSubsystem);
+  private final DriveController driveController = new DriveController(Config.CONTROLLER_PORT);
+
+  private final Autos autos = new Autos(localization, swerve);
 
   private final Command autoCommand = autos.getAutoCommand();
 
@@ -80,7 +95,29 @@ public class Robot extends LoggedRobot {
     // Enables power distribution logging
     pdpLogging = new PowerDistribution(Config.PDP_ID, Config.PDP_TYPE);
 
+    // Record metadata
+    Logger.getInstance().recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
+    Logger.getInstance().recordMetadata("RoborioSerialNumber", Config.SERIAL_NUMBER);
+    Logger.getInstance().recordMetadata("RobotConfig", Config.IS_SPIKE ? "Spike" : "Tyke");
+    Logger.getInstance().recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
+    Logger.getInstance().recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+    Logger.getInstance().recordMetadata("GitDate", BuildConstants.GIT_DATE);
+    Logger.getInstance().recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+    switch (BuildConstants.DIRTY) {
+      case 0:
+        Logger.getInstance().recordMetadata("GitDirty", "All changes committed");
+        break;
+      case 1:
+        Logger.getInstance().recordMetadata("GitDirty", "Uncomitted changes");
+        break;
+      default:
+        Logger.getInstance().recordMetadata("GitDirty", "Unknown");
+        break;
+    }
+
     Logger.getInstance().start();
+
+    configureButtonBindings();
   }
 
   /**
@@ -88,8 +125,69 @@ public class Robot extends LoggedRobot {
    * initialization code.
    */
   @Override
-  public void robotInit() {
+  public void robotInit() {}
 
+  private void configureButtonBindings() {
+    // Home superstructure
+    driveController
+        .x()
+        .onTrue(
+            new ElevatorHomingCommand(elevator)
+                .andThen(new WristHomingCommand(wrist))
+                .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
+
+    // Intake cone
+    driveController
+        .leftTrigger()
+        .onTrue(
+            new SuperstructureMotionManagerCommand(
+                    superstructureMotionManager, Positions.INTAKING_CONE)
+                .alongWith(new IntakeCommand(intake, IntakeMode.INTAKE_CONE)))
+        .onFalse(
+            new SuperstructureMotionManagerCommand(superstructureMotionManager, Positions.STOWED)
+                .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
+    // Score cone
+    driveController
+        .leftBumper()
+        .onTrue(
+            new IntakeCommand(intake, IntakeMode.STOPPED)
+                .andThen(
+                    new SuperstructureMotionManagerCommand(
+                        superstructureMotionManager, Positions.CONE_NODE_LOW))
+                .andThen(new IntakeCommand(intake, IntakeMode.OUTTAKE)))
+        .onFalse(
+            new SuperstructureMotionManagerCommand(superstructureMotionManager, Positions.STOWED)
+                .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
+    // Intake cube
+    driveController
+        .rightTrigger()
+        .onTrue(
+            new SuperstructureMotionManagerCommand(
+                    superstructureMotionManager, Positions.INTAKING_CUBE)
+                .alongWith(new IntakeCommand(intake, IntakeMode.INTAKE_CUBE)))
+        .onFalse(
+            new SuperstructureMotionManagerCommand(superstructureMotionManager, Positions.STOWED)
+                .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
+    // Intake cube
+    driveController
+        .rightBumper()
+        .onTrue(
+            new IntakeCommand(intake, IntakeMode.STOPPED)
+                .andThen(
+                    new SuperstructureMotionManagerCommand(
+                        superstructureMotionManager, Positions.CUBE_NODE_LOW))
+                .andThen(new IntakeCommand(intake, IntakeMode.OUTTAKE)))
+        .onFalse(
+            new SuperstructureMotionManagerCommand(superstructureMotionManager, Positions.STOWED)
+                .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
+    // Full elevator extension
+    driveController
+        .a()
+        .onTrue(
+            new SuperstructureMotionManagerCommand(
+                superstructureMotionManager, Positions.FULL_EXTENSION))
+        .onFalse(
+            new SuperstructureMotionManagerCommand(superstructureMotionManager, Positions.STOWED));
   }
 
   @Override
@@ -101,6 +199,9 @@ public class Robot extends LoggedRobot {
   public void autonomousInit() {
     CommandScheduler.getInstance().schedule(autoCommand);
   }
+  public void autonomousInit() {
+    CommandScheduler.getInstance().schedule(autoCommand);
+  }
 
   @Override
   public void autonomousPeriodic() {}
@@ -109,37 +210,20 @@ public class Robot extends LoggedRobot {
   public void teleopInit() {
     autoCommand.cancel();
   }
+  public void teleopInit() {
+    autoCommand.cancel();
+  }
 
   @Override
   public void teleopPeriodic() {
-    boolean buttonA = controller.getAButton();
-    boolean buttonB = controller.getBButton();
-    boolean buttonY = controller.getYButton();
-    boolean buttonX = controller.getXButton();
-    double rightTrigger = controller.getRightTriggerAxis();
-    boolean rightBumper = controller.getRightBumper();
-
-    // TODO: Re-enable elevator and wrist
-    // if (buttonX) {
-    //   elevator.startHoming();
-    //   wrist.startHoming();
-    // } else if (buttonA) {
-    //   elevator.setGoalPosition(2);
-    // } else if (buttonB) {
-    //   elevator.setGoalPosition(12);
-    //   wrist.setAngle(Rotation2d.fromDegrees(45));
-    // } else if (buttonY) {
-    //   elevator.setGoalPosition(24);
-    //   wrist.setAngle(Rotation2d.fromDegrees(90));
-    // } else if (rightTrigger > 0.3) {
-    //   wrist.setAngle(Rotation2d.fromDegrees(30));
-    // } else if (rightBumper) {
-    //   wrist.setAngle(Rotation2d.fromDegrees(135));
-    // }
-
-    swerveSubsystem.driveTeleop(
-        -controller.getLeftX(), controller.getLeftY(), -controller.getRightX(), true);
-    if (controller.getStartButton()) {
+    boolean openLoop = false; // !driveController.start().getAsBoolean();
+    swerve.driveTeleop(
+        driveController.getSidewaysPercentage(),
+        driveController.getForwardPercentage(),
+        driveController.getThetaPercentage(),
+        true,
+        openLoop);
+    if (driveController.back().getAsBoolean()) {
       imu.zero();
     }
   }

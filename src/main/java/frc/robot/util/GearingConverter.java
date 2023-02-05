@@ -28,7 +28,7 @@ public class GearingConverter {
   }
 
   /** Converts a value after gearing to the value after gearing. */
-  public double afterToBeforeGearing(double value) {
+  public double gearingToMotor(double value) {
     return value * gearingReduction;
   }
 
