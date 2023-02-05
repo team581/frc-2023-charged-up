@@ -56,7 +56,9 @@ public class SuperstructureManager extends LifecycleSubsystem {
   }
 
   public Command getCommand(SuperstructureState state) {
-    return Commands.runOnce(() -> this.set(state)).until(() -> atGoal(state));
+    return Commands.runOnce(
+            () -> this.set(state), motionManager.wrist, motionManager.elevator, intake)
+        .andThen(Commands.waitUntil(() -> atGoal(state)));
   }
 
   public Command getScoreCommand() {
@@ -66,27 +68,31 @@ public class SuperstructureManager extends LifecycleSubsystem {
   public Command getManualScoreCommand(ScoringLocation scoringLocation) {
     if (scoringLocation == ScoringLocation.LOW) {
       return Commands.either(
-          getCommand(States.CUBE_NODE_LOW),
-          getCommand(States.CONE_NODE_LOW),
-          () -> intake.getGamePiece() == HeldGamePiece.CUBE);
+              getCommand(States.CUBE_NODE_LOW),
+              getCommand(States.CONE_NODE_LOW),
+              () -> intake.getGamePiece() == HeldGamePiece.CUBE)
+          .andThen(getCommand(States.STOWED));
     } else if (scoringLocation == ScoringLocation.MID) {
       return Commands.either(
-          getCommand(States.CUBE_NODE_MID),
-          getCommand(States.CONE_NODE_MID),
-          () -> intake.getGamePiece() == HeldGamePiece.CUBE);
+              getCommand(States.CUBE_NODE_MID),
+              getCommand(States.CONE_NODE_MID),
+              () -> intake.getGamePiece() == HeldGamePiece.CUBE)
+          .andThen(getCommand(States.STOWED));
     } else {
       return Commands.either(
-          getCommand(States.CUBE_NODE_HIGH),
-          getCommand(States.CONE_NODE_HIGH),
-          () -> intake.getGamePiece() == HeldGamePiece.CUBE);
+              getCommand(States.CUBE_NODE_HIGH),
+              getCommand(States.CONE_NODE_HIGH),
+              () -> intake.getGamePiece() == HeldGamePiece.CUBE)
+          .andThen(getCommand(States.STOWED));
     }
   }
 
   public Command getIntakeCommand() {
     return Commands.either(
-        getCommand(States.INTAKING_CUBE),
-        getCommand(States.INTAKING_CONE),
-        () -> mode == HeldGamePiece.CUBE);
+            getCommand(States.INTAKING_CUBE),
+            getCommand(States.INTAKING_CONE),
+            () -> mode == HeldGamePiece.CUBE)
+        .andThen(getCommand(States.STOWED));
   }
 
   public Command setIntakeModeCommand(HeldGamePiece gamePiece) {
