@@ -18,8 +18,6 @@ import frc.robot.util.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 public class LocalizationSubsystem extends LifecycleSubsystem {
-  // TODO: log vision pose
-  // TODO: Use plain odometry class, log pose
   private final SwerveSubsystem swerve;
   private final ImuSubsystem imu;
 
@@ -81,5 +79,6 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
   public void resetPose(Pose2d pose, Rotation2d gyroAngle) {
     imu.setAngle(gyroAngle);
     poseEstimator.resetPosition(imu.getRobotHeading(), swerve.getModulePositions(), pose);
+    odometry.resetPosition(imu.getRobotHeading(), swerve.getModulePositions(), pose);
   }
 }
