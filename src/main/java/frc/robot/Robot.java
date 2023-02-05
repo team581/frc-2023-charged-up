@@ -10,6 +10,7 @@ import com.ctre.phoenix.sensors.Pigeon2;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.autos.Autos;
 import frc.robot.autos.Autos;
 import frc.robot.config.Config;
@@ -18,12 +19,13 @@ import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.elevator.commands.ElevatorHomingCommand;
 import frc.robot.generated.BuildConstants;
 import frc.robot.imu.ImuSubsystem;
+import frc.robot.intake.HeldGamePiece;
 import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.intake.commands.IntakeCommand;
 import frc.robot.localization.LocalizationSubsystem;
+import frc.robot.managers.SuperstructureManager;
 import frc.robot.managers.SuperstructureMotionManager;
-import frc.robot.managers.commands.SuperstructureMotionManagerCommand;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.wrist.WristSubsystem;
@@ -75,12 +77,16 @@ public class Robot extends LoggedRobot {
       new IntakeSubsystem(new TalonFX(Config.INTAKE_MOTOR_ID, "581CANivore"));
   private final SuperstructureMotionManager superstructureMotionManager =
       new SuperstructureMotionManager(elevator, wrist);
+  private final SuperstructureManager superstructureManager =
+      new SuperstructureManager(superstructureMotionManager, intake);
   private final ImuSubsystem imu = new ImuSubsystem(new Pigeon2(Config.PIGEON_ID, "581CANivore"));
   private final SwerveSubsystem swerve =
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
   private final LocalizationSubsystem localization = new LocalizationSubsystem(swerve, imu);
 
-  private final DriveController driveController = new DriveController(Config.CONTROLLER_PORT);
+  private final DriveController driveController = new DriveController(Config.DRIVE_CONTROLLER_PORT);
+  private final CommandXboxController operatorController =
+      new CommandXboxController(Config.OPERATOR_CONTROLLER_PORT);
 
   private final Autos autos = new Autos(localization, swerve);
 
@@ -128,66 +134,50 @@ public class Robot extends LoggedRobot {
   public void robotInit() {}
 
   private void configureButtonBindings() {
-    // Home superstructure
+    // Intake
     driveController
-        .x()
+        .leftTrigger(0.3)
+        .onTrue(superstructureManager.getIntakeCommand())
+        .onFalse(superstructureManager.getCommand(States.STOWED));
+    // Score
+    driveController
+        .rightTrigger(0.3)
+        .onTrue(superstructureManager.getScoreCommand())
+        .onFalse(superstructureManager.getCommand(States.STOWED));
+    // Zero gyro
+    driveController.back().onTrue(imu.getZeroCommand());
+    // Set mode to cubes
+    driveController.povUp().onTrue(superstructureManager.setIntakeModeCommand(HeldGamePiece.CUBE));
+    // Set mode to cones
+    driveController
+        .povDown()
+        .onTrue(superstructureManager.setIntakeModeCommand(HeldGamePiece.CONE));
+
+    // Manual score low
+    operatorController
+        .a()
+        .onTrue(superstructureManager.getManualScoreCommand(ScoringLocation.LOW))
+        .onFalse(superstructureManager.getCommand(States.STOWED));
+    // Manual score mid
+    operatorController
+        .b()
+        .onTrue(superstructureManager.getManualScoreCommand(ScoringLocation.MID))
+        .onFalse(superstructureManager.getCommand(States.STOWED));
+    // Manual score high
+    operatorController
+        .y()
+        .onTrue(superstructureManager.getManualScoreCommand(ScoringLocation.HIGH))
+        .onFalse(superstructureManager.getCommand(States.STOWED));
+
+    // Stow all
+    operatorController.x().onTrue(superstructureManager.getCommand(States.STOWED));
+    // Home superstructure
+    operatorController
+        .back()
         .onTrue(
             new ElevatorHomingCommand(elevator)
                 .andThen(new WristHomingCommand(wrist))
                 .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
-
-    // Intake cone
-    driveController
-        .leftTrigger()
-        .onTrue(
-            new SuperstructureMotionManagerCommand(
-                    superstructureMotionManager, Positions.INTAKING_CONE)
-                .alongWith(new IntakeCommand(intake, IntakeMode.INTAKE_CONE)))
-        .onFalse(
-            new SuperstructureMotionManagerCommand(superstructureMotionManager, Positions.STOWED)
-                .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
-    // Score cone
-    driveController
-        .leftBumper()
-        .onTrue(
-            new IntakeCommand(intake, IntakeMode.STOPPED)
-                .andThen(
-                    new SuperstructureMotionManagerCommand(
-                        superstructureMotionManager, Positions.CONE_NODE_LOW))
-                .andThen(new IntakeCommand(intake, IntakeMode.OUTTAKE)))
-        .onFalse(
-            new SuperstructureMotionManagerCommand(superstructureMotionManager, Positions.STOWED)
-                .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
-    // Intake cube
-    driveController
-        .rightTrigger()
-        .onTrue(
-            new SuperstructureMotionManagerCommand(
-                    superstructureMotionManager, Positions.INTAKING_CUBE)
-                .alongWith(new IntakeCommand(intake, IntakeMode.INTAKE_CUBE)))
-        .onFalse(
-            new SuperstructureMotionManagerCommand(superstructureMotionManager, Positions.STOWED)
-                .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
-    // Intake cube
-    driveController
-        .rightBumper()
-        .onTrue(
-            new IntakeCommand(intake, IntakeMode.STOPPED)
-                .andThen(
-                    new SuperstructureMotionManagerCommand(
-                        superstructureMotionManager, Positions.CUBE_NODE_LOW))
-                .andThen(new IntakeCommand(intake, IntakeMode.OUTTAKE)))
-        .onFalse(
-            new SuperstructureMotionManagerCommand(superstructureMotionManager, Positions.STOWED)
-                .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
-    // Full elevator extension
-    driveController
-        .a()
-        .onTrue(
-            new SuperstructureMotionManagerCommand(
-                superstructureMotionManager, Positions.FULL_EXTENSION))
-        .onFalse(
-            new SuperstructureMotionManagerCommand(superstructureMotionManager, Positions.STOWED));
   }
 
   @Override
@@ -223,9 +213,6 @@ public class Robot extends LoggedRobot {
         driveController.getThetaPercentage(),
         true,
         openLoop);
-    if (driveController.back().getAsBoolean()) {
-      imu.zero();
-    }
   }
 
   @Override

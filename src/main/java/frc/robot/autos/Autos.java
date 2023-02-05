@@ -8,6 +8,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.localization.LocalizationSubsystem;
@@ -25,12 +26,18 @@ public class Autos {
     this.localization = localization;
     this.swerve = swerve;
 
-    autoChooser.addDefaultOption("Do nothing", new InstantCommand());
+    autoChooser.addDefaultOption("Do nothing", Commands.none());
     autoChooser.addOption("Balance Auto", followTrajectoryCommand(Paths.BALANCE_AUTO, true));
   }
 
   public Command getAutoCommand() {
-    return autoChooser.get();
+    Command command = autoChooser.get();
+
+    if (command != null) {
+      return command;
+    }
+
+    return Commands.none();
   }
 
   private Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {

@@ -4,6 +4,11 @@
 
 package frc.robot.managers;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.ScoringLocation;
+import frc.robot.States;
+import frc.robot.intake.HeldGamePiece;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.util.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
@@ -11,7 +16,8 @@ import org.littletonrobotics.junction.Logger;
 public class SuperstructureManager extends LifecycleSubsystem {
   private final SuperstructureMotionManager motionManager;
   private final IntakeSubsystem intake;
-  private SuperstructureState goal;
+  private SuperstructureState goal = States.STOWED;
+  private HeldGamePiece mode = HeldGamePiece.CUBE;
 
   public SuperstructureManager(SuperstructureMotionManager motionManager, IntakeSubsystem intake) {
     this.motionManager = motionManager;
@@ -20,14 +26,19 @@ public class SuperstructureManager extends LifecycleSubsystem {
 
   public void set(SuperstructureState state) {
     goal = state;
+    motionManager.set(goal.position);
   }
 
-  // Create an atGoal() method which accepts a SuperstructureState and returns a boolean of whether
-  // the superstructure is at the provided state
+  public boolean atGoal(SuperstructureState goal) {
+    if (motionManager.atGoal(goal.position) && intake.atGoal(goal.intakeMode)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   @Override
   public void enabledPeriodic() {
-    motionManager.set(goal.position);
     if (goal.intakeNow || motionManager.atGoal(goal.position)) {
       intake.setMode(goal.intakeMode);
     }
@@ -42,5 +53,47 @@ public class SuperstructureManager extends LifecycleSubsystem {
     Logger.getInstance()
         .recordOutput("SuperstructureManager/Goal/WristAngle", goal.position.angle.getDegrees());
     Logger.getInstance().recordOutput("SuperstructureManager/Goal/IntakeNow", goal.intakeNow);
+  }
+
+  public Command getCommand(SuperstructureState state) {
+    return Commands.runOnce(() -> this.set(state)).until(() -> atGoal(state));
+  }
+
+  public Command getScoreCommand() {
+    return getManualScoreCommand(ScoringLocation.LOW);
+  }
+
+  public Command getManualScoreCommand(ScoringLocation scoringLocation) {
+    if (scoringLocation == ScoringLocation.LOW) {
+      return Commands.either(
+          getCommand(States.CUBE_NODE_LOW),
+          getCommand(States.CONE_NODE_LOW),
+          () -> intake.getGamePiece() == HeldGamePiece.CUBE);
+    } else if (scoringLocation == ScoringLocation.MID) {
+      return Commands.either(
+          getCommand(States.CUBE_NODE_MID),
+          getCommand(States.CONE_NODE_MID),
+          () -> intake.getGamePiece() == HeldGamePiece.CUBE);
+    } else {
+      return Commands.either(
+          getCommand(States.CUBE_NODE_HIGH),
+          getCommand(States.CONE_NODE_HIGH),
+          () -> intake.getGamePiece() == HeldGamePiece.CUBE);
+    }
+  }
+
+  public Command getIntakeCommand() {
+    return Commands.either(
+        getCommand(States.INTAKING_CUBE),
+        getCommand(States.INTAKING_CONE),
+        () -> mode == HeldGamePiece.CUBE);
+  }
+
+  public Command setIntakeModeCommand(HeldGamePiece gamePiece) {
+    return Commands.runOnce(() -> setIntakeMode(gamePiece));
+  }
+
+  public void setIntakeMode(HeldGamePiece gamePiece) {
+    mode = gamePiece;
   }
 }
