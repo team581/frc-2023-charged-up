@@ -27,10 +27,17 @@ public class Autos {
 
     autoChooser.addDefaultOption("Do nothing", new InstantCommand());
     autoChooser.addOption("Balance Auto", followTrajectoryCommand(Paths.BALANCE_AUTO, true));
+    autoChooser.addOption("Drive Forward", followTrajectoryCommand(Paths.DRIVE_FORWARD, false));
   }
 
   public Command getAutoCommand() {
-    return autoChooser.get();
+    Command command = autoChooser.get();
+
+    if (command != null) {
+      return command;
+    }
+
+    return new InstantCommand();
   }
 
   private Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {

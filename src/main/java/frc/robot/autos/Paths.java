@@ -4,10 +4,15 @@
 
 package frc.robot.autos;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
+
+import edu.wpi.first.cscore.VideoCamera.WhiteBalance;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
@@ -28,4 +33,10 @@ public class Paths {
               Rotation2d.fromDegrees(
                   -90) // position, heading(direction of travel), holonomic rotation
               ));
+ private static ArrayList<PathPoint> driveForwardList = new ArrayList<PathPoint>() {
+    {
+      add(new PathPoint(new Translation2d(0.0, 4.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)));
+    }
+  };
+  public static final PathPlannerTrajectory DRIVE_FORWARD = PathPlanner.generatePath(new PathConstraints(4, 3), driveForwardList);
 }
