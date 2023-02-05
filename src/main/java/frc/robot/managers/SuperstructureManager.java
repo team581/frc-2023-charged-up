@@ -68,20 +68,20 @@ public class SuperstructureManager extends LifecycleSubsystem {
   public Command getManualScoreCommand(ScoringLocation scoringLocation) {
     if (scoringLocation == ScoringLocation.LOW) {
       return Commands.either(
-              getCommand(States.CUBE_NODE_LOW),
-              getCommand(States.CONE_NODE_LOW),
-              () -> intake.getGamePiece() == HeldGamePiece.CUBE);
+          getCommand(States.CUBE_NODE_LOW),
+          getCommand(States.CONE_NODE_LOW),
+          () -> intake.getGamePiece() == HeldGamePiece.CUBE);
     } else if (scoringLocation == ScoringLocation.MID) {
       return Commands.either(
-              getCommand(States.CUBE_NODE_MID),
-              getCommand(States.CONE_NODE_MID),
-              () -> intake.getGamePiece() == HeldGamePiece.CUBE);
+          getCommand(States.CUBE_NODE_MID),
+          getCommand(States.CONE_NODE_MID),
+          () -> intake.getGamePiece() == HeldGamePiece.CUBE);
 
     } else {
       return Commands.either(
-              getCommand(States.CUBE_NODE_HIGH),
-              getCommand(States.CONE_NODE_HIGH),
-              () -> intake.getGamePiece() == HeldGamePiece.CUBE);
+          getCommand(States.CUBE_NODE_HIGH),
+          getCommand(States.CONE_NODE_HIGH),
+          () -> intake.getGamePiece() == HeldGamePiece.CUBE);
     }
   }
 
