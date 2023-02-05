@@ -48,14 +48,18 @@ public class Autos {
           Logger.getInstance().recordOutput("Autos/TargetPose", targetPose);
         },
         (ChassisSpeeds setpointSpeeds) -> {
-          Logger.getInstance().recordOutput("Autos/SetpointSpeeds/X", setpointSpeeds.vxMetersPerSecond);
-          Logger.getInstance().recordOutput("Autos/SetpointSpeeds/Y", setpointSpeeds.vyMetersPerSecond);
+          Logger.getInstance()
+              .recordOutput("Autos/SetpointSpeeds/X", setpointSpeeds.vxMetersPerSecond);
+          Logger.getInstance()
+              .recordOutput("Autos/SetpointSpeeds/Y", setpointSpeeds.vyMetersPerSecond);
           Logger.getInstance()
               .recordOutput("Autos/SetpointSpeeds/Omega", setpointSpeeds.omegaRadiansPerSecond);
         },
         (Translation2d translationError, Rotation2d rotationError) -> {
           // Log path following error
-          Logger.getInstance().recordOutput("Autos/TranslationError", new Pose2d(translationError, new Rotation2d()));
+          Logger.getInstance()
+              .recordOutput(
+                  "Autos/TranslationError", new Pose2d(translationError, new Rotation2d()));
           Logger.getInstance().recordOutput("Autos/RotationError", rotationError.getDegrees());
         });
   }
