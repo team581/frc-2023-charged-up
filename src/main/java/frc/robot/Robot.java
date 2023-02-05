@@ -93,6 +93,7 @@ public class Robot extends LoggedRobot {
   private Command autoCommand = autos.getAutoCommand();
 
   public Robot() {
+
     // Log to a USB stick
     Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/"));
     // Publish data to NetworkTables
