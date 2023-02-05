@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.autos.Autos;
-import frc.robot.autos.Autos;
 import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
 import frc.robot.elevator.ElevatorSubsystem;
@@ -191,9 +190,6 @@ public class Robot extends LoggedRobot {
   public void autonomousInit() {
     CommandScheduler.getInstance().schedule(autoCommand);
   }
-  public void autonomousInit() {
-    CommandScheduler.getInstance().schedule(autoCommand);
-  }
 
   @Override
   public void autonomousPeriodic() {}
@@ -202,6 +198,7 @@ public class Robot extends LoggedRobot {
   public void teleopInit() {
     autoCommand.cancel();
   }
+
   public void teleopInit() {
     autoCommand.cancel();
   }
