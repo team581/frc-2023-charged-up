@@ -43,7 +43,10 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
         new SwerveDriveOdometry(
             SwerveSubsystem.KINEMATICS, imu.getRobotHeading(), swerve.getModulePositions());
 
-    startPose = new Pose2d(new Translation2d(Units.inchesToMeters(582.0), Units.inchesToMeters(15.0)), imu.getRobotHeading());
+    startPose =
+        new Pose2d(
+            new Translation2d(Units.inchesToMeters(582.0), Units.inchesToMeters(15.0)),
+            imu.getRobotHeading());
   }
 
   @Override
