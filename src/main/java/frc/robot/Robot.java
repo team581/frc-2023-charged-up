@@ -199,10 +199,6 @@ public class Robot extends LoggedRobot {
     autoCommand.cancel();
   }
 
-  public void teleopInit() {
-    autoCommand.cancel();
-  }
-
   @Override
   public void teleopPeriodic() {
     boolean openLoop = false; // !driveController.start().getAsBoolean();
