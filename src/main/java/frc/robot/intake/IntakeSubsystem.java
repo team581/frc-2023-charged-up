@@ -13,7 +13,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class IntakeSubsystem extends LifecycleSubsystem {
   private static final SupplyCurrentLimitConfiguration CURRENT_LIMIT =
-      new SupplyCurrentLimitConfiguration(true, 5, 10, 0.2);
+      new SupplyCurrentLimitConfiguration(true, 20, 30, 0.2);
 
   // numbers above are placeholders for current limits
   private HeldGamePiece gamePiece = HeldGamePiece.NOTHING;
@@ -69,7 +69,7 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     } else if (gamePiece == HeldGamePiece.CUBE) {
       motor.set(TalonFXControlMode.PercentOutput, 0.075);
     } else if (gamePiece == HeldGamePiece.CONE) {
-      motor.set(TalonFXControlMode.PercentOutput, -0.1);
+      motor.set(TalonFXControlMode.PercentOutput, -0.075);
     } else if (mode == IntakeMode.INTAKE_CUBE) {
       motor.set(TalonFXControlMode.PercentOutput, 0.4);
     } else if (mode == IntakeMode.INTAKE_CONE) {
