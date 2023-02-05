@@ -88,9 +88,9 @@ public class Robot extends LoggedRobot {
   private final CommandXboxController operatorController =
       new CommandXboxController(Config.OPERATOR_CONTROLLER_PORT);
 
-  private final Autos autos = new Autos(localization, swerve);
+  private final Autos autos = new Autos(localization, swerve, imu);
 
-  private final Command autoCommand = autos.getAutoCommand();
+  private Command autoCommand = autos.getAutoCommand();
 
   public Robot() {
     // Log to a USB stick
@@ -187,6 +187,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
+    autoCommand = autos.getAutoCommand();
     CommandScheduler.getInstance().schedule(autoCommand);
   }
 

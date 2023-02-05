@@ -7,12 +7,19 @@ package frc.robot.autos;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.imu.ImuSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class Autos {
@@ -21,14 +28,48 @@ public class Autos {
   private final SwerveSubsystem swerve;
   private final LoggedDashboardChooser<Command> autoChooser =
       new LoggedDashboardChooser<>("Auto Choices");
+  private final ImuSubsystem imu;
 
-  public Autos(LocalizationSubsystem localization, SwerveSubsystem swerve) {
+  public Autos(LocalizationSubsystem localization, SwerveSubsystem swerve, ImuSubsystem imu) {
     this.localization = localization;
     this.swerve = swerve;
+    this.imu = imu;
 
-    autoChooser.addDefaultOption("Do nothing", Commands.none());
-    autoChooser.addOption("Balance Auto", followTrajectoryCommand(Paths.BALANCE_AUTO, true));
-    autoChooser.addOption("Drive Forward", followTrajectoryCommand(Paths.DRIVE_FORWARD, false));
+    autoChooser.addDefaultOption("Do nothing", getDoNothingAuto());
+    autoChooser.addOption("Balance Auto", getBalanceAuto());
+    autoChooser.addOption("Drive Forward", getDriveForward());
+
+    PPSwerveControllerCommand.setLoggingCallbacks(
+        (PathPlannerTrajectory activeTrajectory) -> {
+          // Log current trajectory
+          Logger.getInstance().recordOutput("Autos/CurrentTrajectory", activeTrajectory);
+        },
+        (Pose2d targetPose) -> {
+          Logger.getInstance().recordOutput("Autos/TargetPose", targetPose);
+        },
+        (ChassisSpeeds setpointSpeeds) -> {
+          Logger.getInstance().recordOutput("Autos/SetpointSpeeds/X", setpointSpeeds.vxMetersPerSecond);
+          Logger.getInstance().recordOutput("Autos/SetpointSpeeds/Y", setpointSpeeds.vyMetersPerSecond);
+          Logger.getInstance()
+              .recordOutput("Autos/SetpointSpeeds/Omega", setpointSpeeds.omegaRadiansPerSecond);
+        },
+        (Translation2d translationError, Rotation2d rotationError) -> {
+          // Log path following error
+          Logger.getInstance().recordOutput("Autos/TranslationError", new Pose2d(translationError, new Rotation2d()));
+          Logger.getInstance().recordOutput("Autos/RotationError", rotationError.getDegrees());
+        });
+  }
+
+  private Command getDriveForward() {
+    return followTrajectoryCommand(Paths.DRIVE_FORWARD, true).withName("DriveForwardAutoCommand");
+  }
+
+  private Command getBalanceAuto() {
+    return followTrajectoryCommand(Paths.BALANCE_AUTO, true).withName("BalanceAutoCommand");
+  }
+
+  private CommandBase getDoNothingAuto() {
+    return Commands.none().withName("DoNothingAutoCommand");
   }
 
   public Command getAutoCommand() {
@@ -38,7 +79,7 @@ public class Autos {
       return command;
     }
 
-    return Commands.none();
+    return getDoNothingAuto();
   }
 
   private Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
@@ -48,7 +89,7 @@ public class Autos {
               // Reset odometry for the first path you run during auto
               if (isFirstPath) {
                 // gyroAngle should not be null
-                localization.resetPose(traj.getInitialHolonomicPose(), null);
+                localization.resetPose(traj.getInitialHolonomicPose(), imu.getRobotHeading());
               }
             }),
         new PPSwerveControllerCommand(
@@ -62,7 +103,7 @@ public class Autos {
             // theta controller
             new PIDController(0.5, 0, 0),
             states -> swerve.setModuleStates(states, false),
-            true,
+            false,
             swerve));
   }
 }

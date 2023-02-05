@@ -142,7 +142,7 @@ public class SwerveModule {
 
   public SwerveModulePosition getPosition() {
     final var steerMotorPosition = getSteerMotorPosition();
-    final var getDriveMotorPosition = getDriveMotorPosition();
+    final var getDriveMotorPosition = Units.inchesToMeters(getDriveMotorPosition());
 
     return new SwerveModulePosition(getDriveMotorPosition, steerMotorPosition);
   }
