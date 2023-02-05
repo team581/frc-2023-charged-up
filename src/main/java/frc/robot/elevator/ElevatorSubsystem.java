@@ -38,7 +38,8 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
     this.motor.configMotionAcceleration(27500);
     // Set current limiting
     this.motor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(false, 40, 40, 1));
-    this.motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(false, 10, 15, 0.5));
+    // TODO: Verify behavior with this current limit enabled
+    this.motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 15, 0.5));
   }
 
   public void startHoming() {

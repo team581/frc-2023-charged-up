@@ -32,7 +32,7 @@ public class WristSubsystem extends LifecycleSubsystem {
     this.motor.configMotionCruiseVelocity(20000);
     this.motor.configMotionAcceleration(50000);
 
-    this.motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(false, 25, 25, 0.5));
+    this.motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 25, 25, 0.5));
   }
 
   public Rotation2d getAngle() {

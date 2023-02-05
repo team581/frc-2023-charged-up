@@ -28,6 +28,7 @@ public class Autos {
 
     autoChooser.addDefaultOption("Do nothing", Commands.none());
     autoChooser.addOption("Balance Auto", followTrajectoryCommand(Paths.BALANCE_AUTO, true));
+    autoChooser.addOption("Drive Forward", followTrajectoryCommand(Paths.DRIVE_FORWARD, false));
   }
 
   public Command getAutoCommand() {

@@ -4,7 +4,7 @@
 
 package frc.robot.intake;
 
-import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.filter.LinearFilter;
@@ -12,8 +12,8 @@ import frc.robot.util.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 public class IntakeSubsystem extends LifecycleSubsystem {
-  private static final StatorCurrentLimitConfiguration CURRENT_LIMIT =
-      new StatorCurrentLimitConfiguration(false, 5, 10, 0.2);
+  private static final SupplyCurrentLimitConfiguration CURRENT_LIMIT =
+      new SupplyCurrentLimitConfiguration(true, 20, 30, 0.2);
 
   // numbers above are placeholders for current limits
   private HeldGamePiece gamePiece = HeldGamePiece.NOTHING;
@@ -27,7 +27,8 @@ public class IntakeSubsystem extends LifecycleSubsystem {
   public IntakeSubsystem(TalonFX motor) {
     this.motor = motor;
     motor.setInverted(true);
-    motor.configStatorCurrentLimit(CURRENT_LIMIT);
+    // TODO: Verify behavior with this current limit enabled
+    motor.configSupplyCurrentLimit(CURRENT_LIMIT);
   }
 
   @Override
@@ -52,11 +53,11 @@ public class IntakeSubsystem extends LifecycleSubsystem {
         gamePiece = HeldGamePiece.CONE;
       }
     } else if (mode == IntakeMode.OUTTAKE_CUBE) {
-      if (current < 15 && current > 7) {
+      if (current < 12 && current > 7) {
         gamePiece = HeldGamePiece.NOTHING;
       }
     } else if (mode == IntakeMode.OUTTAKE_CONE) {
-      if (current < 15 && current > 7) {
+      if (current < 12 && current > 7) {
         gamePiece = HeldGamePiece.NOTHING;
       }
     }
@@ -68,7 +69,7 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     } else if (gamePiece == HeldGamePiece.CUBE) {
       motor.set(TalonFXControlMode.PercentOutput, 0.075);
     } else if (gamePiece == HeldGamePiece.CONE) {
-      motor.set(TalonFXControlMode.PercentOutput, -0.1);
+      motor.set(TalonFXControlMode.PercentOutput, -0.075);
     } else if (mode == IntakeMode.INTAKE_CUBE) {
       motor.set(TalonFXControlMode.PercentOutput, 0.4);
     } else if (mode == IntakeMode.INTAKE_CONE) {
