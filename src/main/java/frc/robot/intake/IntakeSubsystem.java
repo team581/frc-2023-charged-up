@@ -22,7 +22,7 @@ public class IntakeSubsystem extends LifecycleSubsystem {
 
   private final TalonFX motor;
 
-  private final LinearFilter filter = LinearFilter.movingAverage(5);
+  private final LinearFilter filter = LinearFilter.movingAverage(7);
 
   public IntakeSubsystem(TalonFX motor) {
     this.motor = motor;
@@ -42,34 +42,46 @@ public class IntakeSubsystem extends LifecycleSubsystem {
   public void enabledPeriodic() {
     double current = filter.calculate(motor.getStatorCurrent());
     Logger.getInstance().recordOutput("Intake/FilteredCurrent", current);
+
     if (mode == IntakeMode.INTAKE_CUBE) {
-      motor.set(TalonFXControlMode.PercentOutput, 0.4);
       if (current > 40) {
         gamePiece = HeldGamePiece.CUBE;
       }
     } else if (mode == IntakeMode.INTAKE_CONE) {
-      motor.set(TalonFXControlMode.PercentOutput, -0.2);
-      if (current > 999) {
+      if (current > 95) {
         gamePiece = HeldGamePiece.CONE;
       }
-    } else if (mode == IntakeMode.OUTTAKE) {
-      if (gamePiece == HeldGamePiece.CUBE) {
-        motor.set(TalonFXControlMode.PercentOutput, -0.3);
-        if (current < 13 && current > 5) {
-          gamePiece = HeldGamePiece.NOTHING;
-        }
-      } else if (gamePiece == HeldGamePiece.CONE) {
-        motor.set(TalonFXControlMode.PercentOutput, 0.2);
-        if (current < -999) {
-          gamePiece = HeldGamePiece.NOTHING;
-        }
+    } else if (mode == IntakeMode.OUTTAKE_CUBE) {
+      if (current < 15 && current > 7) {
+        gamePiece = HeldGamePiece.NOTHING;
       }
+    } else if (mode == IntakeMode.OUTTAKE_CONE) {
+      if (current < 15 && current > 7) {
+        gamePiece = HeldGamePiece.NOTHING;
+      }
+    }
+
+    if (mode == IntakeMode.OUTTAKE_CUBE) {
+      motor.set(TalonFXControlMode.PercentOutput, -0.3);
+    } else if (mode == IntakeMode.OUTTAKE_CONE) {
+      motor.set(TalonFXControlMode.PercentOutput, 0.15);
+    } else if (gamePiece == HeldGamePiece.CUBE) {
+      motor.set(TalonFXControlMode.PercentOutput, 0.075);
+    } else if (gamePiece == HeldGamePiece.CONE) {
+      motor.set(TalonFXControlMode.PercentOutput, -0.1);
+    } else if (mode == IntakeMode.INTAKE_CUBE) {
+      motor.set(TalonFXControlMode.PercentOutput, 0.4);
+    } else if (mode == IntakeMode.INTAKE_CONE) {
+      motor.set(TalonFXControlMode.PercentOutput, -0.5);
     } else {
       motor.set(TalonFXControlMode.PercentOutput, 0);
     }
   }
 
   public void setMode(IntakeMode mode) {
+    if (this.mode != mode && (mode == IntakeMode.INTAKE_CONE || mode == IntakeMode.INTAKE_CUBE)) {
+      gamePiece = HeldGamePiece.NOTHING;
+    }
     this.mode = mode;
   }
 
@@ -77,7 +89,7 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     if (mode != goal) {
       return false;
     }
-    if (mode == IntakeMode.OUTTAKE) {
+    if (mode == IntakeMode.OUTTAKE_CONE || mode == IntakeMode.OUTTAKE_CUBE) {
       return gamePiece == HeldGamePiece.NOTHING;
     }
     if (mode == IntakeMode.STOPPED) {
