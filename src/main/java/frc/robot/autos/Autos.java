@@ -38,10 +38,10 @@ public class Autos {
     autoChooser.addDefaultOption("Do nothing", getDoNothingAuto());
     autoChooser.addOption("Balance Auto", getBalanceAuto());
     autoChooser.addOption("Drive Forward", getDriveForward());
+    autoChooser.addOption("Two Cube Auto Score", getTwoAutoScore());
 
     PPSwerveControllerCommand.setLoggingCallbacks(
         (PathPlannerTrajectory activeTrajectory) -> {
-          // Log current trajectory
           Logger.getInstance().recordOutput("Autos/CurrentTrajectory", activeTrajectory);
         },
         (Pose2d targetPose) -> {
@@ -56,7 +56,6 @@ public class Autos {
               .recordOutput("Autos/SetpointSpeeds/Omega", setpointSpeeds.omegaRadiansPerSecond);
         },
         (Translation2d translationError, Rotation2d rotationError) -> {
-          // Log path following error
           Logger.getInstance()
               .recordOutput(
                   "Autos/TranslationError", new Pose2d(translationError, new Rotation2d()));
@@ -70,6 +69,10 @@ public class Autos {
 
   private Command getBalanceAuto() {
     return followTrajectoryCommand(Paths.BALANCE_AUTO, true).withName("BalanceAutoCommand");
+  }
+
+  private Command getTwoAutoScore() {
+    return followTrajectoryCommand(Paths.TWO_AUTO_SCORE, true).withName("Two auto score");
   }
 
   private CommandBase getDoNothingAuto() {
