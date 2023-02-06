@@ -8,7 +8,6 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -16,6 +15,8 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.util.LifecycleSubsystem;
+import frc.robot.util.geometry.InchesPose2d;
+import frc.robot.util.geometry.InchesTranslation2d;
 import org.littletonrobotics.junction.Logger;
 
 public class LocalizationSubsystem extends LifecycleSubsystem {
@@ -24,7 +25,7 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
 
   private final SwerveDrivePoseEstimator poseEstimator;
   private final SwerveDriveOdometry odometry;
-  private Pose2d startPose;
+  private InchesPose2d startPose;
 
   public LocalizationSubsystem(SwerveSubsystem swerve, ImuSubsystem imu) {
     this.swerve = swerve;
@@ -43,10 +44,7 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
         new SwerveDriveOdometry(
             SwerveSubsystem.KINEMATICS, imu.getRobotHeading(), swerve.getModulePositions());
 
-    startPose =
-        new Pose2d(
-            new Translation2d(Units.inchesToMeters(582.0), Units.inchesToMeters(15.0)),
-            imu.getRobotHeading());
+    startPose = new InchesPose2d(new InchesTranslation2d(582.0, 15.0), imu.getRobotHeading());
   }
 
   @Override
@@ -74,21 +72,18 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
             .getDoubleArray(emptyArray);
 
     if (rawPose.length > 0) {
-      Pose2d visionPose =
-          new Pose2d(
-              Units.metersToInches(rawPose[0]),
-              Units.metersToInches(rawPose[1]),
-              Rotation2d.fromDegrees(rawPose[4]));
+      InchesPose2d visionPose =
+          new InchesPose2d(new Pose2d(rawPose[0], rawPose[1], Rotation2d.fromDegrees(rawPose[4])));
       poseEstimator.addVisionMeasurement(visionPose, Timer.getFPGATimestamp());
       Logger.getInstance().recordOutput("Localization/VisionPose", visionPose);
     }
   }
 
-  public Pose2d getPose() {
-    return poseEstimator.getEstimatedPosition();
+  public InchesPose2d getPose() {
+    return new InchesPose2d(poseEstimator.getEstimatedPosition());
   }
 
-  public void resetPose(Pose2d pose, Rotation2d gyroAngle) {
+  public void resetPose(InchesPose2d pose, Rotation2d gyroAngle) {
     imu.setAngle(gyroAngle);
     poseEstimator.resetPosition(imu.getRobotHeading(), swerve.getModulePositions(), pose);
     odometry.resetPosition(imu.getRobotHeading(), swerve.getModulePositions(), pose);

@@ -6,26 +6,26 @@ package frc.robot.swerve;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.util.LifecycleSubsystem;
+import frc.robot.util.geometry.InchesChassisSpeeds;
+import frc.robot.util.geometry.InchesSwerveDriveKinematics;
+import frc.robot.util.geometry.InchesSwerveModulePosition;
+import frc.robot.util.geometry.InchesSwerveModuleState;
+import frc.robot.util.geometry.InchesTranslation2d;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveSubsystem extends LifecycleSubsystem {
-  private static final Translation2d FRONT_LEFT_LOCATION = new Translation2d(0.381, 0.381);
-  private static final Translation2d FRONT_RIGHT_LOCATION = new Translation2d(0.381, -0.381);
-  private static final Translation2d BACK_LEFT_LOCATION = new Translation2d(-0.381, 0.381);
-  private static final Translation2d BACK_RIGHT_LOCATION = new Translation2d(-0.381, -0.381);
-  public static final SwerveDriveKinematics KINEMATICS =
-      new SwerveDriveKinematics(
+  private static final InchesTranslation2d FRONT_LEFT_LOCATION = new InchesTranslation2d(15, 15);
+  private static final InchesTranslation2d FRONT_RIGHT_LOCATION = new InchesTranslation2d(15, -15);
+  private static final InchesTranslation2d BACK_LEFT_LOCATION = new InchesTranslation2d(-15, 15);
+  private static final InchesTranslation2d BACK_RIGHT_LOCATION = new InchesTranslation2d(-15, -15);
+  public static final InchesSwerveDriveKinematics KINEMATICS =
+      new InchesSwerveDriveKinematics(
           FRONT_LEFT_LOCATION, FRONT_RIGHT_LOCATION, BACK_LEFT_LOCATION, BACK_RIGHT_LOCATION);
-  public static final double MAX_VELOCITY_INCHES_PER_SECOND = 127;
-  public static final double MAX_VELOCITY_METERS_PER_SECOND =
-      MAX_VELOCITY_INCHES_PER_SECOND / 39.37;
-  public static final double MAX_ANGULAR_VELOCITY = 20;
+  public static final double MAX_VELOCITY = 127;
+  public static final double MAX_ANGULAR_VELOCITY = Units.rotationsToDegrees(3);
 
   private final ImuSubsystem imu;
   private final SwerveModule frontRight;
@@ -63,14 +63,14 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     this.backRight.logValues();
 
     Logger.getInstance().recordOutput("Swerve/ModuleStates", getModuleStates());
-    ChassisSpeeds chassisSpeeds = getChassisSpeeds();
-    Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/X", chassisSpeeds.vxMetersPerSecond);
-    Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/Y", chassisSpeeds.vyMetersPerSecond);
+    InchesChassisSpeeds chassisSpeeds = getChassisSpeeds();
+    Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/X", chassisSpeeds.vxInchesPerSecond);
+    Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/Y", chassisSpeeds.vyInchesPerSecond);
     Logger.getInstance()
-        .recordOutput("Swerve/ChassisSpeeds/Omega", chassisSpeeds.omegaRadiansPerSecond);
+        .recordOutput("Swerve/ChassisSpeeds/Omega", chassisSpeeds.omegaDegreesPerSecond);
   }
 
-  public ChassisSpeeds getChassisSpeeds() {
+  public InchesChassisSpeeds getChassisSpeeds() {
     final var frontLeftState = frontLeft.getState();
     final var frontRightState = frontRight.getState();
     final var backLeftState = backLeft.getState();
@@ -80,14 +80,14 @@ public class SwerveSubsystem extends LifecycleSubsystem {
         frontLeftState, frontRightState, backLeftState, backRightState);
   }
 
-  public SwerveModuleState[] getModuleStates() {
-    return new SwerveModuleState[] {
+  public InchesSwerveModuleState[] getModuleStates() {
+    return new InchesSwerveModuleState[] {
       frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()
     };
   }
 
-  public SwerveModulePosition[] getModulePositions() {
-    return new SwerveModulePosition[] {
+  public InchesSwerveModulePosition[] getModulePositions() {
+    return new InchesSwerveModulePosition[] {
       frontLeft.getPosition(),
       frontRight.getPosition(),
       backLeft.getPosition(),
@@ -95,12 +95,12 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     };
   }
 
-  public void setChassisSpeeds(ChassisSpeeds speeds, boolean openLoop) {
+  public void setChassisSpeeds(InchesChassisSpeeds speeds, boolean openLoop) {
     final var moduleStates = KINEMATICS.toSwerveModuleStates(speeds);
     setModuleStates(moduleStates, openLoop);
   }
 
-  public void setModuleStates(SwerveModuleState[] moduleStates, boolean openLoop) {
+  public void setModuleStates(InchesSwerveModuleState[] moduleStates, boolean openLoop) {
     Logger.getInstance().recordOutput("Swerve/GoalModuleStates", moduleStates);
     frontLeft.setDesiredState(moduleStates[0], openLoop);
     frontRight.setDesiredState(moduleStates[1], openLoop);
@@ -119,16 +119,15 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     Logger.getInstance().recordOutput("Swerve/ThetaPercentage", thetaPercentage);
 
     Translation2d robotTranslation =
-        new Translation2d(forwardPercentage, sidewaysPercentage)
-            .times(MAX_VELOCITY_METERS_PER_SECOND);
-    ChassisSpeeds chassisSpeeds =
-        ChassisSpeeds.fromFieldRelativeSpeeds(
+        new Translation2d(forwardPercentage, sidewaysPercentage).times(MAX_VELOCITY);
+    InchesChassisSpeeds chassisSpeeds =
+        InchesChassisSpeeds.fromFieldRelativeSpeeds(
             robotTranslation.getX(),
             robotTranslation.getY(),
             thetaPercentage * MAX_ANGULAR_VELOCITY,
             fieldRelative ? imu.getRobotHeading() : new Rotation2d());
-    SwerveModuleState[] moduleStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_VELOCITY_METERS_PER_SECOND);
+    InchesSwerveModuleState[] moduleStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds);
+    InchesSwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_VELOCITY);
     setChassisSpeeds(KINEMATICS.toChassisSpeeds(moduleStates), openLoop);
 
     Logger.getInstance().recordOutput("Swerve/getX", robotTranslation.getX());

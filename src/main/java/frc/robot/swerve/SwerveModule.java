@@ -17,13 +17,12 @@ import com.ctre.phoenixpro.hardware.TalonFX;
 import com.ctre.phoenixpro.signals.InvertedValue;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import frc.robot.config.Config;
 import frc.robot.util.CircleConverter;
 import frc.robot.util.CtreModuleState;
 import frc.robot.util.GearingConverter;
+import frc.robot.util.geometry.InchesSwerveModulePosition;
+import frc.robot.util.geometry.InchesSwerveModuleState;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule {
@@ -36,7 +35,7 @@ public class SwerveModule {
   private static final GearingConverter DRIVE_MOTOR_GEARING_CONVERTER =
       GearingConverter.fromReduction(Config.SWERVE_DRIVE_GEARING_REDUCTION);
   private static final CircleConverter DRIVE_MOTOR_WHEEL_CONVERTER =
-      CircleConverter.fromDiameter(Units.inchesToMeters(4));
+      CircleConverter.fromDiameter(4);
 
   private final SwerveModuleConstants constants;
   private final TalonFX driveMotor;
@@ -110,47 +109,45 @@ public class SwerveModule {
     steerMotor.getConfigurator().apply(steerMotorClosedLoopGeneralConfigs);
   }
 
-  public void setDesiredState(SwerveModuleState state, boolean OpenLoop) {
+  public void setDesiredState(InchesSwerveModuleState state, boolean OpenLoop) {
     final var steerMotorPosition = getSteerMotorPosition();
-    state = CtreModuleState.optimize(state, steerMotorPosition);
+    state = new InchesSwerveModuleState(CtreModuleState.optimize(state, steerMotorPosition));
 
     double commandedSteerPosition =
         STEER_MOTOR_GEARING_CONVERTER.gearingToMotor(state.angle.getRotations());
     steerMotor.setControl(steerMotorControl.withPosition(commandedSteerPosition));
 
-    boolean isStopped =
-        Math.abs(state.speedMetersPerSecond)
-            <= SwerveSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.01;
+    boolean isStopped = Math.abs(state.speedInchesPerSecond) <= SwerveSubsystem.MAX_VELOCITY * 0.01;
     Rotation2d angle = isStopped ? this.previousAngle : state.angle;
     this.previousAngle = angle;
 
     var wheelRotationsPerSecond =
-        DRIVE_MOTOR_WHEEL_CONVERTER.distanceToRotations(state.speedMetersPerSecond);
+        DRIVE_MOTOR_WHEEL_CONVERTER.distanceToRotations(state.speedInchesPerSecond);
     var motorRotationsPerSecond =
         DRIVE_MOTOR_GEARING_CONVERTER.gearingToMotor(wheelRotationsPerSecond);
 
-    this.commandedDriveVelocity = Units.metersToInches(state.speedMetersPerSecond);
+    this.commandedDriveVelocity = state.speedInchesPerSecond;
     driveMotor.setControl(driveVoltageClosedLoopRequest.withVelocity(motorRotationsPerSecond));
   }
 
-  public SwerveModuleState getState() {
+  public InchesSwerveModuleState getState() {
     final var steerMotorPosition = getSteerMotorPosition();
-    final var driveMotorVelocity = Units.inchesToMeters(getDriveMotorVelocity());
+    final var driveMotorVelocity = getDriveMotorVelocity();
 
-    return new SwerveModuleState(driveMotorVelocity, steerMotorPosition);
+    return new InchesSwerveModuleState(driveMotorVelocity, steerMotorPosition);
   }
 
-  public SwerveModulePosition getPosition() {
+  public InchesSwerveModulePosition getPosition() {
     final var steerMotorPosition = getSteerMotorPosition();
     final var driveMotorPosition = getDriveMotorPosition();
 
-    return new SwerveModulePosition(driveMotorPosition, steerMotorPosition);
+    return new InchesSwerveModulePosition(driveMotorPosition, steerMotorPosition);
   }
 
   public void logValues() {
     Logger.getInstance()
         .recordOutput(
-            "Swerve/" + this.constants.corner.toString() + "/Drive motor velocity (inches per/sec)",
+            "Swerve/" + this.constants.corner.toString() + "/Drive motor velocity (in/s)",
             this.getDriveMotorVelocity());
     Logger.getInstance()
         .recordOutput(
@@ -182,33 +179,29 @@ public class SwerveModule {
             driveMotor.getClosedLoopReference().getValue());
     Logger.getInstance()
         .recordOutput(
-            "Swerve/"
-                + this.constants.corner.toString()
-                + "/Drive Motor Commanded Velocity (inches/sec)",
+            "Swerve/" + this.constants.corner.toString() + "/Drive Motor Commanded Velocity (in/s)",
             this.commandedDriveVelocity);
   }
 
   private Rotation2d getSteerMotorPosition() {
     double rotationsBeforeGearing = steerMotor.getPosition().getValue();
-    double rotations = STEER_MOTOR_GEARING_CONVERTER.beforeToAfterGearing(rotationsBeforeGearing);
+    double rotations = STEER_MOTOR_GEARING_CONVERTER.motorToGearing(rotationsBeforeGearing);
     return Rotation2d.fromRotations(rotations);
   }
 
   private double getDriveMotorPosition() {
     final var rotationsBeforeGearing = driveMotor.getPosition().getValue();
-    final var rotations =
-        DRIVE_MOTOR_GEARING_CONVERTER.beforeToAfterGearing(rotationsBeforeGearing);
+    final var rotations = DRIVE_MOTOR_GEARING_CONVERTER.motorToGearing(rotationsBeforeGearing);
+    final var inches = DRIVE_MOTOR_WHEEL_CONVERTER.rotationsToDistance(rotations);
 
-    final var meters = DRIVE_MOTOR_WHEEL_CONVERTER.rotationsToDistance(rotations);
-    return meters;
+    return inches;
   }
 
   private double getDriveMotorVelocity() {
     final var rotationsPerSecondBeforeGearing = driveMotor.getVelocity().getValue();
     final var rotationsPerSecond =
-        DRIVE_MOTOR_GEARING_CONVERTER.beforeToAfterGearing(rotationsPerSecondBeforeGearing);
-    final var metersPerSecond = DRIVE_MOTOR_WHEEL_CONVERTER.rotationsToDistance(rotationsPerSecond);
-    final var inchesPerSecond = metersPerSecond * 39.37;
+        DRIVE_MOTOR_GEARING_CONVERTER.motorToGearing(rotationsPerSecondBeforeGearing);
+    final var inchesPerSecond = DRIVE_MOTOR_WHEEL_CONVERTER.rotationsToDistance(rotationsPerSecond);
     return inchesPerSecond;
   }
 

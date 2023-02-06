@@ -19,6 +19,9 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
+import frc.robot.util.geometry.InchesChassisSpeeds;
+import frc.robot.util.geometry.InchesPose2d;
+import frc.robot.util.geometry.InchesSwerveModuleState;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -47,13 +50,15 @@ public class Autos {
         (Pose2d targetPose) -> {
           Logger.getInstance().recordOutput("Autos/TargetPose", targetPose);
         },
-        (ChassisSpeeds setpointSpeeds) -> {
+        (ChassisSpeeds rawSetpointSpeeds) -> {
+          InchesChassisSpeeds chassisSpeeds = new InchesChassisSpeeds(rawSetpointSpeeds);
+
           Logger.getInstance()
-              .recordOutput("Autos/SetpointSpeeds/X", setpointSpeeds.vxMetersPerSecond);
+              .recordOutput("Autos/SetpointSpeeds/X", chassisSpeeds.vxInchesPerSecond);
           Logger.getInstance()
-              .recordOutput("Autos/SetpointSpeeds/Y", setpointSpeeds.vyMetersPerSecond);
+              .recordOutput("Autos/SetpointSpeeds/Y", chassisSpeeds.vyInchesPerSecond);
           Logger.getInstance()
-              .recordOutput("Autos/SetpointSpeeds/Omega", setpointSpeeds.omegaRadiansPerSecond);
+              .recordOutput("Autos/SetpointSpeeds/Omega", chassisSpeeds.omegaDegreesPerSecond);
         },
         (Translation2d translationError, Rotation2d rotationError) -> {
           Logger.getInstance()
@@ -96,7 +101,8 @@ public class Autos {
               // Reset odometry for the first path you run during auto
               if (isFirstPath) {
                 // gyroAngle should not be null
-                localization.resetPose(traj.getInitialHolonomicPose(), imu.getRobotHeading());
+                localization.resetPose(
+                    new InchesPose2d(traj.getInitialHolonomicPose()), imu.getRobotHeading());
               }
             }),
         new PPSwerveControllerCommand(
@@ -109,7 +115,7 @@ public class Autos {
             new PIDController(5, 0, 0),
             // theta controller
             new PIDController(0.5, 0, 0),
-            states -> swerve.setModuleStates(states, false),
+            states -> swerve.setModuleStates(InchesSwerveModuleState.fromStates(states), false),
             false,
             swerve));
   }

@@ -23,16 +23,12 @@ public class GearingConverter {
   }
 
   /** Converts a value before gearing to the value after gearing. */
-  public double beforeToAfterGearing(double value) {
+  public double motorToGearing(double value) {
     return value / gearingReduction;
   }
 
-  /** Converts a value after gearing to the value after gearing. */
+  /** Converts a value after gearing to the value before gearing. */
   public double gearingToMotor(double value) {
     return value * gearingReduction;
-  }
-
-  public static CircleConverter fromDiameter(int i) {
-    return null;
   }
 }
