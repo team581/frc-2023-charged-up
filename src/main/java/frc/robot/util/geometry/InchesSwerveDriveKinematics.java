@@ -26,13 +26,6 @@ public class InchesSwerveDriveKinematics extends SwerveDriveKinematics {
   }
 
   public InchesSwerveModuleState[] toSwerveModuleStates(InchesChassisSpeeds chassisSpeeds) {
-    SwerveModuleState[] rawStates = super.toSwerveModuleStates(chassisSpeeds);
-    InchesSwerveModuleState[] states = new InchesSwerveModuleState[rawStates.length];
-
-    for (int i = 0; i < rawStates.length; i++) {
-      states[i] = new InchesSwerveModuleState(rawStates[i]);
-    }
-
-    return states;
+    return InchesSwerveModuleState.fromStates(super.toSwerveModuleStates(chassisSpeeds));
   }
 }
