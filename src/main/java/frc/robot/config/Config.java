@@ -26,7 +26,7 @@ public class Config {
   public static final int PIGEON_ID = 1;
 
   public static final double SWERVE_STEER_GEARING_REDUCTION = IS_SPIKE ? 150.0 / 7.0 : 12.8;
-  public static final double SWERVE_DRIVE_GEARING_REDUCTION = IS_SPIKE ? 6.75 : 8.14;
+  public static final double SWERVE_DRIVE_GEARING_REDUCTION = IS_SPIKE ? 6.75 : 10.0;
 
   public static final int SWERVE_FL_DRIVE_MOTOR_ID = 8;
   public static final int SWERVE_FL_STEER_MOTOR_ID = 9;
