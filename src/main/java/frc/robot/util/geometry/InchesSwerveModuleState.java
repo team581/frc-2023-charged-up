@@ -9,6 +9,16 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 
 public class InchesSwerveModuleState extends SwerveModuleState {
+  public static InchesSwerveModuleState[] fromStates(SwerveModuleState[] states) {
+    InchesSwerveModuleState[] inchesStates = new InchesSwerveModuleState[states.length];
+
+    for (int i = 0; i < states.length; i++) {
+      inchesStates[i] = new InchesSwerveModuleState(states[i]);
+    }
+
+    return inchesStates;
+  }
+
   public final double speedInchesPerSecond;
 
   public InchesSwerveModuleState(double speedInchesPerSecond, Rotation2d angle) {

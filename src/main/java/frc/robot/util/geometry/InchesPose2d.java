@@ -11,9 +11,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 public class InchesPose2d extends Pose2d {
   private final InchesTranslation2d inchesTranslation2d;
 
-  public InchesPose2d(InchesTranslation2d translation, Rotation2d rotation) {
+  public InchesPose2d(Translation2d translation, Rotation2d rotation) {
     super(translation, rotation);
-    inchesTranslation2d = translation;
+    inchesTranslation2d = new InchesTranslation2d(translation);
   }
 
   public InchesPose2d(double xInches, double yInches, Rotation2d rotation) {
@@ -21,11 +21,7 @@ public class InchesPose2d extends Pose2d {
   }
 
   public InchesPose2d(Pose2d pose) {
-    this(new InchesTranslation2d(pose.getTranslation()), pose.getRotation());
-  }
-
-  public InchesPose2d(Translation2d translation, Rotation2d rotation) {
-    this(new InchesTranslation2d(translation), rotation);
+    this(pose.getTranslation(), pose.getRotation());
   }
 
   public InchesTranslation2d getTranslationInches() {

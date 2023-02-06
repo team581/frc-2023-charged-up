@@ -4,10 +4,30 @@
 
 package frc.robot.util.geometry;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 
 public class InchesChassisSpeeds extends ChassisSpeeds {
+  public static InchesChassisSpeeds fromFieldRelativeSpeeds(
+      ChassisSpeeds fieldRelativeSpeeds, Rotation2d robotAngle) {
+    return new InchesChassisSpeeds(
+        ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds, robotAngle));
+  }
+
+  public static InchesChassisSpeeds fromFieldRelativeSpeeds(
+      double vxInchesPerSecond,
+      double vyInchesPerSecond,
+      double omegaDegreesPerSecond,
+      Rotation2d robotAngle) {
+    return new InchesChassisSpeeds(
+        ChassisSpeeds.fromFieldRelativeSpeeds(
+            Units.inchesToMeters(vxInchesPerSecond),
+            Units.inchesToMeters(vyInchesPerSecond),
+            Units.degreesToRadians(omegaDegreesPerSecond),
+            robotAngle));
+  }
+
   public final double vxInchesPerSecond;
   public final double vyInchesPerSecond;
   public final double omegaDegreesPerSecond;
