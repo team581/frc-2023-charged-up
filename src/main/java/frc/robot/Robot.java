@@ -202,9 +202,9 @@ public class Robot extends LoggedRobot {
   public void teleopPeriodic() {
     boolean openLoop = false; // !driveController.start().getAsBoolean();
     swerve.driveTeleop(
-        driveController.getSidewaysPercentage(),
-        driveController.getForwardPercentage(),
-        driveController.getThetaPercentage(),
+        -driveController.getSidewaysPercentage(),
+        -driveController.getForwardPercentage(),
+        -driveController.getThetaPercentage(),
         true,
         openLoop);
   }
