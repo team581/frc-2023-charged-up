@@ -9,7 +9,7 @@ import frc.robot.managers.SuperstructurePosition;
 
 public class Positions {
   public static final SuperstructurePosition STOWED =
-      new SuperstructurePosition(0.5, Rotation2d.fromDegrees(25));
+      new SuperstructurePosition(1, Rotation2d.fromDegrees(25)); // change height back to 0.5
   public static final SuperstructurePosition FULL_EXTENSION =
       new SuperstructurePosition(20, Rotation2d.fromDegrees(10)); // Find full extension height for spike later, 20 is a placeholder so it doesnt break
 
@@ -27,9 +27,9 @@ public class Positions {
   public static final SuperstructurePosition CONE_NODE_LOW =
       new SuperstructurePosition(10, Rotation2d.fromDegrees(170));
   public static final SuperstructurePosition CONE_NODE_MID =
-      new SuperstructurePosition(25, Rotation2d.fromDegrees(150));
+      new SuperstructurePosition(10, Rotation2d.fromDegrees(150));
   public static final SuperstructurePosition CONE_NODE_HIGH =
-      new SuperstructurePosition(31, Rotation2d.fromDegrees(130));
+      new SuperstructurePosition(23, Rotation2d.fromDegrees(130));
 
   private Positions() {}
 }
