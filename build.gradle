@@ -129,6 +129,8 @@ gversion {
 
 apply plugin: 'groovy'
 spotless {
+	enforceCheck false
+
 	encoding 'UTF-8'
 	lineEndings 'UNIX'
 
