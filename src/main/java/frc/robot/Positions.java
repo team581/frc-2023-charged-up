@@ -11,7 +11,11 @@ public class Positions {
   public static final SuperstructurePosition STOWED =
       new SuperstructurePosition(1, Rotation2d.fromDegrees(25)); // change height back to 0.5
   public static final SuperstructurePosition FULL_EXTENSION =
-      new SuperstructurePosition(20, Rotation2d.fromDegrees(10)); // Find full extension height for spike later, 20 is a placeholder so it doesnt break
+      new SuperstructurePosition(
+          20,
+          Rotation2d.fromDegrees(
+              10)); // Find full extension height for spike later, 20 is a placeholder so it doesnt
+  // break
 
   public static final SuperstructurePosition INTAKING_CUBE =
       new SuperstructurePosition(0.16, Rotation2d.fromDegrees(136));
@@ -23,7 +27,7 @@ public class Positions {
       new SuperstructurePosition(28, Rotation2d.fromDegrees(132));
 
   public static final SuperstructurePosition INTAKING_CONE =
-      new SuperstructurePosition(1.5, Rotation2d.fromDegrees(100)); //edit later
+      new SuperstructurePosition(1.5, Rotation2d.fromDegrees(100)); // edit later
   public static final SuperstructurePosition CONE_NODE_LOW =
       new SuperstructurePosition(10, Rotation2d.fromDegrees(170));
   public static final SuperstructurePosition CONE_NODE_MID =

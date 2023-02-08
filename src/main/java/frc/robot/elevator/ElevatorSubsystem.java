@@ -5,9 +5,9 @@
 package frc.robot.elevator;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import frc.robot.config.Config;
@@ -99,8 +99,12 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
       }
     } else if (goToGoal) {
       double goalPositionInSensorUnits = goalPositionInInches * sensorUnitsPerElevatorInch;
-      motor.set(ControlMode.Position, goalPositionInSensorUnits);
-      motor.set(TalonFXControlMode.MotionMagic, goalPositionInSensorUnits);
+      motor.set(
+          ControlMode.Position,
+          goalPositionInSensorUnits,
+          DemandType.ArbitraryFeedForward,
+          Config.ELEVATOR_ARB_F);
+      // motor.set(TalonFXControlMode.MotionMagic, goalPositionInSensorUnits);
     } else {
       motor.set(ControlMode.PercentOutput, 0);
     }
