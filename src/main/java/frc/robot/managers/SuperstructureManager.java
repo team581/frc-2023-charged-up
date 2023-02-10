@@ -18,15 +18,23 @@ public class SuperstructureManager extends LifecycleSubsystem {
   private final IntakeSubsystem intake;
   private SuperstructureState goal = States.STOWED;
   private HeldGamePiece mode = HeldGamePiece.CUBE;
+  private ScoringState scoringState = ScoringState.IDLE;
 
   public SuperstructureManager(SuperstructureMotionManager motionManager, IntakeSubsystem intake) {
     this.motionManager = motionManager;
     this.intake = intake;
   }
 
+  public ScoringState getScoringState() {
+    return scoringState;
+  }
+
   public void set(SuperstructureState state) {
     goal = state;
     motionManager.set(goal.position);
+    if (state == States.STOWED) {
+      scoringState = ScoringState.IDLE;
+    }
   }
 
   public boolean atGoal(SuperstructureState goal) {
@@ -42,6 +50,9 @@ public class SuperstructureManager extends LifecycleSubsystem {
     if (goal.intakeNow || motionManager.atGoal(goal.position)) {
       intake.setMode(goal.intakeMode);
     }
+    if (scoringState == ScoringState.ALIGNING && motionManager.atGoal(goal.position)) {
+      scoringState = ScoringState.SCORING;
+    }
   }
 
   @Override
@@ -55,6 +66,10 @@ public class SuperstructureManager extends LifecycleSubsystem {
     Logger.getInstance().recordOutput("SuperstructureManager/Goal/IntakeNow", goal.intakeNow);
   }
 
+  public HeldGamePiece getMode() {
+    return mode;
+  }
+
   public Command getCommand(SuperstructureState state) {
     return Commands.runOnce(
             () -> this.set(state), motionManager.wrist, motionManager.elevator, intake)
@@ -62,27 +77,31 @@ public class SuperstructureManager extends LifecycleSubsystem {
   }
 
   public Command getScoreCommand() {
-    return getManualScoreCommand(ScoringLocation.LOW);
+    return getManualScoreCommand(ScoringLocation.LOW).andThen(getCommand(States.STOWED));
   }
 
   public Command getManualScoreCommand(ScoringLocation scoringLocation) {
+    Command scoreCommand;
     if (scoringLocation == ScoringLocation.LOW) {
-      return Commands.either(
-          getCommand(States.CUBE_NODE_LOW),
-          getCommand(States.CONE_NODE_LOW),
-          () -> intake.getGamePiece() == HeldGamePiece.CUBE);
+      scoreCommand =
+          Commands.either(
+              getCommand(States.CUBE_NODE_LOW),
+              getCommand(States.CONE_NODE_LOW),
+              () -> intake.getGamePiece() == HeldGamePiece.CUBE);
     } else if (scoringLocation == ScoringLocation.MID) {
-      return Commands.either(
-          getCommand(States.CUBE_NODE_MID),
-          getCommand(States.CONE_NODE_MID),
-          () -> intake.getGamePiece() == HeldGamePiece.CUBE);
-
+      scoreCommand =
+          Commands.either(
+              getCommand(States.CUBE_NODE_MID),
+              getCommand(States.CONE_NODE_MID),
+              () -> intake.getGamePiece() == HeldGamePiece.CUBE);
     } else {
-      return Commands.either(
-          getCommand(States.CUBE_NODE_HIGH),
-          getCommand(States.CONE_NODE_HIGH),
-          () -> intake.getGamePiece() == HeldGamePiece.CUBE);
+      scoreCommand =
+          Commands.either(
+              getCommand(States.CUBE_NODE_HIGH),
+              getCommand(States.CONE_NODE_HIGH),
+              () -> intake.getGamePiece() == HeldGamePiece.CUBE);
     }
+    return Commands.runOnce(() -> scoringState = ScoringState.ALIGNING).alongWith(scoreCommand);
   }
 
   public Command getIntakeCommand() {
