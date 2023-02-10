@@ -18,22 +18,22 @@ public class Positions {
   // break
 
   public static final SuperstructurePosition INTAKING_CUBE =
-      new SuperstructurePosition(0.16, Rotation2d.fromDegrees(136));
+      new SuperstructurePosition(0.1, Rotation2d.fromDegrees(136));
   public static final SuperstructurePosition CUBE_NODE_LOW =
-      new SuperstructurePosition(4, Rotation2d.fromDegrees(127));
+      new SuperstructurePosition(1, Rotation2d.fromDegrees(127));
   public static final SuperstructurePosition CUBE_NODE_MID =
-      new SuperstructurePosition(17, Rotation2d.fromDegrees(121));
+      new SuperstructurePosition(12, Rotation2d.fromDegrees(110));
   public static final SuperstructurePosition CUBE_NODE_HIGH =
-      new SuperstructurePosition(28, Rotation2d.fromDegrees(132));
+      new SuperstructurePosition(25, Rotation2d.fromDegrees(132));
 
   public static final SuperstructurePosition INTAKING_CONE =
-      new SuperstructurePosition(1.5, Rotation2d.fromDegrees(100)); // edit later
+      new SuperstructurePosition(1, Rotation2d.fromDegrees(135)); // edit later
   public static final SuperstructurePosition CONE_NODE_LOW =
-      new SuperstructurePosition(10, Rotation2d.fromDegrees(170));
+      new SuperstructurePosition(1, Rotation2d.fromDegrees(130));
   public static final SuperstructurePosition CONE_NODE_MID =
-      new SuperstructurePosition(10, Rotation2d.fromDegrees(150));
+      new SuperstructurePosition(25, Rotation2d.fromDegrees(175));
   public static final SuperstructurePosition CONE_NODE_HIGH =
-      new SuperstructurePosition(23, Rotation2d.fromDegrees(130));
+      new SuperstructurePosition(25, Rotation2d.fromDegrees(130));
 
   private Positions() {}
 }

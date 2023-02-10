@@ -100,7 +100,7 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
     } else if (goToGoal) {
       double goalPositionInSensorUnits = goalPositionInInches * sensorUnitsPerElevatorInch;
       motor.set(
-          ControlMode.Position,
+          ControlMode.MotionMagic,
           goalPositionInSensorUnits,
           DemandType.ArbitraryFeedForward,
           Config.ELEVATOR_ARB_F);

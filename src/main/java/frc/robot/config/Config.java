@@ -83,12 +83,12 @@ public class Config {
   public static final double ELEVATOR_MIN_HEIGHT = IS_SPIKE ? 1 : 0.5;
   public static final double ELEVATOR_MAX_HEIGHT = IS_SPIKE ? 25 : 12;
   public static final double ELEVATOR_KF = IS_SPIKE ? 0 : 0;
-  public static final double ELEVATOR_KP = IS_SPIKE ? 0.5 : 0.8;
+  public static final double ELEVATOR_KP = IS_SPIKE ? 0.7 : 0.8;
   public static final double ELEVATOR_KI = IS_SPIKE ? 0 : 0;
-  public static final double ELEVATOR_KD = IS_SPIKE ? 0 : 0;
-  public static final double ELEVATOR_ARB_F = IS_SPIKE ? 0 : 0; // Change back to 1
-  public static final int ELEVATOR_CRUISE_VELOCITY = IS_SPIKE ? 15000 : 15000;
-  public static final int ELEVATOR_ACCELERATION = IS_SPIKE ? 27500 : 27500;
+  public static final double ELEVATOR_KD = IS_SPIKE ? 0.1 : 0;
+  public static final double ELEVATOR_ARB_F = IS_SPIKE ? 0.08 : 0; // Change back to 1
+  public static final int ELEVATOR_CRUISE_VELOCITY = IS_SPIKE ? 20000 : 15000;
+  public static final int ELEVATOR_ACCELERATION = IS_SPIKE ? 30000 : 27500;
   public static final boolean ELEVATOR_INVERTED = IS_SPIKE ? false : true;
 
   public static final int WRIST_MOTOR_ID = 16;
@@ -98,7 +98,7 @@ public class Config {
   public static final double WRIST_KP = IS_SPIKE ? 0.15 : 0.1;
   public static final int WRIST_KI = IS_SPIKE ? 0 : 0;
   public static final int WRIST_KD = IS_SPIKE ? 0 : 0;
-  public static final int WRIST_MOTION_ACCELERATION = IS_SPIKE ? 50000 : 50000;
+  public static final int WRIST_MOTION_ACCELERATION = IS_SPIKE ? 55000 : 50000;
   public static final double WRIST_HOMED_CURRENT = IS_SPIKE ? 15 : 15;
   public static final Rotation2d WRIST_HOMED_ANGLE =
       IS_SPIKE ? Rotation2d.fromDegrees(0) : Rotation2d.fromDegrees(133.0);
