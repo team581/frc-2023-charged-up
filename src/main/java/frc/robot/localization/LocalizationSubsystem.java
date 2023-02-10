@@ -50,9 +50,7 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
   }
 
   @Override
-  public void teleopInit() {
-    resetPose(startPose, imu.getRobotHeading());
-  }
+  public void teleopInit() {}
 
   @Override
   public void robotPeriodic() {
