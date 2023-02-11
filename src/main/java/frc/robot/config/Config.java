@@ -87,5 +87,8 @@ public class Config {
   public static final boolean SWERVE_MOTOR_LIMITS_ENABLED = IS_SPIKE ? true : true;
   public static final double STEER_MOTOR_OUTPUT_CONFIGS = IS_SPIKE ? 0 : 0;
 
+  public static final int FORKS_MOTOR_ID = 18;
+  public static final double FORKS_GEARING = IS_SPIKE ? 125 : 999;
+
   private Config() {}
 }
