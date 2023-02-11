@@ -93,12 +93,12 @@ public class Config {
 
   public static final int WRIST_MOTOR_ID = 16;
   public static final double WRIST_GEARING = IS_SPIKE ? 64.0 * 2 : 48.0 * 2.0;
-  public static final int WRIST_MOTION_CRUISE_VELOCITY = IS_SPIKE ? 20000 : 20000;
   public static final int WRIST_KF = IS_SPIKE ? 0 : 0;
-  public static final double WRIST_KP = IS_SPIKE ? 0.15 : 0.1;
+  public static final double WRIST_KP = IS_SPIKE ? 0.25 : 0.1;
   public static final int WRIST_KI = IS_SPIKE ? 0 : 0;
   public static final int WRIST_KD = IS_SPIKE ? 0 : 0;
-  public static final int WRIST_MOTION_ACCELERATION = IS_SPIKE ? 55000 : 50000;
+  public static final int WRIST_MOTION_ACCELERATION = IS_SPIKE ? 65000 : 50000;
+  public static final int WRIST_MOTION_CRUISE_VELOCITY = IS_SPIKE ? 27500 : 20000;
   public static final double WRIST_HOMED_CURRENT = IS_SPIKE ? 15 : 15;
   public static final Rotation2d WRIST_HOMED_ANGLE =
       IS_SPIKE ? Rotation2d.fromDegrees(0) : Rotation2d.fromDegrees(133.0);
