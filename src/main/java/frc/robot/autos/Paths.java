@@ -12,7 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
 public class Paths {
-  private static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(0.125, 0.5);
+  private static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(1, 4);
 
   private Paths() {}
 
@@ -26,7 +26,7 @@ public class Paths {
               Rotation2d.fromDegrees(45),
               Rotation2d.fromDegrees(-90)));
 
-  public static final PathPlannerTrajectory DRIVE_FORWARD =
+  public static final PathPlannerTrajectory DRIVE_BACKWARDS =
       PathPlanner.generatePath(
           PATH_CONSTRAINTS,
           new PathPoint(
@@ -34,19 +34,15 @@ public class Paths {
           new PathPoint(
               new Translation2d(-0.5, 0.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)));
 
-  public static final PathPlannerTrajectory TWO_AUTO_SCORE =
+  public static final PathPlannerTrajectory BACK_RIGHT_FORWARD =
       PathPlanner.generatePath(
           PATH_CONSTRAINTS,
           new PathPoint(
               new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)),
           new PathPoint(
-              new Translation2d(-0.15, 0.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)),
+              new Translation2d(-1.21, 0.0), Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(-90)),
           new PathPoint(
-              new Translation2d(1.0, 0.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)),
+              new Translation2d(-1.21, -1.95), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)),
           new PathPoint(
-              new Translation2d(1.0, -1.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)),
-          new PathPoint(
-              new Translation2d(-0.15, -1.0),
-              Rotation2d.fromDegrees(0),
-              Rotation2d.fromDegrees(0)));
+              new Translation2d(0.0, -1.95), Rotation2d.fromDegrees(-90), Rotation2d.fromDegrees(0)));
 }
