@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
@@ -23,6 +24,7 @@ import frc.robot.intake.HeldGamePiece;
 import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.intake.commands.IntakeCommand;
+import frc.robot.lights.LightsSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.managers.SuperstructureManager;
 import frc.robot.managers.SuperstructureMotionManager;
@@ -83,6 +85,9 @@ public class Robot extends LoggedRobot {
   private final SwerveSubsystem swerve =
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
   private final LocalizationSubsystem localization = new LocalizationSubsystem(swerve, imu);
+  private final LightsSubsystem lights =
+      new LightsSubsystem(
+          new CANdle(Config.LIGHTS_CANDLE_ID, "581CANivore"), intake, superstructureManager, localization);
 
   private final DriveController driveController = new DriveController(Config.DRIVE_CONTROLLER_PORT);
   private final CommandXboxController operatorController =

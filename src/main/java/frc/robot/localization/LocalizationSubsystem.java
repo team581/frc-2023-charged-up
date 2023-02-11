@@ -84,7 +84,7 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
       Logger.getInstance().recordOutput("Localization/VisionPose", visionPose);
       visionWorking = true;
     } else {
-      visionWorking = true;
+      visionWorking = false;
     }
   }
 

@@ -5,9 +5,9 @@
 package frc.robot.lights;
 
 import com.ctre.phoenix.led.CANdle;
-import com.ctre.phoenix.led.StrobeAnimation;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.robot.intake.HeldGamePiece;
@@ -17,13 +17,21 @@ import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.managers.ScoringState;
 import frc.robot.managers.SuperstructureManager;
 import frc.robot.util.LifecycleSubsystem;
+import org.littletonrobotics.junction.Logger;
 
 public class LightsSubsystem extends LifecycleSubsystem {
+  /** The duration (in seconds) that lights should be on or off when in fast blink mode. */
+  private static final double FAST_BLINK_DURATION = 0.08;
+
+  /** The duration (in seconds) that lights should be on or off when in slow blink mode. */
+  private static final double SLOW_BLINK_DURATION = 0.25;
+
   private final CANdle candle;
   private final IntakeSubsystem intake;
   private final SuperstructureManager superstructure;
   private final LocalizationSubsystem localization;
-  private Color8Bit color = new Color8Bit(255, 255, 255);
+  private final Timer blinkTimer = new Timer();
+  private Color color = Color.kWhite;
   private BlinkPattern blinkPattern = BlinkPattern.SOLID;
 
   public LightsSubsystem(
@@ -39,72 +47,88 @@ public class LightsSubsystem extends LifecycleSubsystem {
 
   @Override
   public void robotPeriodic() {
+    ScoringState scoringState = superstructure.getScoringState();
+    HeldGamePiece gamePiece = intake.getGamePiece();
+    IntakeMode intakeMode = intake.getMode();
+    HeldGamePiece superstructureMode = superstructure.getMode();
 
     if (DriverStation.isDisabled()) {
       if (DriverStation.getAlliance() == Alliance.Blue) {
-        color = new Color8Bit(Color.kBlue);
+        color = Color.kBlue;
         blinkPattern = BlinkPattern.SOLID;
       } else {
-        color = new Color8Bit(Color.kRed);
+        color = Color.kRed;
         blinkPattern = BlinkPattern.SOLID;
       }
-    } else {
-      ScoringState scoringState = superstructure.getScoringState();
-      HeldGamePiece gamePiece = intake.getGamePiece();
-      IntakeMode intakeMode = intake.getMode();
-      HeldGamePiece superstructureMode = superstructure.getMode();
-
-      if (scoringState == ScoringState.ALIGNING || scoringState == ScoringState.SCORING) {
-        if (localization.isVisionWorking()) {
-          color = new Color8Bit(Color.kGreen);
-        } else {
-          color = new Color8Bit(Color.kRed);
-        }
-        blinkPattern = BlinkPattern.BLINK_SLOW;
-      } else if (scoringState == ScoringState.READY) {
-        if (localization.isVisionWorking()) {
-          color = new Color8Bit(Color.kGreen);
-        } else {
-          color = new Color8Bit(Color.kRed);
-        }
+    } else if (scoringState == ScoringState.ALIGNING || scoringState == ScoringState.SCORING) {
+      if (localization.isVisionWorking()) {
+        color = Color.kGreen;
+      } else {
+        color = Color.kRed;
+      }
+      blinkPattern = BlinkPattern.BLINK_SLOW;
+    } else if (scoringState == ScoringState.READY) {
+      if (localization.isVisionWorking()) {
+        color = Color.kGreen;
+      } else {
+        color = Color.kRed;
+      }
+      blinkPattern = BlinkPattern.BLINK_FAST;
+    } else if (gamePiece == HeldGamePiece.CUBE) {
+      if (intakeMode == IntakeMode.INTAKE_CUBE) {
+        color = Color.kPurple;
         blinkPattern = BlinkPattern.BLINK_FAST;
-      } else if (gamePiece == HeldGamePiece.CUBE) {
-        if (intakeMode == IntakeMode.INTAKE_CUBE) {
-          color = new Color8Bit(Color.kPurple);
-          blinkPattern = BlinkPattern.BLINK_FAST;
-        } else {
-          color = new Color8Bit(Color.kPurple);
-          blinkPattern = BlinkPattern.SOLID;
-        }
-      } else if (gamePiece == HeldGamePiece.CONE) {
-        if (intakeMode == IntakeMode.INTAKE_CONE) {
-          color = new Color8Bit(Color.kYellow);
-          blinkPattern = BlinkPattern.BLINK_FAST;
-        } else {
-          color = new Color8Bit(Color.kYellow);
-          blinkPattern = BlinkPattern.SOLID;
-        }
       } else {
-        if (superstructureMode == HeldGamePiece.CUBE) {
-          color = new Color8Bit(Color.kPurple);
-          blinkPattern = BlinkPattern.BLINK_SLOW;
-        } else if (superstructureMode == HeldGamePiece.CONE) {
-          color = new Color8Bit(Color.kYellow);
-          blinkPattern = BlinkPattern.BLINK_SLOW;
-        } else {
-          color = new Color8Bit(Color.kWhite);
-          blinkPattern = BlinkPattern.SOLID;
-        }
+        color = Color.kPurple;
+        blinkPattern = BlinkPattern.SOLID;
       }
+    } else if (gamePiece == HeldGamePiece.CONE) {
+      if (intakeMode == IntakeMode.INTAKE_CONE) {
+        color = Color.kYellow;
+        blinkPattern = BlinkPattern.BLINK_FAST;
+      } else {
+        color = Color.kYellow;
+        blinkPattern = BlinkPattern.SOLID;
+      }
+    } else if (superstructureMode == HeldGamePiece.CUBE) {
+      color = Color.kPurple;
+      blinkPattern = BlinkPattern.BLINK_SLOW;
+    } else if (superstructureMode == HeldGamePiece.CONE) {
+      color = Color.kYellow;
+      blinkPattern = BlinkPattern.BLINK_SLOW;
+    } else {
+      color = Color.kWhite;
+      blinkPattern = BlinkPattern.SOLID;
     }
+
+    Color8Bit color8Bit = new Color8Bit(color);
 
     if (blinkPattern == BlinkPattern.SOLID) {
-      candle.setLEDs(color.red, color.green, color.blue);
+      candle.setLEDs(color8Bit.red, color8Bit.green, color8Bit.blue);
     } else {
-      StrobeAnimation animation = new StrobeAnimation(color.red, color.green, color.blue);
+      double time = blinkTimer.get();
+      double onDuration = 0;
+      double offDuration = 0;
 
-      // TODO: Check with Saikiran if this is how to use animations
-      candle.animate(animation);
+      if (blinkPattern == BlinkPattern.BLINK_FAST) {
+        onDuration = FAST_BLINK_DURATION;
+        offDuration = FAST_BLINK_DURATION * 2;
+      } else if (blinkPattern == BlinkPattern.BLINK_SLOW) {
+        onDuration = SLOW_BLINK_DURATION;
+        offDuration = SLOW_BLINK_DURATION * 2;
+      }
+
+      if (time >= onDuration) {
+        if (time >= offDuration) {
+          blinkTimer.reset();
+          candle.setLEDs(0, 0, 0);
+        } else {
+          candle.setLEDs(color8Bit.red, color8Bit.green, color8Bit.blue);
+        }
+      }
     }
+
+    Logger.getInstance().recordOutput("Lights/Color", color.toString());
+    Logger.getInstance().recordOutput("Lights/BlinkPattern", blinkPattern.toString());
   }
 }

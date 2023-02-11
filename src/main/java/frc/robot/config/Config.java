@@ -91,6 +91,10 @@ public class Config {
   public static final int ELEVATOR_ACCELERATION = IS_SPIKE ? 30000 : 27500;
   public static final boolean ELEVATOR_INVERTED = IS_SPIKE ? false : true;
 
+  public static final int LIGHTS_CANDLE_ID = 15;
+  public static final int LIGHTS_LED_COUNT = 0;
+
+
   public static final int WRIST_MOTOR_ID = 16;
   public static final double WRIST_GEARING = IS_SPIKE ? 64.0 * 2 : 48.0 * 2.0;
   public static final int WRIST_MOTION_CRUISE_VELOCITY = IS_SPIKE ? 20000 : 20000;
