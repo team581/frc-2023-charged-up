@@ -38,7 +38,7 @@ public class Autos {
     autoChooser.addDefaultOption("Do nothing", getDoNothingAuto());
     autoChooser.addOption("Balance Auto", getBalanceAuto());
     autoChooser.addOption("Drive Forward", getDriveForward());
-    autoChooser.addOption("Two Cube Auto Score", getTwoAutoScore());
+    autoChooser.addOption("BackRightForwardAutoCommand", getTwoAutoScore());
 
     PPSwerveControllerCommand.setLoggingCallbacks(
         (PathPlannerTrajectory activeTrajectory) -> {
@@ -64,7 +64,7 @@ public class Autos {
   }
 
   private Command getDriveForward() {
-    return followTrajectoryCommand(Paths.DRIVE_FORWARD, true).withName("DriveForwardAutoCommand");
+    return followTrajectoryCommand(Paths.DRIVE_BACKWARDS, true).withName("DriveForwardAutoCommand");
   }
 
   private Command getBalanceAuto() {
@@ -72,7 +72,7 @@ public class Autos {
   }
 
   private Command getTwoAutoScore() {
-    return followTrajectoryCommand(Paths.TWO_AUTO_SCORE, true).withName("Two auto score");
+    return followTrajectoryCommand(Paths.BACK_RIGHT_FORWARD, true).withName("BackRightForwardAutoCommand");
   }
 
   private CommandBase getDoNothingAuto() {
@@ -101,14 +101,14 @@ public class Autos {
             }),
         new PPSwerveControllerCommand(
             traj,
-            localization::getPose,
+            localization::getOdometryPose,
             SwerveSubsystem.KINEMATICS,
             // x controller
             new PIDController(5, 0, 0),
             // y controller
             new PIDController(5, 0, 0),
             // theta controller
-            new PIDController(0.5, 0, 0),
+            new PIDController(1 , 0, 0),
             states -> swerve.setModuleStates(states, false),
             false,
             swerve));
