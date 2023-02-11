@@ -80,7 +80,7 @@ public class Config {
   // 104.58
   public static final int ELEVATOR_MOTOR_ID = 14;
   public static final double ELEVATOR_GEARING = IS_SPIKE ? 9.0 : 20.0;
-  public static final double ELEVATOR_MIN_HEIGHT = IS_SPIKE ? 1 : 0.5;
+  public static final double ELEVATOR_MIN_HEIGHT = IS_SPIKE ? 0 : 0.5;
   public static final double ELEVATOR_MAX_HEIGHT = IS_SPIKE ? 25 : 12;
   public static final double ELEVATOR_KF = IS_SPIKE ? 0 : 0;
   public static final double ELEVATOR_KP = IS_SPIKE ? 0.7 : 0.8;

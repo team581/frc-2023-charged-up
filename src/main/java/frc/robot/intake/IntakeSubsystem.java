@@ -35,13 +35,13 @@ public class IntakeSubsystem extends LifecycleSubsystem {
   public void robotPeriodic() {
     Logger.getInstance().recordOutput("Intake/Mode", mode.toString());
     Logger.getInstance().recordOutput("Intake/HeldGamePiece", gamePiece.toString());
-    Logger.getInstance().recordOutput("Intake/Current", motor.getStatorCurrent());
+    Logger.getInstance().recordOutput("Intake/Current", motor.getSupplyCurrent());
     Logger.getInstance().recordOutput("Intake/Voltage", motor.getMotorOutputVoltage());
   }
 
   @Override
   public void enabledPeriodic() {
-    double current = filter.calculate(motor.getStatorCurrent());
+    double current = filter.calculate(motor.getSupplyCurrent());
     Logger.getInstance().recordOutput("Intake/FilteredCurrent", current);
 
     if (mode == IntakeMode.INTAKE_CUBE) {
@@ -49,15 +49,15 @@ public class IntakeSubsystem extends LifecycleSubsystem {
         gamePiece = HeldGamePiece.CUBE;
       }
     } else if (mode == IntakeMode.INTAKE_CONE) {
-      if (current > 95) {
+      if (current > 45) {
         gamePiece = HeldGamePiece.CONE;
       }
     } else if (mode == IntakeMode.OUTTAKE_CUBE) {
-      if (current < 12 && current > 7) {
+      if (current < 5 && current > 2) {
         gamePiece = HeldGamePiece.NOTHING;
       }
     } else if (mode == IntakeMode.OUTTAKE_CONE) {
-      if (current < 12 && current > 7) {
+      if (current < 1.3 && current > 0.2) {
         gamePiece = HeldGamePiece.NOTHING;
       }
     }
@@ -73,7 +73,7 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     } else if (mode == IntakeMode.INTAKE_CUBE) {
       motor.set(TalonFXControlMode.PercentOutput, 0.4);
     } else if (mode == IntakeMode.INTAKE_CONE) {
-      motor.set(TalonFXControlMode.PercentOutput, -0.7);
+      motor.set(TalonFXControlMode.PercentOutput, -0.5);
     } else {
       motor.set(TalonFXControlMode.PercentOutput, 0);
     }
