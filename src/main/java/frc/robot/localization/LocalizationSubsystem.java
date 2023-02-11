@@ -8,7 +8,6 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -24,7 +23,6 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
 
   private final SwerveDrivePoseEstimator poseEstimator;
   private final SwerveDriveOdometry odometry;
-  private Pose2d startPose;
 
   public LocalizationSubsystem(SwerveSubsystem swerve, ImuSubsystem imu) {
     this.swerve = swerve;
@@ -35,18 +33,12 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
             imu.getRobotHeading(),
             swerve.getModulePositions(),
             new Pose2d(),
-            // TODO: tune standard deviations
             VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-            VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+            VecBuilder.fill(0.0334, 0.1391, Units.degreesToRadians(30)));
 
     odometry =
         new SwerveDriveOdometry(
             SwerveSubsystem.KINEMATICS, imu.getRobotHeading(), swerve.getModulePositions());
-
-    startPose =
-        new Pose2d(
-            new Translation2d(Units.inchesToMeters(582.0), Units.inchesToMeters(15.0)),
-            imu.getRobotHeading());
   }
 
   @Override
@@ -71,14 +63,16 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
             .getEntry("botpose_wpiblue")
             .getDoubleArray(emptyArray);
 
-    if (rawPose.length > 0) {
-      Pose2d visionPose =
-          new Pose2d(
-              Units.metersToInches(rawPose[0]),
-              Units.metersToInches(rawPose[1]),
-              Rotation2d.fromDegrees(rawPose[4]));
-      poseEstimator.addVisionMeasurement(visionPose, Timer.getFPGATimestamp());
-      Logger.getInstance().recordOutput("Localization/VisionPose", visionPose);
+    boolean hasTargets =
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0) == 1;
+
+    if (rawPose.length > 0 && hasTargets) {
+      Pose2d visionPose = new Pose2d(rawPose[0], rawPose[1], imu.getRobotHeading());
+
+      if (rawPose[0] != 0.0 && rawPose[1] != 0.0) {
+        poseEstimator.addVisionMeasurement(visionPose, Timer.getFPGATimestamp() - 0.02);
+        Logger.getInstance().recordOutput("Localization/VisionPose", visionPose);
+      }
     }
   }
 
@@ -88,7 +82,7 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
 
   public void resetPose(Pose2d pose, Rotation2d gyroAngle) {
     imu.setAngle(gyroAngle);
-    poseEstimator.resetPosition(imu.getRobotHeading(), swerve.getModulePositions(), pose);
-    odometry.resetPosition(imu.getRobotHeading(), swerve.getModulePositions(), pose);
+    poseEstimator.resetPosition(gyroAngle, swerve.getModulePositions(), pose);
+    odometry.resetPosition(gyroAngle, swerve.getModulePositions(), pose);
   }
 }
