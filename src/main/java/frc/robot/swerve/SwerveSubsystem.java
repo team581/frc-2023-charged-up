@@ -10,15 +10,16 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import frc.robot.config.Config;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.util.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveSubsystem extends LifecycleSubsystem {
-  private static final Translation2d FRONT_LEFT_LOCATION = new Translation2d(0.381, 0.381);
-  private static final Translation2d FRONT_RIGHT_LOCATION = new Translation2d(0.381, -0.381);
-  private static final Translation2d BACK_LEFT_LOCATION = new Translation2d(-0.381, 0.381);
-  private static final Translation2d BACK_RIGHT_LOCATION = new Translation2d(-0.381, -0.381);
+  private static final Translation2d FRONT_LEFT_LOCATION = Config.SWERVE_FRONT_LEFT_LOCATION;
+  private static final Translation2d FRONT_RIGHT_LOCATION = Config.SWERVE_FRONT_RIGHT_LOCATION;
+  private static final Translation2d BACK_LEFT_LOCATION = Config.SWERVE_BACK_LEFT_LOCATION;
+  private static final Translation2d BACK_RIGHT_LOCATION = Config.SWERVE_BACK_RIGHT_LOCATION;
   public static final SwerveDriveKinematics KINEMATICS =
       new SwerveDriveKinematics(
           FRONT_LEFT_LOCATION, FRONT_RIGHT_LOCATION, BACK_LEFT_LOCATION, BACK_RIGHT_LOCATION);

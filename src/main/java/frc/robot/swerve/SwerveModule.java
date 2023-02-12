@@ -15,7 +15,6 @@ import com.ctre.phoenixpro.controls.PositionVoltage;
 import com.ctre.phoenixpro.controls.VelocityVoltage;
 import com.ctre.phoenixpro.hardware.TalonFX;
 import com.ctre.phoenixpro.signals.InvertedValue;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -27,8 +26,6 @@ import frc.robot.util.GearingConverter;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule {
-  private static final SimpleMotorFeedforward DRIVE_SIMPLE_MOTOR_FEEDFORWARD =
-      new SimpleMotorFeedforward(0, 0, 0);
 
   private static final GearingConverter STEER_MOTOR_GEARING_CONVERTER =
       GearingConverter.fromReduction(Config.SWERVE_STEER_GEARING_REDUCTION);
@@ -57,11 +54,11 @@ public class SwerveModule {
 
     com.ctre.phoenixpro.configs.TalonFXConfiguration driveMotorConfigs = new TalonFXConfiguration();
 
-    driveMotorConfigs.Slot0.kP = 0.01;
-    driveMotorConfigs.Slot0.kI = 0.0;
-    driveMotorConfigs.Slot0.kD = 0.0;
-    driveMotorConfigs.Slot0.kV = 0.117;
-    driveMotorConfigs.Slot0.kS = 0.0;
+    driveMotorConfigs.Slot0.kP = Config.SWERVE_DRIVE_KP;
+    driveMotorConfigs.Slot0.kI = Config.SWERVE_DRIVE_KI;
+    driveMotorConfigs.Slot0.kD = Config.SWERVE_DRIVE_KD;
+    driveMotorConfigs.Slot0.kV = Config.SWERVE_DRIVE_KV;
+    driveMotorConfigs.Slot0.kS = Config.SWERVE_DRIVE_KS;
 
     driveMotorConfigs.Voltage.PeakForwardVoltage = 12;
     driveMotorConfigs.Voltage.PeakReverseVoltage = -12;
@@ -89,11 +86,11 @@ public class SwerveModule {
     CurrentLimitsConfigs steerMotorCurrentLimitsConfigs = new CurrentLimitsConfigs();
     ClosedLoopGeneralConfigs steerMotorClosedLoopGeneralConfigs = new ClosedLoopGeneralConfigs();
     steerMotorClosedLoopGeneralConfigs.ContinuousWrap = false;
-    steerMotorSlot0Configs.kV = 0.0;
-    steerMotorSlot0Configs.kP = 3.0;
-    steerMotorSlot0Configs.kI = 0;
-    steerMotorSlot0Configs.kD = 0.0;
-    steerMotorSlot0Configs.kS = 0.0;
+    steerMotorSlot0Configs.kV = Config.SWERVE_STEER_KV;
+    steerMotorSlot0Configs.kP = Config.SWERVE_STEER_KP;
+    steerMotorSlot0Configs.kI = Config.SWERVE_STEER_KI;
+    steerMotorSlot0Configs.kD = Config.SWERVE_STEER_KD;
+    steerMotorSlot0Configs.kS = Config.SWERVE_STEER_KS;
     steerMotorCurrentLimitsConfigs.SupplyCurrentLimit = 35;
     steerMotorCurrentLimitsConfigs.SupplyCurrentLimitEnable = true;
     steerMotorOutputConfigs.DutyCycleNeutralDeadband = 0;
