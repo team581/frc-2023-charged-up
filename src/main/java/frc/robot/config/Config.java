@@ -129,8 +129,6 @@ public class Config {
   public static final double SUPERSTRUCTURE_COLLISION_HEIGHT = IS_SPIKE ? 0.75 : 26;
   public static final Rotation2d SUPERSTRUCTURE_WRIST_RANGE =
       IS_SPIKE ? Rotation2d.fromDegrees(50) : Rotation2d.fromDegrees(13);
-  public static final Rotation2d SUPERSTRUCTURE_WRIST_STOWED_ANGLE =
-      IS_SPIKE ? Rotation2d.fromDegrees(25) : Rotation2d.fromDegrees(10);
 
   private Config() {}
 }

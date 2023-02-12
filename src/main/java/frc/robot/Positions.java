@@ -10,28 +10,45 @@ import frc.robot.managers.SuperstructurePosition;
 
 public class Positions {
   public static final SuperstructurePosition STOWED =
-      new SuperstructurePosition(0, Config.SUPERSTRUCTURE_WRIST_STOWED_ANGLE);
+      Config.IS_SPIKE
+          ? new SuperstructurePosition(0, Rotation2d.fromDegrees(25))
+          : new SuperstructurePosition(0, Rotation2d.fromDegrees(10));
   public static final SuperstructurePosition FULL_EXTENSION =
       new SuperstructurePosition(20, Rotation2d.fromDegrees(10));
-  // Find full extension height for spike later, 20 is a placeholder so it doesnt break
 
   public static final SuperstructurePosition INTAKING_CUBE =
-      new SuperstructurePosition(0, Rotation2d.fromDegrees(136));
+      Config.IS_SPIKE
+          ? new SuperstructurePosition(0, Rotation2d.fromDegrees(136))
+          : new SuperstructurePosition(0.5, Rotation2d.fromDegrees(120));
   public static final SuperstructurePosition CUBE_NODE_LOW =
-      new SuperstructurePosition(0, Rotation2d.fromDegrees(127));
+      Config.IS_SPIKE
+      ? new SuperstructurePosition(0, Rotation2d.fromDegrees(127))
+      : new SuperstructurePosition(4, Rotation2d.fromDegrees(127));
   public static final SuperstructurePosition CUBE_NODE_MID =
-      new SuperstructurePosition(12, Rotation2d.fromDegrees(110));
+      Config.IS_SPIKE
+      ? new SuperstructurePosition(12, Rotation2d.fromDegrees(110))
+      : new SuperstructurePosition(17, Rotation2d.fromDegrees(121));
   public static final SuperstructurePosition CUBE_NODE_HIGH =
-      new SuperstructurePosition(23, Rotation2d.fromDegrees(125));
+      Config.IS_SPIKE
+      ? new SuperstructurePosition(23, Rotation2d.fromDegrees(125))
+      : new SuperstructurePosition(28, Rotation2d.fromDegrees(132));
 
   public static final SuperstructurePosition INTAKING_CONE =
-      new SuperstructurePosition(0, Rotation2d.fromDegrees(130));
+      Config.IS_SPIKE
+      ? new SuperstructurePosition(0, Rotation2d.fromDegrees(130))
+      : new SuperstructurePosition(1.5, Rotation2d.fromDegrees(118));
   public static final SuperstructurePosition CONE_NODE_LOW =
-      new SuperstructurePosition(0, Rotation2d.fromDegrees(130));
+      Config.IS_SPIKE
+      ? new SuperstructurePosition(0, Rotation2d.fromDegrees(130))
+      : new SuperstructurePosition(10, Rotation2d.fromDegrees(170));
   public static final SuperstructurePosition CONE_NODE_MID =
-      new SuperstructurePosition(25, Rotation2d.fromDegrees(175));
+      Config.IS_SPIKE
+      ? new SuperstructurePosition(25, Rotation2d.fromDegrees(175))
+      : new SuperstructurePosition(25, Rotation2d.fromDegrees(150));
   public static final SuperstructurePosition CONE_NODE_HIGH =
-      new SuperstructurePosition(25, Rotation2d.fromDegrees(130));
+      Config.IS_SPIKE
+      ? new SuperstructurePosition(25, Rotation2d.fromDegrees(130))
+      : new SuperstructurePosition(31, Rotation2d.fromDegrees(130));
 
   private Positions() {}
 }
