@@ -6,7 +6,7 @@ package frc.robot.controller;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.ManualScoringLocation;
-import frc.robot.NodeKind;
+import frc.robot.autoscore.NodeKind;
 
 public class DriveController extends CommandXboxController {
   public DriveController(int port) {
@@ -37,7 +37,7 @@ public class DriveController extends CommandXboxController {
     return joystickScale(-1 * getRightX());
   }
 
-  public NodeKind getAutoScoreLocation() {
+  public NodeKind getAutoScoreNodeKind() {
     double rightX = getRightX();
     double rightY = -getRightY();
 

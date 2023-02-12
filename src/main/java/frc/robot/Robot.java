@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.autos.Autos;
+import frc.robot.autoscore.AutoScoreLocation;
 import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
 import frc.robot.elevator.ElevatorSubsystem;
@@ -77,12 +78,12 @@ public class Robot extends LoggedRobot {
       new IntakeSubsystem(new TalonFX(Config.INTAKE_MOTOR_ID, "581CANivore"));
   private final SuperstructureMotionManager superstructureMotionManager =
       new SuperstructureMotionManager(elevator, wrist);
-  private final SuperstructureManager superstructureManager =
-      new SuperstructureManager(superstructureMotionManager, intake);
   private final ImuSubsystem imu = new ImuSubsystem(new Pigeon2(Config.PIGEON_ID, "581CANivore"));
   private final SwerveSubsystem swerve =
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
   private final LocalizationSubsystem localization = new LocalizationSubsystem(swerve, imu);
+  private final SuperstructureManager superstructureManager =
+      new SuperstructureManager(superstructureMotionManager, intake, localization);
 
   private final DriveController driveController = new DriveController(Config.DRIVE_CONTROLLER_PORT);
   private final CommandXboxController operatorController =
@@ -184,6 +185,12 @@ public class Robot extends LoggedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     SmartDashboard.putData(CommandScheduler.getInstance());
+
+    AutoScoreLocation autoScoreLocation =
+        superstructureManager.getAutoScoreLocation(driveController.getAutoScoreNodeKind());
+    Logger.getInstance().recordOutput("AutoScore/GoalLocation/Pose", autoScoreLocation.pose);
+    Logger.getInstance()
+        .recordOutput("AutoScore/GoalLocation/Node", autoScoreLocation.node.toString());
   }
 
   @Override

@@ -7,6 +7,7 @@ package frc.robot.localization;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import java.util.List;
 
 public class Landmarks {
   public static final Pose2d APRILTAG_1 =
@@ -123,6 +124,11 @@ public class Landmarks {
   public static final Pose2d RED_PRELOAD_FAR_RIGHT =
       new Pose2d(
           Units.inchesToMeters(372.77), Units.inchesToMeters(180.19), Rotation2d.fromDegrees(0));
+
+  public static final List<Pose2d> RED_GRIDS =
+      List.of(RED_GRID_LEFT, RED_GRID_CENTER, RED_GRID_RIGHT);
+  public static final List<Pose2d> BLUE_GRIDS =
+      List.of(BLUE_GRID_LEFT, BLUE_GRID_CENTER, BLUE_GRID_RIGHT);
 
   private Landmarks() {}
 }
