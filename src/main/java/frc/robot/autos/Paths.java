@@ -40,9 +40,15 @@ public class Paths {
           new PathPoint(
               new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)),
           new PathPoint(
-              new Translation2d(-1.21, 0.0), Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(-90)),
+              new Translation2d(-1.21, 0.0),
+              Rotation2d.fromDegrees(90),
+              Rotation2d.fromDegrees(-90)),
           new PathPoint(
-              new Translation2d(-1.21, -1.95), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)),
+              new Translation2d(-1.21, -1.95),
+              Rotation2d.fromDegrees(0),
+              Rotation2d.fromDegrees(0)),
           new PathPoint(
-              new Translation2d(0.0, -1.95), Rotation2d.fromDegrees(-90), Rotation2d.fromDegrees(0)));
+              new Translation2d(0.0, -1.95),
+              Rotation2d.fromDegrees(-90),
+              Rotation2d.fromDegrees(0)));
 }

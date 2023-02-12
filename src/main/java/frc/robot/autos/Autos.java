@@ -72,7 +72,8 @@ public class Autos {
   }
 
   private Command getTwoAutoScore() {
-    return followTrajectoryCommand(Paths.BACK_RIGHT_FORWARD, true).withName("BackRightForwardAutoCommand");
+    return followTrajectoryCommand(Paths.BACK_RIGHT_FORWARD, true)
+        .withName("BackRightForwardAutoCommand");
   }
 
   private CommandBase getDoNothingAuto() {
@@ -108,7 +109,7 @@ public class Autos {
             // y controller
             new PIDController(5, 0, 0),
             // theta controller
-            new PIDController(1 , 0, 0),
+            new PIDController(1, 0, 0),
             states -> swerve.setModuleStates(states, false),
             false,
             swerve));
