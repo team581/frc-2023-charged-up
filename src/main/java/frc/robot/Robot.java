@@ -87,7 +87,10 @@ public class Robot extends LoggedRobot {
   private final LocalizationSubsystem localization = new LocalizationSubsystem(swerve, imu);
   private final LightsSubsystem lights =
       new LightsSubsystem(
-          new CANdle(Config.LIGHTS_CANDLE_ID, "581CANivore"), intake, superstructureManager, localization);
+          new CANdle(Config.LIGHTS_CANDLE_ID, "581CANivore"),
+          intake,
+          superstructureManager,
+          localization);
 
   private final DriveController driveController = new DriveController(Config.DRIVE_CONTROLLER_PORT);
   private final CommandXboxController operatorController =
