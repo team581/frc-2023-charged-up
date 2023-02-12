@@ -76,7 +76,12 @@ public class Paths {
               Rotation2d.fromDegrees(180)));
 
   public static final PathPlannerTrajectory NODE_TO_RIGHT =
-    PathPlanner.generatePath(PATH_CONSTRAINTS, new PathPoint(
-      new Translation2d(-4.6, -1.1049), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
-      new PathPoint(new Translation2d(0.0, -1.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)));
+      PathPlanner.generatePath(
+          PATH_CONSTRAINTS,
+          new PathPoint(
+              new Translation2d(-4.6, -1.1049),
+              Rotation2d.fromDegrees(0),
+              Rotation2d.fromDegrees(180)),
+          new PathPoint(
+              new Translation2d(0.0, -1.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)));
 }
