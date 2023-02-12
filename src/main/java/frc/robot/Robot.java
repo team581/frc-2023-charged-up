@@ -213,7 +213,7 @@ public class Robot extends LoggedRobot {
           openLoop);
     } else {
       swerve.driveTeleop(
-          driveController.getSidewaysPercentage(),
+          -driveController.getSidewaysPercentage(),
           driveController.getForwardPercentage(),
           driveController.getThetaPercentage(),
           true,
