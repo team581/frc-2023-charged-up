@@ -12,20 +12,43 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
 public class Paths {
+  private static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(1, 4);
+
   private Paths() {}
 
   public static final PathPlannerTrajectory BALANCE_AUTO =
       PathPlanner.generatePath(
-          new PathConstraints(4, 3),
+          PATH_CONSTRAINTS,
           new PathPoint(
-              new Translation2d(1.0, 1.0),
-              Rotation2d.fromDegrees(0),
-              Rotation2d.fromDegrees(
-                  0)), // position, heading(direction of travel), holonomic rotation
+              new Translation2d(1.0, 1.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)),
           new PathPoint(
               new Translation2d(3.0, 3.0),
               Rotation2d.fromDegrees(45),
-              Rotation2d.fromDegrees(
-                  -90) // position, heading(direction of travel), holonomic rotation
-              ));
+              Rotation2d.fromDegrees(-90)));
+
+  public static final PathPlannerTrajectory DRIVE_BACKWARDS =
+      PathPlanner.generatePath(
+          PATH_CONSTRAINTS,
+          new PathPoint(
+              new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)),
+          new PathPoint(
+              new Translation2d(-0.5, 0.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)));
+
+  public static final PathPlannerTrajectory BACK_RIGHT_FORWARD =
+      PathPlanner.generatePath(
+          PATH_CONSTRAINTS,
+          new PathPoint(
+              new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)),
+          new PathPoint(
+              new Translation2d(-1.21, 0.0),
+              Rotation2d.fromDegrees(90),
+              Rotation2d.fromDegrees(-90)),
+          new PathPoint(
+              new Translation2d(-1.21, -1.95),
+              Rotation2d.fromDegrees(0),
+              Rotation2d.fromDegrees(0)),
+          new PathPoint(
+              new Translation2d(0.0, -1.95),
+              Rotation2d.fromDegrees(-90),
+              Rotation2d.fromDegrees(0)));
 }
