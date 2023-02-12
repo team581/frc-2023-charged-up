@@ -5,17 +5,15 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.config.Config;
 import frc.robot.managers.SuperstructurePosition;
 
 public class Positions {
   public static final SuperstructurePosition STOWED =
-      new SuperstructurePosition(0, Rotation2d.fromDegrees(25)); // change height back to 0.5
+      new SuperstructurePosition(0, Config.SUPERSTRUCTURE_WRIST_STOWED_ANGLE);
   public static final SuperstructurePosition FULL_EXTENSION =
-      new SuperstructurePosition(
-          20,
-          Rotation2d.fromDegrees(
-              10)); // Find full extension height for spike later, 20 is a placeholder so it doesnt
-  // break
+      new SuperstructurePosition(20, Rotation2d.fromDegrees(10));
+  // Find full extension height for spike later, 20 is a placeholder so it doesnt break
 
   public static final SuperstructurePosition INTAKING_CUBE =
       new SuperstructurePosition(0, Rotation2d.fromDegrees(136));

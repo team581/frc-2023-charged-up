@@ -103,7 +103,6 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
           goalPositionInSensorUnits,
           DemandType.ArbitraryFeedForward,
           Config.ELEVATOR_ARB_F);
-      // motor.set(TalonFXControlMode.MotionMagic, goalPositionInSensorUnits);
     } else {
       motor.set(ControlMode.PercentOutput, 0);
     }
