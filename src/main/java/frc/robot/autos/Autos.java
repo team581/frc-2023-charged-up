@@ -16,9 +16,18 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.elevator.ElevatorSubsystem;
+import frc.robot.elevator.commands.ElevatorHomingCommand;
 import frc.robot.imu.ImuSubsystem;
+import frc.robot.intake.HeldGamePiece;
+import frc.robot.intake.IntakeMode;
+import frc.robot.intake.IntakeSubsystem;
+import frc.robot.intake.commands.IntakeCommand;
 import frc.robot.localization.LocalizationSubsystem;
+import frc.robot.managers.SuperstructureManager;
 import frc.robot.swerve.SwerveSubsystem;
+import frc.robot.wrist.WristSubsystem;
+import frc.robot.wrist.commands.WristHomingCommand;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -29,16 +38,35 @@ public class Autos {
   private final LoggedDashboardChooser<Command> autoChooser =
       new LoggedDashboardChooser<>("Auto Choices");
   private final ImuSubsystem imu;
+  private SuperstructureManager superstructure;
+  // private States states;
+  private ElevatorSubsystem elevator;
+  private WristSubsystem wrist;
+  private IntakeSubsystem intake;
 
-  public Autos(LocalizationSubsystem localization, SwerveSubsystem swerve, ImuSubsystem imu) {
+  public Autos(
+      LocalizationSubsystem localization,
+      SwerveSubsystem swerve,
+      ImuSubsystem imu,
+      SuperstructureManager superstructure,
+      ElevatorSubsystem elevator,
+      WristSubsystem wrist,
+      IntakeSubsystem intake) {
     this.localization = localization;
     this.swerve = swerve;
     this.imu = imu;
+    this.superstructure = superstructure;
+    this.elevator = elevator;
+    this.wrist = wrist;
+    this.intake = intake;
+
+    // this.states = states;
 
     autoChooser.addDefaultOption("Do nothing", getDoNothingAuto());
     autoChooser.addOption("Balance Auto", getBalanceAuto());
     autoChooser.addOption("Drive Forward", getDriveForward());
-    autoChooser.addOption("BackRightForwardAutoCommand", getTwoAutoScore());
+    autoChooser.addOption("BackRightForwardAutoCommand", backRightForwardAutoCommand());
+    autoChooser.addOption("ScoreCubeAndBackCommand", scoreAndBackCommand());
 
     PPSwerveControllerCommand.setLoggingCallbacks(
         (PathPlannerTrajectory activeTrajectory) -> {
@@ -68,11 +96,27 @@ public class Autos {
   }
 
   private Command getBalanceAuto() {
-    return followTrajectoryCommand(Paths.BALANCE_AUTO, true).withName("BalanceAutoCommand");
+    return followTrajectoryCommand(Paths.BALANCE_AUTO, true)
+        .withName("BalanceAutoCommand"); // superstructure.getScoreCOmmand()
   }
 
-  private Command getTwoAutoScore() {
-    return followTrajectoryCommand(Paths.BACK_RIGHT_FORWARD, true).withName("BackRightForwardAutoCommand");
+  private Command backRightForwardAutoCommand() {
+    return followTrajectoryCommand(Paths.BACK_RIGHT_FORWARD, true)
+        .withName("BackRightForwardAutoCommand");
+  }
+
+  // andThen(null)
+
+  private Command scoreAndBackCommand() {
+    return superstructure
+        .setIntakeModeCommand(HeldGamePiece.CUBE)
+        .andThen(() -> intake.setPreloadForAutos(HeldGamePiece.CUBE))
+        .andThen(superstructure.getScoreCommand())
+        .andThen(
+            followTrajectoryCommand(Paths.RIGHT_SIDE_GRID_TO_OPPOSITE_PIECE, true)
+                .alongWith(Commands.waitSeconds(4).andThen((superstructure.getIntakeCommand()))))
+        .andThen(followTrajectoryCommand(Paths.NODE_TO_RIGHT, false))
+        .andThen(superstructure.getScoreCommand());
   }
 
   private CommandBase getDoNothingAuto() {
@@ -80,13 +124,17 @@ public class Autos {
   }
 
   public Command getAutoCommand() {
+    Command homingCommand =
+        new ElevatorHomingCommand(elevator)
+            .andThen(new WristHomingCommand(wrist))
+            .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED));
     Command command = autoChooser.get();
 
     if (command != null) {
-      return command;
+      return homingCommand.andThen(command);
     }
 
-    return getDoNothingAuto();
+    return homingCommand.andThen(getDoNothingAuto());
   }
 
   private Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
@@ -108,7 +156,7 @@ public class Autos {
             // y controller
             new PIDController(5, 0, 0),
             // theta controller
-            new PIDController(1 , 0, 0),
+            new PIDController(1, 0, 0),
             states -> swerve.setModuleStates(states, false),
             false,
             swerve));

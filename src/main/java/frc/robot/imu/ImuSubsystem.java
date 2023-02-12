@@ -6,10 +6,10 @@ package frc.robot.imu;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.util.LifecycleSubsystem;
+import org.littletonrobotics.junction.Logger;
 
 public class ImuSubsystem extends LifecycleSubsystem {
   private final Pigeon2 imu;
@@ -19,7 +19,7 @@ public class ImuSubsystem extends LifecycleSubsystem {
   }
 
   public void robotPeriodic() {
-    SmartDashboard.putNumber("Gyro sensor", this.getRobotHeading().getDegrees());
+    Logger.getInstance().recordOutput("Gyro sensor", this.getRobotHeading().getDegrees());
   }
 
   public Rotation2d getRobotHeading() {
@@ -27,6 +27,7 @@ public class ImuSubsystem extends LifecycleSubsystem {
   }
 
   public void zero() {
+    // TODO: This should use setAngle()
     this.imu.setYaw(0);
   }
 

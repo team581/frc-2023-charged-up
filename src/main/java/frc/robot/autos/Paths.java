@@ -10,11 +10,16 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import frc.robot.managers.SuperstructureManager;
 
 public class Paths {
   private static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(1, 4);
 
-  private Paths() {}
+  private SuperstructureManager superstructure;
+
+  private Paths(SuperstructureManager superstructure) {
+    this.superstructure = superstructure;
+  }
 
   public static final PathPlannerTrajectory BALANCE_AUTO =
       PathPlanner.generatePath(
@@ -40,9 +45,38 @@ public class Paths {
           new PathPoint(
               new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)),
           new PathPoint(
-              new Translation2d(-1.21, 0.0), Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(-90)),
+              new Translation2d(-1.21, 0.0),
+              Rotation2d.fromDegrees(90),
+              Rotation2d.fromDegrees(-90)),
           new PathPoint(
-              new Translation2d(-1.21, -1.95), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)),
+              new Translation2d(-1.21, -1.95),
+              Rotation2d.fromDegrees(0),
+              Rotation2d.fromDegrees(0)),
           new PathPoint(
-              new Translation2d(0.0, -1.95), Rotation2d.fromDegrees(-90), Rotation2d.fromDegrees(0)));
+              new Translation2d(0.0, -1.95),
+              Rotation2d.fromDegrees(-90),
+              Rotation2d.fromDegrees(0)));
+
+  public static final PathPlannerTrajectory ORIGIN =
+      PathPlanner.generatePath(
+          PATH_CONSTRAINTS,
+          new PathPoint(
+              new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)),
+          new PathPoint(
+              new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)));
+
+  public static final PathPlannerTrajectory RIGHT_SIDE_GRID_TO_OPPOSITE_PIECE =
+      PathPlanner.generatePath(
+          PATH_CONSTRAINTS,
+          new PathPoint(
+              new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)),
+          new PathPoint(
+              new Translation2d(-4.6, -1.1049),
+              Rotation2d.fromDegrees(0),
+              Rotation2d.fromDegrees(180)));
+
+  public static final PathPlannerTrajectory NODE_TO_RIGHT =
+    PathPlanner.generatePath(PATH_CONSTRAINTS, new PathPoint(
+      new Translation2d(-4.6, -1.1049), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+      new PathPoint(new Translation2d(0.0, -1.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)));
 }

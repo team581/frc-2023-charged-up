@@ -88,7 +88,7 @@ public class Robot extends LoggedRobot {
   private final CommandXboxController operatorController =
       new CommandXboxController(Config.OPERATOR_CONTROLLER_PORT);
 
-  private final Autos autos = new Autos(localization, swerve, imu);
+  private final Autos autos = new Autos(localization, swerve, imu, superstructureManager, elevator, wrist, intake);
 
   private Command autoCommand = autos.getAutoCommand();
 
@@ -202,6 +202,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopPeriodic() {
+    // TODO: Create teleop drive command
     boolean openLoop = false; // !driveController.start().getAsBoolean();
     swerve.driveTeleop(
         driveController.getSidewaysPercentage(),
