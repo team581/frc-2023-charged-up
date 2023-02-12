@@ -6,7 +6,7 @@ package frc.robot.managers;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.ScoringLocation;
+import frc.robot.ManualScoringLocation;
 import frc.robot.States;
 import frc.robot.intake.HeldGamePiece;
 import frc.robot.intake.IntakeSubsystem;
@@ -62,16 +62,16 @@ public class SuperstructureManager extends LifecycleSubsystem {
   }
 
   public Command getScoreCommand() {
-    return getManualScoreCommand(ScoringLocation.LOW).andThen(getCommand(States.STOWED));
+    return getManualScoreCommand(ManualScoringLocation.LOW).andThen(getCommand(States.STOWED));
   }
 
-  public Command getManualScoreCommand(ScoringLocation scoringLocation) {
-    if (scoringLocation == ScoringLocation.LOW) {
+  public Command getManualScoreCommand(ManualScoringLocation scoringLocation) {
+    if (scoringLocation == ManualScoringLocation.LOW) {
       return Commands.either(
           getCommand(States.CUBE_NODE_LOW),
           getCommand(States.CONE_NODE_LOW),
           () -> intake.getGamePiece() == HeldGamePiece.CUBE);
-    } else if (scoringLocation == ScoringLocation.MID) {
+    } else if (scoringLocation == ManualScoringLocation.MID) {
       return Commands.either(
           getCommand(States.CUBE_NODE_MID),
           getCommand(States.CONE_NODE_MID),

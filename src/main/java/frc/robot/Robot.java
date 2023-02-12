@@ -156,17 +156,17 @@ public class Robot extends LoggedRobot {
     // Manual score low
     operatorController
         .a()
-        .onTrue(superstructureManager.getManualScoreCommand(ScoringLocation.LOW))
+        .onTrue(superstructureManager.getManualScoreCommand(ManualScoringLocation.LOW))
         .onFalse(superstructureManager.getCommand(States.STOWED));
     // Manual score mid
     operatorController
         .b()
-        .onTrue(superstructureManager.getManualScoreCommand(ScoringLocation.MID))
+        .onTrue(superstructureManager.getManualScoreCommand(ManualScoringLocation.MID))
         .onFalse(superstructureManager.getCommand(States.STOWED));
     // Manual score high
     operatorController
         .y()
-        .onTrue(superstructureManager.getManualScoreCommand(ScoringLocation.HIGH))
+        .onTrue(superstructureManager.getManualScoreCommand(ManualScoringLocation.HIGH))
         .onFalse(superstructureManager.getCommand(States.STOWED));
 
     // Stow all

@@ -5,6 +5,8 @@
 package frc.robot.controller;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.ManualScoringLocation;
+import frc.robot.NodeKind;
 
 public class DriveController extends CommandXboxController {
   public DriveController(int port) {
@@ -22,7 +24,7 @@ public class DriveController extends CommandXboxController {
 
   /** The rotation across the robot's x-axis as a percentage (<code>-1 <= x <= 1</code>) */
   public double getSidewaysPercentage() {
-    return joystickScale(-1 * getLeftX());
+    return joystickScale(getLeftX());
   }
 
   /** The translation across the robot's y-axis as a percentage (<code>-1 <= x <= 1</code>) */
@@ -33,5 +35,46 @@ public class DriveController extends CommandXboxController {
   /** The rotation about the robot's z-axis as a percentage (<code>-1 <= x <= 1</code>) */
   public double getThetaPercentage() {
     return joystickScale(-1 * getRightX());
+  }
+
+  public NodeKind getAutoScoreLocation() {
+    double rightX = getRightX();
+    double rightY = -getRightY();
+
+    ManualScoringLocation scoringHeight;
+
+    if (rightY > 0.7) {
+      scoringHeight = ManualScoringLocation.HIGH;
+    } else if (rightY < -0.7) {
+      scoringHeight = ManualScoringLocation.LOW;
+    } else {
+      scoringHeight = ManualScoringLocation.MID;
+    }
+
+    if (rightX < -0.7) {
+      if (scoringHeight == ManualScoringLocation.LOW) {
+        return NodeKind.LEFT_HYBRID;
+      } else if (scoringHeight == ManualScoringLocation.MID) {
+        return NodeKind.LEFT_MID_CONE;
+      } else if (scoringHeight == ManualScoringLocation.HIGH) {
+        return NodeKind.LEFT_HIGH_CONE;
+      }
+    } else if (rightX > 0.7) {
+      if (scoringHeight == ManualScoringLocation.LOW) {
+        return NodeKind.RIGHT_HYBRID;
+      } else if (scoringHeight == ManualScoringLocation.MID) {
+        return NodeKind.RIGHT_MID_CONE;
+      } else if (scoringHeight == ManualScoringLocation.HIGH) {
+        return NodeKind.RIGHT_HIGH_CONE;
+      }
+    }
+
+    if (scoringHeight == ManualScoringLocation.LOW) {
+      return NodeKind.CENTER_HYBRID;
+    } else if (scoringHeight == ManualScoringLocation.HIGH) {
+      return NodeKind.CENTER_HIGH_CUBE;
+    }
+
+    return NodeKind.CENTER_MID_CUBE;
   }
 }

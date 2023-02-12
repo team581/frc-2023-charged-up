@@ -4,8 +4,16 @@
 
 package frc.robot;
 
-public enum ScoringLocation {
-  LOW,
-  MID,
-  HIGH;
+public enum NodeKind {
+  LEFT_HYBRID,
+  LEFT_MID_CONE,
+  LEFT_HIGH_CONE,
+
+  RIGHT_HYBRID,
+  RIGHT_MID_CONE,
+  RIGHT_HIGH_CONE,
+
+  CENTER_HYBRID,
+  CENTER_MID_CUBE,
+  CENTER_HIGH_CUBE;
 }
