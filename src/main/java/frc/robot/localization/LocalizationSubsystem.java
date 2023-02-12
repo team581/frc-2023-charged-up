@@ -18,6 +18,8 @@ import frc.robot.util.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 public class LocalizationSubsystem extends LifecycleSubsystem {
+  private static final double MAX_APRILTAG_DISTANCE = Units.feetToMeters(15);
+
   private final SwerveSubsystem swerve;
   private final ImuSubsystem imu;
 
@@ -67,9 +69,27 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0) == 1;
 
     if (rawPose.length > 0 && hasTargets) {
+      LimelightHelpers.LimelightResults llresults = LimelightHelpers.getLatestResults("");
+
+      boolean isValid = true;
+
+      for (int i = 0; i < llresults.targetingResults.targets_Retro.length; i++) {
+        LimelightHelpers.LimelightTarget_Retro item = llresults.targetingResults.targets_Retro[i];
+        Pose2d apriltagPose = item.getTargetPose_RobotSpace2D();
+        if (Math.abs(apriltagPose.getX()) > MAX_APRILTAG_DISTANCE
+            || Math.abs(apriltagPose.getY()) > MAX_APRILTAG_DISTANCE) {
+          isValid = false;
+          break;
+        }
+      }
+
       Pose2d visionPose = new Pose2d(rawPose[0], rawPose[1], imu.getRobotHeading());
 
-      if (rawPose[0] != 0.0 && rawPose[1] != 0.0) {
+      if (rawPose[0] == 0.0 && rawPose[1] == 0.0) {
+        isValid = false;
+      }
+
+      if (isValid) {
         poseEstimator.addVisionMeasurement(visionPose, Timer.getFPGATimestamp() - 0.02);
         Logger.getInstance().recordOutput("Localization/VisionPose", visionPose);
       }
