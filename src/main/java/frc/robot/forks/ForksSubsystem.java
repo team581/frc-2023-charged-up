@@ -64,5 +64,6 @@ public class ForksSubsystem extends LifecycleSubsystem {
     Logger.getInstance().recordOutput("Forks/Current", motor.getSupplyCurrent());
     Logger.getInstance().recordOutput("Forks/Angle", getAngle().getDegrees());
     Logger.getInstance().recordOutput("Forks/Mode", mode.toString());
+    Logger.getInstance().recordOutput("Forks/HomingState", homingState.toString());
   }
 }
