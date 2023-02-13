@@ -4,6 +4,9 @@
 
 package frc.robot.swerve;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -16,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
 import frc.robot.imu.ImuSubsystem;
+import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.util.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
 
@@ -165,6 +169,23 @@ public class SwerveSubsystem extends LifecycleSubsystem {
                 openLoop);
           }
         },
+        this);
+  }
+
+  public Command getFollowTrajectoryCommand(
+      PathPlannerTrajectory traj, LocalizationSubsystem localization) {
+    return new PPSwerveControllerCommand(
+        traj,
+        localization::getPose,
+        SwerveSubsystem.KINEMATICS,
+        // x controller
+        new PIDController(5, 0, 0),
+        // y controller
+        new PIDController(5, 0, 0),
+        // theta controller
+        new PIDController(1, 0, 0),
+        states -> setModuleStates(states, false),
+        false,
         this);
   }
 }
