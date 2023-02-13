@@ -28,6 +28,7 @@ public class SuperstructureManager extends LifecycleSubsystem {
   private SuperstructureState goal = States.STOWED;
   private HeldGamePiece mode = HeldGamePiece.CUBE;
   private LocalizationSubsystem localization;
+  private boolean autoScoreEnabled = false;
 
   public SuperstructureManager(
       SuperstructureMotionManager motionManager,
@@ -127,5 +128,13 @@ public class SuperstructureManager extends LifecycleSubsystem {
     } else {
       return new AutoScoreLocation(GridKind.RIGHT, node, nearestGrid);
     }
+  }
+
+  public boolean isAutoScoreEnabled() {
+    return autoScoreEnabled;
+  }
+
+  public void setAutoScoreEnabled(boolean enabled) {
+    autoScoreEnabled = enabled;
   }
 }

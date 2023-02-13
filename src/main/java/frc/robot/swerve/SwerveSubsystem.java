@@ -10,7 +10,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.config.Config;
+import frc.robot.controller.DriveController;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.util.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
@@ -134,5 +138,33 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
     Logger.getInstance().recordOutput("Swerve/getX", robotTranslation.getX());
     Logger.getInstance().recordOutput("Swerve/getY", robotTranslation.getY());
+  }
+
+  public Command getDriveTeleopCommand(DriveController controller) {
+    return Commands.run(
+        () -> {
+          if (!DriverStation.isTeleopEnabled()) {
+            return;
+          }
+
+          boolean openLoop = false;
+
+          if (Config.IS_SPIKE) {
+            driveTeleop(
+                -controller.getSidewaysPercentage(),
+                -controller.getForwardPercentage(),
+                -controller.getThetaPercentage(),
+                true,
+                openLoop);
+          } else {
+            driveTeleop(
+                -controller.getSidewaysPercentage(),
+                controller.getForwardPercentage(),
+                controller.getThetaPercentage(),
+                true,
+                openLoop);
+          }
+        },
+        this);
   }
 }

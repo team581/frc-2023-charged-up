@@ -135,6 +135,8 @@ public class Robot extends LoggedRobot {
   public void robotInit() {}
 
   private void configureButtonBindings() {
+    swerve.setDefaultCommand(swerve.getDriveTeleopCommand(driveController));
+
     // Intake
     driveController
         .leftTrigger(0.3)
@@ -209,23 +211,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopPeriodic() {
-    boolean openLoop = false; // !driveController.start().getAsBoolean();
 
-    if (Config.IS_SPIKE) {
-      swerve.driveTeleop(
-          -driveController.getSidewaysPercentage(),
-          -driveController.getForwardPercentage(),
-          -driveController.getThetaPercentage(),
-          true,
-          openLoop);
-    } else {
-      swerve.driveTeleop(
-          -driveController.getSidewaysPercentage(),
-          driveController.getForwardPercentage(),
-          driveController.getThetaPercentage(),
-          true,
-          openLoop);
-    }
   }
 
   @Override
