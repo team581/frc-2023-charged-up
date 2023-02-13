@@ -5,6 +5,9 @@
 package frc.robot.config;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.swerve.SwerveCorner;
 import frc.robot.swerve.SwerveModuleConstants;
@@ -86,6 +89,8 @@ public class Config {
   public static final double STEER_MOTOR_LIMITS = IS_SPIKE ? 35 : 0.0;
   public static final boolean SWERVE_MOTOR_LIMITS_ENABLED = IS_SPIKE ? true : true;
   public static final double STEER_MOTOR_OUTPUT_CONFIGS = IS_SPIKE ? 0 : 0;
+
+  public static final double ROBOT_CENTER_TO_FRONT = IS_SPIKE ? 0.0 : Units.inchesToMeters(17.5);
 
   private Config() {}
 }
