@@ -61,7 +61,7 @@ public class ForksSubsystem extends LifecycleSubsystem {
 
   @Override
   public void robotPeriodic() {
-    Logger.getInstance().recordOutput("Forks/Current", motor.getStatorCurrent());
+    Logger.getInstance().recordOutput("Forks/Current", motor.getSupplyCurrent());
     Logger.getInstance().recordOutput("Forks/Angle", getAngle().getDegrees());
     Logger.getInstance().recordOutput("Forks/Mode", mode.toString());
   }
