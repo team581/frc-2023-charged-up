@@ -79,6 +79,7 @@ public class Paths {
               Rotation2d.fromDegrees(180),
               Rotation2d.fromDegrees(180)));
 
+<<<<<<< HEAD
   public static final PathPlannerTrajectory RIGHT_PRELOAD_TO_RED_GRID_RIGHT_CENTER =
       PathPlanner.generatePath(
           PATH_CONSTRAINTS,
@@ -90,4 +91,15 @@ public class Paths {
               new Translation2d(Landmarks.RED_GRID_RIGHT_NODE_CENTER.getX() - Config.ROBOT_CENTER_TO_FRONT, Landmarks.RED_GRID_RIGHT_NODE_CENTER.getY()),
               Rotation2d.fromDegrees(0),
               Rotation2d.fromDegrees(0)));
+=======
+  public static final PathPlannerTrajectory NODE_TO_RIGHT =
+      PathPlanner.generatePath(
+          PATH_CONSTRAINTS,
+          new PathPoint(
+              new Translation2d(-4.6, -1.1049),
+              Rotation2d.fromDegrees(0),
+              Rotation2d.fromDegrees(180)),
+          new PathPoint(
+              new Translation2d(0.0, -1.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)));
+>>>>>>> d85ca0745250ced1cc8b4fa517650a85bfec7381
 }

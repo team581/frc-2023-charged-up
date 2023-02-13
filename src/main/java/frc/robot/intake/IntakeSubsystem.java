@@ -18,7 +18,6 @@ public class IntakeSubsystem extends LifecycleSubsystem {
   // numbers above are placeholders for current limits
   private HeldGamePiece gamePiece = HeldGamePiece.NOTHING;
 
-
   private IntakeMode mode = IntakeMode.STOPPED;
 
   private final TalonFX motor;
@@ -109,7 +108,6 @@ public class IntakeSubsystem extends LifecycleSubsystem {
   public HeldGamePiece getGamePiece() {
     return gamePiece;
   }
-
 
   public void setPreloadForAutos(HeldGamePiece gamePiece) {
     this.gamePiece = gamePiece;
