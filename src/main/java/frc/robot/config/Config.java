@@ -38,15 +38,6 @@ public class Config {
   public static final Translation2d SWERVE_BACK_RIGHT_LOCATION =
       IS_SPIKE ? new Translation2d(-0.263525, -0.263525) : new Translation2d(-0.381, -0.381);
 
-  public static final Translation2d SWERVE_FRONT_LEFT_LOCATION =
-      IS_SPIKE ? new Translation2d(0.263525, 0.263525) : new Translation2d(0.381, 0.381);
-  public static final Translation2d SWERVE_FRONT_RIGHT_LOCATION =
-      IS_SPIKE ? new Translation2d(0.263525, -0.263525) : new Translation2d(0.381, -0.381);
-  public static final Translation2d SWERVE_BACK_LEFT_LOCATION =
-      IS_SPIKE ? new Translation2d(-0.263525, 0.263525) : new Translation2d(-0.381, 0.381);
-  public static final Translation2d SWERVE_BACK_RIGHT_LOCATION =
-      IS_SPIKE ? new Translation2d(-0.263525, -0.263525) : new Translation2d(-0.381, -0.381);
-
   public static final int SWERVE_FL_DRIVE_MOTOR_ID = 8;
   public static final int SWERVE_FL_STEER_MOTOR_ID = 9;
   public static final int SWERVE_FL_CANCODER_ID = 13;

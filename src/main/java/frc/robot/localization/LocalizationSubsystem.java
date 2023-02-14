@@ -8,7 +8,6 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -26,7 +25,6 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
 
   private final SwerveDrivePoseEstimator poseEstimator;
   private final SwerveDriveOdometry odometry;
-  private Pose2d startPose;
   private boolean visionWorking = false;
 
   public LocalizationSubsystem(SwerveSubsystem swerve, ImuSubsystem imu) {
@@ -44,16 +42,6 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
     odometry =
         new SwerveDriveOdometry(
             SwerveSubsystem.KINEMATICS, imu.getRobotHeading(), swerve.getModulePositions());
-
-    startPose =
-        new Pose2d(
-            new Translation2d(Units.inchesToMeters(582.0), Units.inchesToMeters(15.0)),
-            imu.getRobotHeading());
-  }
-
-  @Override
-  public void teleopInit() {
-    resetPose(startPose, imu.getRobotHeading());
   }
 
   @Override
