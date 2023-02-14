@@ -19,6 +19,8 @@ import frc.robot.util.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 public class LocalizationSubsystem extends LifecycleSubsystem {
+  private static final double MAX_APRILTAG_DISTANCE = Units.feetToMeters(15);
+
   private final SwerveSubsystem swerve;
   private final ImuSubsystem imu;
 
@@ -36,9 +38,8 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
             imu.getRobotHeading(),
             swerve.getModulePositions(),
             new Pose2d(),
-            // TODO: tune standard deviations
             VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-            VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+            VecBuilder.fill(0.0334, 0.1391, Units.degreesToRadians(30)));
 
     odometry =
         new SwerveDriveOdometry(
@@ -54,6 +55,9 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
   public void teleopInit() {
     resetPose(startPose, imu.getRobotHeading());
   }
+
+  @Override
+  public void teleopInit() {}
 
   @Override
   public void robotPeriodic() {
@@ -74,17 +78,35 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
             .getEntry("botpose_wpiblue")
             .getDoubleArray(emptyArray);
 
-    if (rawPose.length > 0) {
-      Pose2d visionPose =
-          new Pose2d(
-              Units.metersToInches(rawPose[0]),
-              Units.metersToInches(rawPose[1]),
-              Rotation2d.fromDegrees(rawPose[4]));
-      poseEstimator.addVisionMeasurement(visionPose, Timer.getFPGATimestamp());
-      Logger.getInstance().recordOutput("Localization/VisionPose", visionPose);
-      visionWorking = true;
-    } else {
-      visionWorking = false;
+    boolean hasTargets =
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0) == 1;
+
+    if (rawPose.length > 0 && hasTargets) {
+      LimelightHelpers.LimelightResults llresults = LimelightHelpers.getLatestResults("");
+
+      boolean isValid = true;
+
+      for (int i = 0; i < llresults.targetingResults.targets_Retro.length; i++) {
+        LimelightHelpers.LimelightTarget_Retro item = llresults.targetingResults.targets_Retro[i];
+        Pose2d apriltagPose = item.getTargetPose_RobotSpace2D();
+        if (Math.abs(apriltagPose.getX()) > MAX_APRILTAG_DISTANCE
+            || Math.abs(apriltagPose.getY()) > MAX_APRILTAG_DISTANCE) {
+          isValid = false;
+          break;
+        }
+      }
+
+      Pose2d visionPose = new Pose2d(rawPose[0], rawPose[1], imu.getRobotHeading());
+
+      if (rawPose[0] == 0.0 && rawPose[1] == 0.0) {
+        isValid = false;
+      }
+
+      if (isValid) {
+        poseEstimator.addVisionMeasurement(visionPose, Timer.getFPGATimestamp() - 0.02);
+        Logger.getInstance().recordOutput("Localization/VisionPose", visionPose);
+        visionWorking = true;
+      }
     }
   }
 
@@ -92,10 +114,14 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
     return poseEstimator.getEstimatedPosition();
   }
 
+  public Pose2d getOdometryPose() {
+    return odometry.getPoseMeters();
+  }
+
   public void resetPose(Pose2d pose, Rotation2d gyroAngle) {
     imu.setAngle(gyroAngle);
-    poseEstimator.resetPosition(imu.getRobotHeading(), swerve.getModulePositions(), pose);
-    odometry.resetPosition(imu.getRobotHeading(), swerve.getModulePositions(), pose);
+    poseEstimator.resetPosition(gyroAngle, swerve.getModulePositions(), pose);
+    odometry.resetPosition(gyroAngle, swerve.getModulePositions(), pose);
   }
 
   public boolean isVisionWorking() {

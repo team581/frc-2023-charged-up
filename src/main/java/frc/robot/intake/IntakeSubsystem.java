@@ -22,12 +22,12 @@ public class IntakeSubsystem extends LifecycleSubsystem {
 
   private final TalonFX motor;
 
-  private final LinearFilter filter = LinearFilter.movingAverage(7);
+  private final LinearFilter coneFilter = LinearFilter.movingAverage(9);
+  private final LinearFilter cubeFilter = LinearFilter.movingAverage(5);
 
   public IntakeSubsystem(TalonFX motor) {
     this.motor = motor;
     motor.setInverted(true);
-    // TODO: Verify behavior with this current limit enabled
     motor.configSupplyCurrentLimit(CURRENT_LIMIT);
   }
 
@@ -35,35 +35,37 @@ public class IntakeSubsystem extends LifecycleSubsystem {
   public void robotPeriodic() {
     Logger.getInstance().recordOutput("Intake/Mode", mode.toString());
     Logger.getInstance().recordOutput("Intake/HeldGamePiece", gamePiece.toString());
-    Logger.getInstance().recordOutput("Intake/Current", motor.getStatorCurrent());
+    Logger.getInstance().recordOutput("Intake/Current", motor.getSupplyCurrent());
     Logger.getInstance().recordOutput("Intake/Voltage", motor.getMotorOutputVoltage());
   }
 
   @Override
   public void enabledPeriodic() {
-    double current = filter.calculate(motor.getStatorCurrent());
-    Logger.getInstance().recordOutput("Intake/FilteredCurrent", current);
+    double coneCurrent = coneFilter.calculate(motor.getSupplyCurrent());
+    double cubeCurrent = cubeFilter.calculate(motor.getSupplyCurrent());
+    Logger.getInstance().recordOutput("Intake/FilteredConeCurrent", coneCurrent);
+    Logger.getInstance().recordOutput("Intake/FilteredCubeCurrent", cubeCurrent);
 
     if (mode == IntakeMode.INTAKE_CUBE) {
-      if (current > 40) {
+      if (cubeCurrent > 40) {
         gamePiece = HeldGamePiece.CUBE;
       }
     } else if (mode == IntakeMode.INTAKE_CONE) {
-      if (current > 95) {
+      if (coneCurrent > 45) {
         gamePiece = HeldGamePiece.CONE;
       }
     } else if (mode == IntakeMode.OUTTAKE_CUBE) {
-      if (current < 12 && current > 7) {
+      if (cubeCurrent < 5 && coneCurrent > 2) {
         gamePiece = HeldGamePiece.NOTHING;
       }
     } else if (mode == IntakeMode.OUTTAKE_CONE) {
-      if (current < 12 && current > 7) {
+      if (coneCurrent < 1.3 && coneCurrent > 0.2) {
         gamePiece = HeldGamePiece.NOTHING;
       }
     }
 
     if (mode == IntakeMode.OUTTAKE_CUBE) {
-      motor.set(TalonFXControlMode.PercentOutput, -0.3);
+      motor.set(TalonFXControlMode.PercentOutput, -0.2);
     } else if (mode == IntakeMode.OUTTAKE_CONE) {
       motor.set(TalonFXControlMode.PercentOutput, 0.15);
     } else if (gamePiece == HeldGamePiece.CUBE) {

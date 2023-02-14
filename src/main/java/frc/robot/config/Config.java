@@ -27,7 +27,16 @@ public class Config {
   public static final int PIGEON_ID = 1;
 
   public static final double SWERVE_STEER_GEARING_REDUCTION = IS_SPIKE ? 150.0 / 7.0 : 12.8;
-  public static final double SWERVE_DRIVE_GEARING_REDUCTION = IS_SPIKE ? 6.75 : 10.0;
+  public static final double SWERVE_DRIVE_GEARING_REDUCTION = IS_SPIKE ? 6.75 : 8.14;
+
+  public static final Translation2d SWERVE_FRONT_LEFT_LOCATION =
+      IS_SPIKE ? new Translation2d(0.263525, 0.263525) : new Translation2d(0.381, 0.381);
+  public static final Translation2d SWERVE_FRONT_RIGHT_LOCATION =
+      IS_SPIKE ? new Translation2d(0.263525, -0.263525) : new Translation2d(0.381, -0.381);
+  public static final Translation2d SWERVE_BACK_LEFT_LOCATION =
+      IS_SPIKE ? new Translation2d(-0.263525, 0.263525) : new Translation2d(-0.381, 0.381);
+  public static final Translation2d SWERVE_BACK_RIGHT_LOCATION =
+      IS_SPIKE ? new Translation2d(-0.263525, -0.263525) : new Translation2d(-0.381, -0.381);
 
   public static final Translation2d SWERVE_FRONT_LEFT_LOCATION =
       IS_SPIKE ? new Translation2d(0.263525, 0.263525) : new Translation2d(0.381, 0.381);
@@ -80,13 +89,13 @@ public class Config {
   // 104.58
   public static final int ELEVATOR_MOTOR_ID = 14;
   public static final double ELEVATOR_GEARING = IS_SPIKE ? 9.0 : 20.0;
-  public static final double ELEVATOR_MIN_HEIGHT = IS_SPIKE ? 1 : 0.5;
+  public static final double ELEVATOR_MIN_HEIGHT = IS_SPIKE ? 0 : 0.5;
   public static final double ELEVATOR_MAX_HEIGHT = IS_SPIKE ? 25 : 12;
   public static final double ELEVATOR_KF = IS_SPIKE ? 0 : 0;
   public static final double ELEVATOR_KP = IS_SPIKE ? 0.7 : 0.8;
   public static final double ELEVATOR_KI = IS_SPIKE ? 0 : 0;
   public static final double ELEVATOR_KD = IS_SPIKE ? 0.1 : 0;
-  public static final double ELEVATOR_ARB_F = IS_SPIKE ? 0.08 : 0; // Change back to 1
+  public static final double ELEVATOR_ARB_F = IS_SPIKE ? 0.08 : 0;
   public static final int ELEVATOR_CRUISE_VELOCITY = IS_SPIKE ? 20000 : 15000;
   public static final int ELEVATOR_ACCELERATION = IS_SPIKE ? 30000 : 27500;
   public static final boolean ELEVATOR_INVERTED = IS_SPIKE ? false : true;
@@ -96,12 +105,12 @@ public class Config {
 
   public static final int WRIST_MOTOR_ID = 16;
   public static final double WRIST_GEARING = IS_SPIKE ? 64.0 * 2 : 48.0 * 2.0;
-  public static final int WRIST_MOTION_CRUISE_VELOCITY = IS_SPIKE ? 20000 : 20000;
   public static final int WRIST_KF = IS_SPIKE ? 0 : 0;
-  public static final double WRIST_KP = IS_SPIKE ? 0.15 : 0.1;
+  public static final double WRIST_KP = IS_SPIKE ? 0.25 : 0.1;
   public static final int WRIST_KI = IS_SPIKE ? 0 : 0;
   public static final int WRIST_KD = IS_SPIKE ? 0 : 0;
-  public static final int WRIST_MOTION_ACCELERATION = IS_SPIKE ? 55000 : 50000;
+  public static final int WRIST_MOTION_ACCELERATION = IS_SPIKE ? 65000 : 50000;
+  public static final int WRIST_MOTION_CRUISE_VELOCITY = IS_SPIKE ? 27500 : 20000;
   public static final double WRIST_HOMED_CURRENT = IS_SPIKE ? 15 : 15;
   public static final Rotation2d WRIST_HOMED_ANGLE =
       IS_SPIKE ? Rotation2d.fromDegrees(0) : Rotation2d.fromDegrees(133.0);
@@ -128,6 +137,10 @@ public class Config {
 
   public static final double STEER_MOTOR_LIMITS = IS_SPIKE ? 35 : 0.0;
   public static final boolean SWERVE_MOTOR_LIMITS_ENABLED = IS_SPIKE ? true : true;
+
+  public static final double SUPERSTRUCTURE_COLLISION_HEIGHT = IS_SPIKE ? 0.75 : 26;
+  public static final Rotation2d SUPERSTRUCTURE_WRIST_RANGE =
+      IS_SPIKE ? Rotation2d.fromDegrees(50) : Rotation2d.fromDegrees(13);
 
   private Config() {}
 }

@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.autos.Autos;
+import frc.robot.autoscore.AutoScoreLocation;
 import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
 import frc.robot.elevator.ElevatorSubsystem;
@@ -79,12 +80,12 @@ public class Robot extends LoggedRobot {
       new IntakeSubsystem(new TalonFX(Config.INTAKE_MOTOR_ID, "581CANivore"));
   private final SuperstructureMotionManager superstructureMotionManager =
       new SuperstructureMotionManager(elevator, wrist);
-  private final SuperstructureManager superstructureManager =
-      new SuperstructureManager(superstructureMotionManager, intake);
   private final ImuSubsystem imu = new ImuSubsystem(new Pigeon2(Config.PIGEON_ID, "581CANivore"));
   private final SwerveSubsystem swerve =
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
   private final LocalizationSubsystem localization = new LocalizationSubsystem(swerve, imu);
+  private final SuperstructureManager superstructureManager =
+      new SuperstructureManager(superstructureMotionManager, intake, localization);
   private final LightsSubsystem lights =
       new LightsSubsystem(
           new CANdle(Config.LIGHTS_CANDLE_ID, "581CANivore"),
@@ -142,6 +143,8 @@ public class Robot extends LoggedRobot {
   public void robotInit() {}
 
   private void configureButtonBindings() {
+    swerve.setDefaultCommand(swerve.getDriveTeleopCommand(driveController));
+
     // Intake
     driveController
         .leftTrigger(0.3)
@@ -164,17 +167,17 @@ public class Robot extends LoggedRobot {
     // Manual score low
     operatorController
         .a()
-        .onTrue(superstructureManager.getManualScoreCommand(ScoringLocation.LOW))
+        .onTrue(superstructureManager.getManualScoreCommand(ManualScoringLocation.LOW))
         .onFalse(superstructureManager.getCommand(States.STOWED));
     // Manual score mid
     operatorController
         .b()
-        .onTrue(superstructureManager.getManualScoreCommand(ScoringLocation.MID))
+        .onTrue(superstructureManager.getManualScoreCommand(ManualScoringLocation.MID))
         .onFalse(superstructureManager.getCommand(States.STOWED));
     // Manual score high
     operatorController
         .y()
-        .onTrue(superstructureManager.getManualScoreCommand(ScoringLocation.HIGH))
+        .onTrue(superstructureManager.getManualScoreCommand(ManualScoringLocation.HIGH))
         .onFalse(superstructureManager.getCommand(States.STOWED));
 
     // Stow all
@@ -192,6 +195,12 @@ public class Robot extends LoggedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     SmartDashboard.putData(CommandScheduler.getInstance());
+
+    AutoScoreLocation autoScoreLocation =
+        superstructureManager.getAutoScoreLocation(driveController.getAutoScoreNodeKind());
+    Logger.getInstance().recordOutput("AutoScore/GoalLocation/Pose", autoScoreLocation.pose);
+    Logger.getInstance()
+        .recordOutput("AutoScore/GoalLocation/Node", autoScoreLocation.node.toString());
   }
 
   @Override
@@ -209,15 +218,7 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {
-    boolean openLoop = false; // !driveController.start().getAsBoolean();
-    swerve.driveTeleop(
-        -driveController.getSidewaysPercentage(),
-        -driveController.getForwardPercentage(),
-        -driveController.getThetaPercentage(),
-        true,
-        openLoop);
-  }
+  public void teleopPeriodic() {}
 
   @Override
   public void disabledInit() {}

@@ -6,7 +6,6 @@ package frc.robot.autos;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -14,8 +13,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
@@ -38,7 +35,7 @@ public class Autos {
     autoChooser.addDefaultOption("Do nothing", getDoNothingAuto());
     autoChooser.addOption("Balance Auto", getBalanceAuto());
     autoChooser.addOption("Drive Forward", getDriveForward());
-    autoChooser.addOption("Two Cube Auto Score", getTwoAutoScore());
+    autoChooser.addOption("BackRightForwardAutoCommand", getTwoAutoScore());
 
     PPSwerveControllerCommand.setLoggingCallbacks(
         (PathPlannerTrajectory activeTrajectory) -> {
@@ -64,7 +61,7 @@ public class Autos {
   }
 
   private Command getDriveForward() {
-    return followTrajectoryCommand(Paths.DRIVE_FORWARD, true).withName("DriveForwardAutoCommand");
+    return followTrajectoryCommand(Paths.DRIVE_BACKWARDS, true).withName("DriveForwardAutoCommand");
   }
 
   private Command getBalanceAuto() {
@@ -72,7 +69,8 @@ public class Autos {
   }
 
   private Command getTwoAutoScore() {
-    return followTrajectoryCommand(Paths.TWO_AUTO_SCORE, true).withName("Two auto score");
+    return followTrajectoryCommand(Paths.BACK_RIGHT_FORWARD, true)
+        .withName("BackRightForwardAutoCommand");
   }
 
   private CommandBase getDoNothingAuto() {
@@ -90,27 +88,12 @@ public class Autos {
   }
 
   private Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
-    return new SequentialCommandGroup(
-        new InstantCommand(
+    return Commands.runOnce(
             () -> {
-              // Reset odometry for the first path you run during auto
               if (isFirstPath) {
-                // gyroAngle should not be null
                 localization.resetPose(traj.getInitialHolonomicPose(), imu.getRobotHeading());
               }
-            }),
-        new PPSwerveControllerCommand(
-            traj,
-            localization::getPose,
-            SwerveSubsystem.KINEMATICS,
-            // x controller
-            new PIDController(5, 0, 0),
-            // y controller
-            new PIDController(5, 0, 0),
-            // theta controller
-            new PIDController(0.5, 0, 0),
-            states -> swerve.setModuleStates(states, false),
-            false,
-            swerve));
+            })
+        .andThen(swerve.getFollowTrajectoryCommand(traj, localization));
   }
 }

@@ -37,7 +37,6 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
     this.motor.configMotionAcceleration(Config.ELEVATOR_ACCELERATION);
     // Set current limiting
     this.motor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(false, 40, 40, 1));
-    // TODO: Verify behavior with this current limit enabled
     this.motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 15, 0.5));
   }
 
@@ -104,7 +103,6 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
           goalPositionInSensorUnits,
           DemandType.ArbitraryFeedForward,
           Config.ELEVATOR_ARB_F);
-      // motor.set(TalonFXControlMode.MotionMagic, goalPositionInSensorUnits);
     } else {
       motor.set(ControlMode.PercentOutput, 0);
     }

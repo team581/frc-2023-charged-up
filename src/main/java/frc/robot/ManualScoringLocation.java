@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-public enum ScoringLocation {
+public enum ManualScoringLocation {
   LOW,
   MID,
   HIGH;
