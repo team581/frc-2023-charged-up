@@ -5,9 +5,9 @@
 package frc.robot.elevator;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import frc.robot.config.Config;
@@ -17,8 +17,7 @@ import org.littletonrobotics.junction.Logger;
 public class ElevatorSubsystem extends LifecycleSubsystem {
   private final TalonFX motor;
   private double goalPositionInInches = 0;
-  // TODO: Use Config.ELEVATOR_GEARING here
-  private double sensorUnitsPerElevatorInch = 40960 / (1.75 * Math.PI);
+  private double sensorUnitsPerElevatorInch = (Config.ELEVATOR_GEARING * 2048) / (1.75 * Math.PI);
   private boolean isHoming = false;
   private double homingCurrent = 1.5;
   private boolean goToGoal = false;
@@ -26,19 +25,18 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
 
   public ElevatorSubsystem(TalonFX motor) {
     this.motor = motor;
-    this.motor.setInverted(true);
+    this.motor.setInverted(Config.ELEVATOR_INVERTED);
 
     // Set pid for slot 0
-    this.motor.config_kF(0, 0);
-    this.motor.config_kP(0, 0.8);
-    this.motor.config_kI(0, 0);
-    this.motor.config_kD(0, 0);
+    this.motor.config_kF(0, Config.ELEVATOR_KF);
+    this.motor.config_kP(0, Config.ELEVATOR_KP);
+    this.motor.config_kI(0, Config.ELEVATOR_KI);
+    this.motor.config_kD(0, Config.ELEVATOR_KD);
     // Set motion magic
-    this.motor.configMotionCruiseVelocity(15000);
-    this.motor.configMotionAcceleration(27500);
+    this.motor.configMotionCruiseVelocity(Config.ELEVATOR_CRUISE_VELOCITY);
+    this.motor.configMotionAcceleration(Config.ELEVATOR_ACCELERATION);
     // Set current limiting
     this.motor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(false, 40, 40, 1));
-    // TODO: Verify behavior with this current limit enabled
     this.motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 15, 0.5));
   }
 
@@ -100,8 +98,11 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
       }
     } else if (goToGoal) {
       double goalPositionInSensorUnits = goalPositionInInches * sensorUnitsPerElevatorInch;
-      motor.set(ControlMode.Position, goalPositionInSensorUnits);
-      motor.set(TalonFXControlMode.MotionMagic, goalPositionInSensorUnits);
+      motor.set(
+          ControlMode.MotionMagic,
+          goalPositionInSensorUnits,
+          DemandType.ArbitraryFeedForward,
+          Config.ELEVATOR_ARB_F);
     } else {
       motor.set(ControlMode.PercentOutput, 0);
     }

@@ -4,21 +4,30 @@
 
 package frc.robot.swerve;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.config.Config;
+import frc.robot.controller.DriveController;
 import frc.robot.imu.ImuSubsystem;
+import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.util.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveSubsystem extends LifecycleSubsystem {
-  private static final Translation2d FRONT_LEFT_LOCATION = new Translation2d(0.381, 0.381);
-  private static final Translation2d FRONT_RIGHT_LOCATION = new Translation2d(0.381, -0.381);
-  private static final Translation2d BACK_LEFT_LOCATION = new Translation2d(-0.381, 0.381);
-  private static final Translation2d BACK_RIGHT_LOCATION = new Translation2d(-0.381, -0.381);
+  private static final Translation2d FRONT_LEFT_LOCATION = Config.SWERVE_FRONT_LEFT_LOCATION;
+  private static final Translation2d FRONT_RIGHT_LOCATION = Config.SWERVE_FRONT_RIGHT_LOCATION;
+  private static final Translation2d BACK_LEFT_LOCATION = Config.SWERVE_BACK_LEFT_LOCATION;
+  private static final Translation2d BACK_RIGHT_LOCATION = Config.SWERVE_BACK_RIGHT_LOCATION;
   public static final SwerveDriveKinematics KINEMATICS =
       new SwerveDriveKinematics(
           FRONT_LEFT_LOCATION, FRONT_RIGHT_LOCATION, BACK_LEFT_LOCATION, BACK_RIGHT_LOCATION);
@@ -133,5 +142,50 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
     Logger.getInstance().recordOutput("Swerve/getX", robotTranslation.getX());
     Logger.getInstance().recordOutput("Swerve/getY", robotTranslation.getY());
+  }
+
+  public Command getDriveTeleopCommand(DriveController controller) {
+    return Commands.run(
+        () -> {
+          if (!DriverStation.isTeleopEnabled()) {
+            return;
+          }
+
+          boolean openLoop = false;
+
+          if (Config.IS_SPIKE) {
+            driveTeleop(
+                -controller.getSidewaysPercentage(),
+                -controller.getForwardPercentage(),
+                -controller.getThetaPercentage(),
+                true,
+                openLoop);
+          } else {
+            driveTeleop(
+                -controller.getSidewaysPercentage(),
+                controller.getForwardPercentage(),
+                controller.getThetaPercentage(),
+                true,
+                openLoop);
+          }
+        },
+        this);
+  }
+
+  public Command getFollowTrajectoryCommand(
+      PathPlannerTrajectory traj, LocalizationSubsystem localization) {
+    return new PPSwerveControllerCommand(
+        traj,
+        localization::getPose,
+        SwerveSubsystem.KINEMATICS,
+        // x controller
+        new PIDController(5, 0, 0),
+        // y controller
+        new PIDController(5, 0, 0),
+        // theta controller
+        new PIDController(1, 0, 0),
+        states -> setModuleStates(states, false),
+        false,
+        this);
   }
 }

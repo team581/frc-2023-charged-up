@@ -14,7 +14,6 @@ import frc.robot.util.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 public class WristSubsystem extends LifecycleSubsystem {
-  private static final double HOMED_CURRENT = 15;
   private static final Rotation2d TOLERANCE = Rotation2d.fromDegrees(2);
   private final TalonFX motor;
   private Rotation2d goalAngle = new Rotation2d();
@@ -24,13 +23,13 @@ public class WristSubsystem extends LifecycleSubsystem {
   public WristSubsystem(TalonFX motor) {
     this.motor = motor;
 
-    motor.config_kF(0, 0);
-    motor.config_kP(0, 0.1); // Edit PID and add motion magic
-    motor.config_kI(0, 0);
-    motor.config_kD(0, 0);
+    motor.config_kF(0, Config.WRIST_KF);
+    motor.config_kP(0, Config.WRIST_KP);
+    motor.config_kI(0, Config.WRIST_KI);
+    motor.config_kD(0, Config.WRIST_KD);
 
-    this.motor.configMotionCruiseVelocity(20000);
-    this.motor.configMotionAcceleration(50000);
+    this.motor.configMotionCruiseVelocity(Config.WRIST_MOTION_CRUISE_VELOCITY);
+    this.motor.configMotionAcceleration(Config.WRIST_MOTION_ACCELERATION);
 
     this.motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 25, 25, 0.5));
   }
@@ -61,12 +60,12 @@ public class WristSubsystem extends LifecycleSubsystem {
   @Override
   public void enabledPeriodic() {
     if (isHoming) {
-      motor.set(TalonFXControlMode.PercentOutput, 0.15);
+      motor.set(TalonFXControlMode.PercentOutput, Config.WRIST_HOMING_VOLTAGE);
 
-      if (motor.getStatorCurrent() > HOMED_CURRENT) {
+      if (motor.getStatorCurrent() > Config.WRIST_HOMED_CURRENT) {
         motor.set(TalonFXControlMode.PercentOutput, 0);
         motor.setSelectedSensorPosition(
-            Rotation2d.fromDegrees(133.0).getRotations() * 2048.0 * Config.WRIST_GEARING);
+            Config.WRIST_HOMED_ANGLE.getRotations() * 2048.0 * Config.WRIST_GEARING);
         setAngle(Rotation2d.fromDegrees(80));
         isHoming = false;
         goToGoal = true;
