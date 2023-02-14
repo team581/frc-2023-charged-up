@@ -96,8 +96,7 @@ public class Autos {
   }
 
   private Command getBalanceAuto() {
-    return followTrajectoryCommand(Paths.BALANCE_AUTO, true)
-        .withName("BalanceAutoCommand");
+    return followTrajectoryCommand(Paths.BALANCE_AUTO, true).withName("BalanceAutoCommand");
   }
 
   private Command backRightForwardAutoCommand() {
