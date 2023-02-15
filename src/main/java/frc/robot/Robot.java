@@ -142,7 +142,7 @@ public class Robot extends LoggedRobot {
         .leftTrigger(0.3)
         .onTrue(superstructureManager.getIntakeCommand())
         .onFalse(superstructureManager.getCommand(States.STOWED));
-    // Score
+    // Outtake/score low node
     driveController
         .rightTrigger(0.3)
         .onTrue(superstructureManager.getScoreCommand())
@@ -154,7 +154,10 @@ public class Robot extends LoggedRobot {
     // Set mode to cones
     driveController
         .povDown()
+        // TODO: Support cancelling this command when the button is released early
         .onTrue(superstructureManager.setIntakeModeCommand(HeldGamePiece.CONE));
+    // Outtake gamepiece when manual score is at the right position
+    driveController.rightBumper().onTrue(superstructureManager.finishManualScoreCommand());
 
     // Manual score low
     operatorController
