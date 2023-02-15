@@ -43,6 +43,8 @@ public class LightsSubsystem extends LifecycleSubsystem {
     this.intake = intake;
     this.candle = candle;
     this.localization = localization;
+
+    blinkTimer.start();
   }
 
   @Override
@@ -118,13 +120,11 @@ public class LightsSubsystem extends LifecycleSubsystem {
         offDuration = SLOW_BLINK_DURATION * 2;
       }
 
-      if (time >= onDuration) {
-        if (time >= offDuration) {
-          blinkTimer.reset();
-          candle.setLEDs(0, 0, 0);
-        } else {
-          candle.setLEDs(color8Bit.red, color8Bit.green, color8Bit.blue);
-        }
+      if (time >= offDuration) {
+        blinkTimer.reset();
+        candle.setLEDs(0, 0, 0);
+      } else if (time >= onDuration) {
+        candle.setLEDs(color8Bit.red, color8Bit.green, color8Bit.blue);
       }
     }
 
