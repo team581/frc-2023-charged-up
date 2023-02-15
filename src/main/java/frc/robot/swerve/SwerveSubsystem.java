@@ -155,7 +155,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
           if (Config.IS_SPIKE) {
             driveTeleop(
-                -controller.getSidewaysPercentage(),
+                controller.getSidewaysPercentage(),
                 -controller.getForwardPercentage(),
                 -controller.getThetaPercentage(),
                 true,
