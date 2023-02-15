@@ -88,6 +88,10 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     this.mode = mode;
   }
 
+  public IntakeMode getMode() {
+    return mode;
+  }
+
   public boolean atGoal(IntakeMode goal) {
     if (mode != goal) {
       return false;

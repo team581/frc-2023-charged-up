@@ -25,6 +25,7 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
 
   private final SwerveDrivePoseEstimator poseEstimator;
   private final SwerveDriveOdometry odometry;
+  private boolean visionWorking = false;
 
   public LocalizationSubsystem(SwerveSubsystem swerve, ImuSubsystem imu) {
     this.swerve = swerve;
@@ -92,6 +93,7 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
       if (isValid) {
         poseEstimator.addVisionMeasurement(visionPose, Timer.getFPGATimestamp() - 0.02);
         Logger.getInstance().recordOutput("Localization/VisionPose", visionPose);
+        visionWorking = true;
       }
     }
   }
@@ -108,5 +110,9 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
     imu.setAngle(gyroAngle);
     poseEstimator.resetPosition(gyroAngle, swerve.getModulePositions(), pose);
     odometry.resetPosition(gyroAngle, swerve.getModulePositions(), pose);
+  }
+
+  public boolean isVisionWorking() {
+    return visionWorking;
   }
 }
