@@ -28,6 +28,7 @@ public class SuperstructureManager extends LifecycleSubsystem {
   private final IntakeSubsystem intake;
   private SuperstructureState goal = States.STOWED;
   private HeldGamePiece mode = HeldGamePiece.CUBE;
+  private ScoringState scoringState = ScoringState.IDLE;
   private LocalizationSubsystem localization;
   private boolean autoScoreEnabled = false;
   private IntakeMode manualIntakeMode;
@@ -41,10 +42,17 @@ public class SuperstructureManager extends LifecycleSubsystem {
     this.localization = localization;
   }
 
+  public ScoringState getScoringState() {
+    return scoringState;
+  }
+
   public void set(SuperstructureState state) {
     goal = state;
     motionManager.set(goal.position);
     manualIntakeMode = null;
+    if (state == States.STOWED) {
+      scoringState = ScoringState.IDLE;
+    }
   }
 
   public boolean atGoal(SuperstructureState goal) {
@@ -72,6 +80,9 @@ public class SuperstructureManager extends LifecycleSubsystem {
         intake.setMode(goal.intakeMode);
       }
     }
+    if (scoringState == ScoringState.ALIGNING && motionManager.atGoal(goal.position)) {
+      scoringState = ScoringState.SCORING;
+    }
   }
 
   @Override
@@ -83,6 +94,10 @@ public class SuperstructureManager extends LifecycleSubsystem {
     Logger.getInstance()
         .recordOutput("SuperstructureManager/Goal/WristAngle", goal.position.angle.getDegrees());
     Logger.getInstance().recordOutput("SuperstructureManager/Goal/IntakeNow", goal.intakeNow);
+  }
+
+  public HeldGamePiece getMode() {
+    return mode;
   }
 
   public Command getCommand(SuperstructureState state) {
@@ -117,10 +132,12 @@ public class SuperstructureManager extends LifecycleSubsystem {
       coneState = States.CONE_NODE_HIGH;
     }
 
-    return Commands.either(
-        getCommand(new SuperstructureState(cubeState.position, IntakeMode.STOPPED, true)),
-        getCommand(new SuperstructureState(coneState.position, IntakeMode.STOPPED, true)),
-        () -> intake.getGamePiece() == HeldGamePiece.CUBE);
+    return Commands.runOnce(() -> scoringState = ScoringState.ALIGNING)
+        .andThen(
+            Commands.either(
+                getCommand(new SuperstructureState(cubeState.position, IntakeMode.STOPPED, true)),
+                getCommand(new SuperstructureState(coneState.position, IntakeMode.STOPPED, true)),
+                () -> intake.getGamePiece() == HeldGamePiece.CUBE));
   }
 
   public Command getIntakeCommand() {
