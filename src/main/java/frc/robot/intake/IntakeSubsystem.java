@@ -47,15 +47,15 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     Logger.getInstance().recordOutput("Intake/FilteredCubeCurrent", cubeCurrent);
 
     if (mode == IntakeMode.INTAKE_CUBE) {
-      if (cubeCurrent > 40) {
+      if (cubeCurrent > 10) {
         gamePiece = HeldGamePiece.CUBE;
       }
     } else if (mode == IntakeMode.INTAKE_CONE) {
-      if (coneCurrent > 45) {
+      if (coneCurrent > 20) {
         gamePiece = HeldGamePiece.CONE;
       }
     } else if (mode == IntakeMode.OUTTAKE_CUBE) {
-      if (cubeCurrent < 5 && coneCurrent > 2) {
+      if (cubeCurrent < 7 && coneCurrent > 2) {
         gamePiece = HeldGamePiece.NOTHING;
       }
     } else if (mode == IntakeMode.OUTTAKE_CONE) {
@@ -71,7 +71,7 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     } else if (gamePiece == HeldGamePiece.CUBE) {
       motor.set(TalonFXControlMode.PercentOutput, 0.075);
     } else if (gamePiece == HeldGamePiece.CONE) {
-      motor.set(TalonFXControlMode.PercentOutput, -0.1);
+      motor.set(TalonFXControlMode.PercentOutput, -0.2);
     } else if (mode == IntakeMode.INTAKE_CUBE) {
       motor.set(TalonFXControlMode.PercentOutput, 0.4);
     } else if (mode == IntakeMode.INTAKE_CONE) {
