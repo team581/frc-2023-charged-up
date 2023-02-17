@@ -57,8 +57,6 @@ public class Autos {
     this.wrist = wrist;
     this.intake = intake;
 
-    // this.states = states;
-
     autoChooser.addDefaultOption("Do nothing", getDoNothingAuto());
     autoChooser.addOption("Balance Auto", getBalanceAuto());
     autoChooser.addOption("Drive Forward", getDriveForward());
