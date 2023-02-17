@@ -22,9 +22,7 @@ import frc.robot.elevator.commands.ElevatorHomingCommand;
 import frc.robot.generated.BuildConstants;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.intake.HeldGamePiece;
-import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
-import frc.robot.intake.commands.IntakeCommand;
 import frc.robot.lights.LightsSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.managers.SuperstructureManager;
@@ -184,10 +182,7 @@ public class Robot extends LoggedRobot {
     // Home superstructure
     operatorController
         .back()
-        .onTrue(
-            new ElevatorHomingCommand(elevator)
-                .andThen(new WristHomingCommand(wrist))
-                .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
+        .onTrue(new ElevatorHomingCommand(elevator).andThen(new WristHomingCommand(wrist)));
   }
 
   @Override

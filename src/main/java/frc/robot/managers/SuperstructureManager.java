@@ -74,6 +74,8 @@ public class SuperstructureManager extends LifecycleSubsystem {
 
   @Override
   public void enabledPeriodic() {
+    // In each spot where we call intake.setMode(), if the intake mode is NO_CHANGE, then don't call
+    // setMode()
     if (manualIntakeMode != null) {
       intake.setMode(manualIntakeMode);
     } else {
@@ -141,8 +143,10 @@ public class SuperstructureManager extends LifecycleSubsystem {
     return Commands.runOnce(() -> scoringState = ScoringState.ALIGNING)
         .andThen(
             Commands.either(
-                getCommand(new SuperstructureState(cubeState.position, IntakeMode.STOPPED, true)),
-                getCommand(new SuperstructureState(coneState.position, IntakeMode.STOPPED, true)),
+                getCommand(
+                    new SuperstructureState(cubeState.position, IntakeMode.HOLDING_CUBE, true)),
+                getCommand(
+                    new SuperstructureState(coneState.position, IntakeMode.HOLDING_CONE, true)),
                 () -> intake.getGamePiece() == HeldGamePiece.CUBE));
   }
 
@@ -199,10 +203,6 @@ public class SuperstructureManager extends LifecycleSubsystem {
   // TODO: Ignore this command when the superstructure is STOWED
   public Command finishManualScoreCommand() {
     return Commands.waitUntil(() -> atPosition(goal.position))
-        .andThen(
-            Commands.either(
-                Commands.runOnce(() -> setManualIntakeMode(IntakeMode.OUTTAKE_CUBE)),
-                Commands.runOnce(() -> setManualIntakeMode(IntakeMode.OUTTAKE_CONE)),
-                () -> intake.getGamePiece() == HeldGamePiece.CUBE));
+        .andThen(Commands.runOnce(() -> setManualIntakeMode(IntakeMode.OPEN)));
   }
 }

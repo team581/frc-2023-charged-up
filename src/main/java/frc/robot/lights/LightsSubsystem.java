@@ -77,7 +77,7 @@ public class LightsSubsystem extends LifecycleSubsystem {
       }
       blinkPattern = BlinkPattern.BLINK_FAST;
     } else if (gamePiece == HeldGamePiece.CUBE) {
-      if (intakeMode == IntakeMode.INTAKE_CUBE) {
+      if (intakeMode == IntakeMode.HOLDING_CUBE) {
         color = Color.kPurple;
         blinkPattern = BlinkPattern.BLINK_FAST;
       } else {
@@ -85,7 +85,7 @@ public class LightsSubsystem extends LifecycleSubsystem {
         blinkPattern = BlinkPattern.SOLID;
       }
     } else if (gamePiece == HeldGamePiece.CONE) {
-      if (intakeMode == IntakeMode.INTAKE_CONE) {
+      if (intakeMode == IntakeMode.HOLDING_CONE) {
         color = Color.kYellow;
         blinkPattern = BlinkPattern.BLINK_FAST;
       } else {
