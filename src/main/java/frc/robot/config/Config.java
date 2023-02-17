@@ -108,6 +108,7 @@ public class Config {
   public static final double WRIST_HOMING_VOLTAGE = IS_SPIKE ? -0.15 : 0.15;
 
   public static final int INTAKE_MOTOR_ID = 17;
+  public static final int INTAKE_CANIFIER_ID = 20;
 
   public static final double SWERVE_STEER_KV = IS_SPIKE ? 0.0 : 0.0;
   public static final double SWERVE_STEER_KP = IS_SPIKE ? 5.0 : 3.0;

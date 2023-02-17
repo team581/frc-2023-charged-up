@@ -4,6 +4,8 @@
 
 package frc.robot.intake;
 
+import com.ctre.phoenix.CANifier;
+import com.ctre.phoenix.CANifier.GeneralPin;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -21,12 +23,14 @@ public class IntakeSubsystem extends LifecycleSubsystem {
   private IntakeMode mode = IntakeMode.OPEN;
 
   private final TalonFX motor;
+  private final CANifier sensor;
 
   private final LinearFilter currentFilter = LinearFilter.movingAverage(5);
 
-  public IntakeSubsystem(TalonFX motor) {
+  public IntakeSubsystem(TalonFX motor, CANifier sensor) {
     this.motor = motor;
-    motor.setInverted(true);
+    this.sensor = sensor;
+    motor.setInverted(false);
     motor.configSupplyCurrentLimit(CURRENT_LIMIT);
   }
 
@@ -36,6 +40,7 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     Logger.getInstance().recordOutput("Intake/HeldGamePiece", gamePiece.toString());
     Logger.getInstance().recordOutput("Intake/Current", motor.getSupplyCurrent());
     Logger.getInstance().recordOutput("Intake/Voltage", motor.getMotorOutputVoltage());
+    Logger.getInstance().recordOutput("Intake/Sensor", sensor.getGeneralInput(GeneralPin.LIMR));
   }
 
   @Override
@@ -43,12 +48,13 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     double filteredCurrent = currentFilter.calculate(motor.getSupplyCurrent());
     Logger.getInstance().recordOutput("Intake/FilteredCurrent", filteredCurrent);
 
+    // TODO: Run at 100% voltage when grabbing pieces, use a timer to stop the motor (after 200ms ish) and assume we're holding something at the end of that
     if (mode == IntakeMode.HOLDING_CUBE) {
-      if (filteredCurrent > 40) {
+      if (filteredCurrent > 10) {
         gamePiece = HeldGamePiece.CUBE;
       }
     } else if (mode == IntakeMode.HOLDING_CONE) {
-      if (filteredCurrent > 45) {
+      if (filteredCurrent > 15) {
         gamePiece = HeldGamePiece.CONE;
       }
     } else if (mode == IntakeMode.OPEN) {
