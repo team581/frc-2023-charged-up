@@ -63,7 +63,7 @@ public class Autos {
     autoChooser.addOption("Balance Auto", getBalanceAuto());
     autoChooser.addOption("Drive Forward", getDriveForward());
     autoChooser.addOption("BackRightForwardAutoCommand", backRightForwardAutoCommand());
-    autoChooser.addOption("ScoreConeAndBackConesCommand", scoreAndBackConesCommand());
+    autoChooser.addOption("RedRightThreeConeAuto", RedRightThreeConeAuto());
 
     PPSwerveControllerCommand.setLoggingCallbacks(
         (PathPlannerTrajectory activeTrajectory) -> {
@@ -101,15 +101,19 @@ public class Autos {
         .withName("BackRightForwardAutoCommand");
   }
 
-  private Command scoreAndBackConesCommand() {
+  private Command RedRightThreeConeAuto() {
     return superstructure
         .setIntakeModeCommand(HeldGamePiece.CONE)
         .andThen(() -> intake.setPreloadForAutos(HeldGamePiece.CONE))
         .andThen(superstructure.getScoreCommand())
         .andThen(
-            followTrajectoryCommand(Paths.RIGHT_NODE_TO_OPPOSITE_PIECE, true)
+            followTrajectoryCommand(Paths.RIGHT_NODE_TO_PART_OPPOSITE_PIECE, true)
                 .alongWith(Commands.waitSeconds(4).andThen((superstructure.getIntakeCommand()))))
         .andThen(followTrajectoryCommand(Paths.RIGHT_PRELOAD_TO_RED_GRID_RIGHT_CENTER, false))
+        .andThen(superstructure.getScoreCommand())
+        .andThen(followTrajectoryCommand(Paths.RIGHT_CENTER_NODE_TO_MIDDLE_RIGHT_CONE, false))
+        .alongWith(Commands.waitSeconds(4.75).andThen(superstructure.getIntakeCommand()))
+        .andThen(followTrajectoryCommand(Paths.MIDDLE_RIGHT_CONE_TO_RIGHT_LEFT_NODE, false))
         .andThen(superstructure.getScoreCommand());
   }
 

@@ -15,8 +15,6 @@ import com.ctre.phoenixpro.controls.PositionVoltage;
 import com.ctre.phoenixpro.controls.VelocityVoltage;
 import com.ctre.phoenixpro.hardware.TalonFX;
 import com.ctre.phoenixpro.signals.InvertedValue;
-
-import edu.wpi.first.math.StateSpaceUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -232,4 +230,3 @@ public class SwerveModule {
     return Rotation2d.fromDegrees(encoder.getAbsolutePosition());
   }
 }
-

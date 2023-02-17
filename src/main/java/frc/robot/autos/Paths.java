@@ -10,6 +10,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import frc.robot.config.Config;
 import frc.robot.localization.Landmarks;
 import frc.robot.managers.SuperstructureManager;
@@ -67,15 +68,23 @@ public class Paths {
           new PathPoint(
               new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)));
 
-  public static final PathPlannerTrajectory RIGHT_NODE_TO_OPPOSITE_PIECE =
+  public static final PathPlannerTrajectory RIGHT_NODE_TO_PART_OPPOSITE_PIECE =
       PathPlanner.generatePath(
           PATH_CONSTRAINTS,
           new PathPoint(
               new Translation2d(
                   Landmarks.RED_GRID_RIGHT_NODE_RIGHT.getX() - Config.ROBOT_CENTER_TO_FRONT,
-                  Landmarks.RED_PRELOAD_FAR_RIGHT.getY()),
+                  Landmarks.RED_GRID_RIGHT_NODE_RIGHT.getY()),
               Rotation2d.fromDegrees(0),
               Rotation2d.fromDegrees(0)),
+          new PathPoint(
+              new Translation2d(Units.inchesToMeters(442), Units.inchesToMeters(109)),
+              Rotation2d.fromDegrees(0),
+              Rotation2d.fromDegrees(0)),
+          new PathPoint(
+              new Translation2d(Units.inchesToMeters(421), Units.inchesToMeters(132)),
+              Rotation2d.fromDegrees(0),
+              Rotation2d.fromDegrees(180)),
           new PathPoint(
               new Translation2d(
                   Landmarks.RED_PRELOAD_FAR_RIGHT.getX() + Config.ROBOT_CENTER_TO_FRONT,
@@ -93,9 +102,65 @@ public class Paths {
               Rotation2d.fromDegrees(180),
               Rotation2d.fromDegrees(180)),
           new PathPoint(
+              new Translation2d(Units.inchesToMeters(421), Units.inchesToMeters(132)),
+              Rotation2d.fromDegrees(0),
+              Rotation2d.fromDegrees(180)),
+          new PathPoint(
+              new Translation2d(Units.inchesToMeters(442), Units.inchesToMeters(109)),
+              Rotation2d.fromDegrees(0),
+              Rotation2d.fromDegrees(0)),
+          new PathPoint(
               new Translation2d(
                   Landmarks.RED_GRID_RIGHT_NODE_CENTER.getX() - Config.ROBOT_CENTER_TO_FRONT,
                   Landmarks.RED_GRID_RIGHT_NODE_CENTER.getY()),
+              Rotation2d.fromDegrees(0),
+              Rotation2d.fromDegrees(0)));
+
+  public static final PathPlannerTrajectory RIGHT_CENTER_NODE_TO_MIDDLE_RIGHT_CONE =
+      PathPlanner.generatePath(
+          PATH_CONSTRAINTS,
+          new PathPoint(
+              new Translation2d(
+                  Landmarks.RED_GRID_RIGHT_NODE_CENTER.getX() - Config.ROBOT_CENTER_TO_FRONT,
+                  Landmarks.RED_GRID_RIGHT_NODE_CENTER.getY()),
+              Rotation2d.fromDegrees(0),
+              Rotation2d.fromDegrees(0)),
+          new PathPoint(
+              new Translation2d(Units.inchesToMeters(421), Units.inchesToMeters(132)),
+              Rotation2d.fromDegrees(0),
+              Rotation2d.fromDegrees(180)),
+          new PathPoint(
+              new Translation2d(Units.inchesToMeters(442), Units.inchesToMeters(109)),
+              Rotation2d.fromDegrees(0),
+              Rotation2d.fromDegrees(0)),
+          new PathPoint(
+              new Translation2d(
+                  Landmarks.RED_PRELOAD_RIGHT.getX() + Config.ROBOT_CENTER_TO_FRONT,
+                  Landmarks.RED_PRELOAD_RIGHT.getY()),
+              Rotation2d.fromDegrees(0),
+              Rotation2d.fromDegrees(270)));
+
+  public static final PathPlannerTrajectory MIDDLE_RIGHT_CONE_TO_RIGHT_LEFT_NODE =
+      PathPlanner.generatePath(
+          PATH_CONSTRAINTS,
+          new PathPoint(
+              new Translation2d(
+                  Landmarks.RED_PRELOAD_RIGHT.getX() + Config.ROBOT_CENTER_TO_FRONT,
+                  Landmarks.RED_PRELOAD_RIGHT.getY()),
+              Rotation2d.fromDegrees(0),
+              Rotation2d.fromDegrees(270)),
+          new PathPoint(
+              new Translation2d(Units.inchesToMeters(442), Units.inchesToMeters(109)),
+              Rotation2d.fromDegrees(0),
+              Rotation2d.fromDegrees(0)),
+          new PathPoint(
+              new Translation2d(Units.inchesToMeters(421), Units.inchesToMeters(132)),
+              Rotation2d.fromDegrees(0),
+              Rotation2d.fromDegrees(180)),
+          new PathPoint(
+              new Translation2d(
+                  Landmarks.RED_GRID_RIGHT_NODE_LEFT.getX() - Config.ROBOT_CENTER_TO_FRONT,
+                  Landmarks.RED_GRID_RIGHT_NODE_LEFT.getY()),
               Rotation2d.fromDegrees(0),
               Rotation2d.fromDegrees(0)));
 }
