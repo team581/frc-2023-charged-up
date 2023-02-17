@@ -15,6 +15,8 @@ import com.ctre.phoenixpro.controls.PositionVoltage;
 import com.ctre.phoenixpro.controls.VelocityVoltage;
 import com.ctre.phoenixpro.hardware.TalonFX;
 import com.ctre.phoenixpro.signals.InvertedValue;
+
+import edu.wpi.first.math.StateSpaceUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -44,6 +46,7 @@ public class SwerveModule {
       new VelocityVoltage(0, true, 0, 0, false);
   private Rotation2d previousAngle = new Rotation2d();
   private double commandedDriveVelocity = 0;
+  private boolean rotorPositionSet = false;
 
   public SwerveModule(
       SwerveModuleConstants constants, TalonFX driveMotor, TalonFX steerMotor, CANCoder encoder) {
@@ -210,10 +213,15 @@ public class SwerveModule {
   }
 
   public void resetWheelAngle() {
-    final var absolutePosition = getCancoderPosition();
-    double rotations = absolutePosition.getRotations();
-    double rotationsBeforeGearing = STEER_MOTOR_GEARING_CONVERTER.gearingToMotor(rotations);
-    steerMotor.setRotorPosition(rotationsBeforeGearing);
+    if (!rotorPositionSet) {
+      final var absolutePosition = getCancoderPosition();
+      double rotations = absolutePosition.getRotations();
+      double rotationsBeforeGearing = STEER_MOTOR_GEARING_CONVERTER.gearingToMotor(rotations);
+      StatusCode status = steerMotor.setRotorPosition(rotationsBeforeGearing);
+      if (!status.isError()) {
+        rotorPositionSet = true;
+      }
+    }
   }
 
   private final Rotation2d getCancoderPosition() {
@@ -224,3 +232,4 @@ public class SwerveModule {
     return Rotation2d.fromDegrees(encoder.getAbsolutePosition());
   }
 }
+
