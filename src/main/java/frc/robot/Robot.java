@@ -7,7 +7,7 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
-
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -197,6 +197,21 @@ public class Robot extends LoggedRobot {
     Logger.getInstance().recordOutput("AutoScore/GoalLocation/Pose", autoScoreLocation.pose);
     Logger.getInstance()
         .recordOutput("AutoScore/GoalLocation/Node", autoScoreLocation.node.toString());
+
+    Logger.getInstance()
+        .recordOutput(
+            "LocationPose",
+            new Pose2d(
+                Landmarks.RED_GRID_RIGHT_NODE_RIGHT.getX() - Config.ROBOT_CENTER_TO_FRONT,
+                Landmarks.RED_GRID_RIGHT_NODE_RIGHT.getY(),
+                Rotation2d.fromDegrees(0)));
+    Logger.getInstance()
+        .recordOutput(
+            "ConePose",
+            new Pose2d(
+                Landmarks.RED_PRELOAD_FAR_RIGHT.getX() + Config.ROBOT_CENTER_TO_FRONT,
+                Landmarks.RED_PRELOAD_FAR_RIGHT.getY(),
+                Rotation2d.fromDegrees(0)));
   }
 
   @Override
