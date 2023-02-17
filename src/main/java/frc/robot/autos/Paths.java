@@ -90,7 +90,7 @@ public class Paths {
               new Translation2d(
                   Landmarks.RED_PRELOAD_FAR_RIGHT.getX() + Config.ROBOT_CENTER_TO_FRONT,
                   Landmarks.RED_PRELOAD_FAR_RIGHT.getY()),
-              Rotation2d.fromDegrees(0),
+              Rotation2d.fromDegrees(180),
               Rotation2d.fromDegrees(180)),
           new PathPoint(
               new Translation2d(

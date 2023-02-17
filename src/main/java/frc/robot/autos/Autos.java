@@ -63,7 +63,7 @@ public class Autos {
     autoChooser.addOption("Balance Auto", getBalanceAuto());
     autoChooser.addOption("Drive Forward", getDriveForward());
     autoChooser.addOption("BackRightForwardAutoCommand", backRightForwardAutoCommand());
-    autoChooser.addOption("ScoreCubeAndBackConesCommand", scoreAndBackConesCommand());
+    autoChooser.addOption("ScoreConeAndBackConesCommand", scoreAndBackConesCommand());
 
     PPSwerveControllerCommand.setLoggingCallbacks(
         (PathPlannerTrajectory activeTrajectory) -> {
