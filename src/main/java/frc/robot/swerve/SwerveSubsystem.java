@@ -41,6 +41,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   private final SwerveModule frontLeft;
   private final SwerveModule backRight;
   private final SwerveModule backLeft;
+  private boolean doneResetting = false;
 
   public SwerveSubsystem(
       ImuSubsystem imu,
@@ -57,7 +58,6 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
   @Override
   public void disabledPeriodic() {
-    // TODO: This causes constants loop overruns when it runs during disabled
     frontRight.resetWheelAngle();
     frontLeft.resetWheelAngle();
     backRight.resetWheelAngle();
@@ -130,12 +130,18 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     Translation2d robotTranslation =
         new Translation2d(forwardPercentage, sidewaysPercentage)
             .times(MAX_VELOCITY_METERS_PER_SECOND);
+    Rotation2d fieldRelativeHeading = imu.getRobotHeading();
+
+    // if (DriverStation.getAlliance() == Alliance.Red) {
+    //   fieldRelativeHeading = fieldRelativeHeading.plus(Rotation2d.fromDegrees(180));
+    // }
+
     ChassisSpeeds chassisSpeeds =
         ChassisSpeeds.fromFieldRelativeSpeeds(
             robotTranslation.getX(),
             robotTranslation.getY(),
             thetaPercentage * MAX_ANGULAR_VELOCITY,
-            fieldRelative ? imu.getRobotHeading() : new Rotation2d());
+            fieldRelative ? fieldRelativeHeading : new Rotation2d());
     SwerveModuleState[] moduleStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_VELOCITY_METERS_PER_SECOND);
     setChassisSpeeds(KINEMATICS.toChassisSpeeds(moduleStates), openLoop);

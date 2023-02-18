@@ -153,7 +153,7 @@ public class Robot extends LoggedRobot {
         .onTrue(superstructureManager.getScoreCommand())
         .onFalse(superstructureManager.getCommand(States.STOWED));
     // Zero gyro
-    driveController.back().onTrue(imu.getZeroCommand());
+    driveController.back().onTrue(localization.getZeroCommand());
     // Set mode to cubes
     driveController.povUp().onTrue(superstructureManager.setIntakeModeCommand(HeldGamePiece.CUBE));
     // Set mode to cones
