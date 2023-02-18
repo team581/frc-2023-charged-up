@@ -125,6 +125,7 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
     double firstX = xVisionPoseBuffer.get(0);
     double firstY = yVisionPoseBuffer.get(0);
     boolean valid = true;
+    // TODO: Why are we starting at i = 1?
     for (int i = 1; i < xVisionPoseBuffer.size(); i++) {
       if (Math.abs(firstX - xVisionPoseBuffer.get(i)) > 0.025
           || Math.abs(firstY - yVisionPoseBuffer.get(i)) > 0.025) {
