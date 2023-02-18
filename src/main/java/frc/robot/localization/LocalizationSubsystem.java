@@ -14,6 +14,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.CircularBuffer;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.util.LifecycleSubsystem;
@@ -61,7 +63,7 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
 
   @Override
   public void teleopInit() {
-    odometry.resetPosition(imu.getRobotHeading(), swerve.getModulePositions(), startPose);
+    //odometry.resetPosition(imu.getRobotHeading(), swerve.getModulePositions(), startPose);
   }
 
   @Override
@@ -113,19 +115,20 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
         poseEstimator.addVisionMeasurement(visionPose, Timer.getFPGATimestamp() - 0.02);
         Logger.getInstance().recordOutput("Localization/VisionPose", visionPose);
         visionWorking = true;
+
+        if (checkVisionPoseConsistent()) {
+          odometry.resetPosition(imu.getRobotHeading(), swerve.getModulePositions(), visionPose);
+        }
       }
     }
 
-    if (checkVisionPoseConsistent()) {
-      odometry.resetPosition(imu.getRobotHeading(), swerve.getModulePositions(), startPose);
-    }
+
   }
 
   private boolean checkVisionPoseConsistent() {
     double firstX = xVisionPoseBuffer.get(0);
     double firstY = yVisionPoseBuffer.get(0);
     boolean valid = true;
-    // TODO: Why are we starting at i = 1?
     for (int i = 1; i < xVisionPoseBuffer.size(); i++) {
       if (Math.abs(firstX - xVisionPoseBuffer.get(i)) > 0.025
           || Math.abs(firstY - yVisionPoseBuffer.get(i)) > 0.025) {
@@ -150,7 +153,19 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
     odometry.resetPosition(gyroAngle, swerve.getModulePositions(), pose);
   }
 
+  public void resetGyro(Rotation2d gyroAngle) {
+    imu.setAngle(gyroAngle);
+    poseEstimator.resetPosition(gyroAngle, swerve.getModulePositions(), poseEstimator.getEstimatedPosition());
+    odometry.resetPosition(gyroAngle, swerve.getModulePositions(), odometry.getPoseMeters());
+  }
+
+  // Make a method that zeros the gyro and then use it in Robot.java
+
   public boolean isVisionWorking() {
     return visionWorking;
+  }
+
+  public Command getZeroCommand() {
+    return Commands.runOnce(() -> resetGyro(new Rotation2d(0)));
   }
 }
