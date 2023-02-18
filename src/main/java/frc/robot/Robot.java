@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.autos.Autos;
 import frc.robot.autoscore.AutoScoreLocation;
@@ -27,6 +28,7 @@ import frc.robot.intake.IntakeSubsystem;
 import frc.robot.intake.commands.IntakeCommand;
 import frc.robot.lights.LightsSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
+import frc.robot.managers.Autobalance;
 import frc.robot.managers.SuperstructureManager;
 import frc.robot.managers.SuperstructureMotionManager;
 import frc.robot.swerve.SwerveModule;
@@ -98,6 +100,8 @@ public class Robot extends LoggedRobot {
       new CommandXboxController(Config.OPERATOR_CONTROLLER_PORT);
 
   private final Autos autos = new Autos(localization, swerve, imu);
+
+  private final Autobalance autobalance = new Autobalance(swerve, imu);
 
   private Command autoCommand = autos.getAutoCommand();
 
@@ -192,6 +196,10 @@ public class Robot extends LoggedRobot {
             new ElevatorHomingCommand(elevator)
                 .andThen(new WristHomingCommand(wrist))
                 .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
+    operatorController
+        .rightTrigger()
+        .onTrue(autobalance.getCommand())
+        .onFalse(Commands.runOnce(() -> autobalance.setEnabled(false)));
   }
 
   @Override
