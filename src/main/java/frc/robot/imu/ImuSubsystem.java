@@ -29,6 +29,10 @@ public class ImuSubsystem extends LifecycleSubsystem {
     return Rotation2d.fromDegrees(imu.getYaw());
   }
 
+  public Rotation2d getPitch() {
+    return Rotation2d.fromDegrees(imu.getPitch());
+  }
+
   public void zero() {
     // TODO: This should use setAngle()
     this.imu.setYaw(0);
