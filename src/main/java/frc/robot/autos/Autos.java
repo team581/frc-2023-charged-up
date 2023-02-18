@@ -105,11 +105,11 @@ public class Autos {
         .andThen(() -> intake.setPreloadForAutos(HeldGamePiece.CONE))
         .andThen(superstructure.getScoreCommand())
         .andThen(
-            followTrajectoryCommand(Paths.RIGHT_NODE_TO_PART_OPPOSITE_PIECE, true)
+            followTrajectoryCommand(Paths.RIGHT_NODE_TO_OPPOSITE_PRELOAD, true)
                 .alongWith(Commands.waitSeconds(4).andThen((superstructure.getIntakeCommand()))))
         .andThen(followTrajectoryCommand(Paths.RIGHT_PRELOAD_TO_RED_GRID_RIGHT_CENTER, false))
         .andThen(superstructure.getScoreCommand())
-        .andThen(followTrajectoryCommand(Paths.RIGHT_CENTER_NODE_TO_MIDDLE_RIGHT_CONE, false))
+        .andThen(followTrajectoryCommand(Paths.RIGHT_CENTER_NODE_TO_MIDDLE_RIGHT_PRELOAD, false))
         .alongWith(Commands.waitSeconds(4.75).andThen(superstructure.getIntakeCommand()))
         .andThen(followTrajectoryCommand(Paths.MIDDLE_RIGHT_CONE_TO_RIGHT_LEFT_NODE, false))
         .andThen(superstructure.getScoreCommand());

@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.config.Config;
+import frc.robot.localization.Halfmarks;
 import frc.robot.localization.Landmarks;
 import frc.robot.managers.SuperstructureManager;
 
@@ -34,41 +35,7 @@ public class Paths {
               Rotation2d.fromDegrees(45),
               Rotation2d.fromDegrees(-90)));
 
-  public static final PathPlannerTrajectory DRIVE_BACKWARDS =
-      PathPlanner.generatePath(
-          PATH_CONSTRAINTS,
-          new PathPoint(
-              new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)),
-          new PathPoint(
-              new Translation2d(-0.5, 0.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)));
-
-  public static final PathPlannerTrajectory BACK_RIGHT_FORWARD =
-      PathPlanner.generatePath(
-          PATH_CONSTRAINTS,
-          new PathPoint(
-              new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)),
-          new PathPoint(
-              new Translation2d(-1.21, 0.0),
-              Rotation2d.fromDegrees(90),
-              Rotation2d.fromDegrees(-90)),
-          new PathPoint(
-              new Translation2d(-1.21, -1.95),
-              Rotation2d.fromDegrees(0),
-              Rotation2d.fromDegrees(0)),
-          new PathPoint(
-              new Translation2d(0.0, -1.95),
-              Rotation2d.fromDegrees(-90),
-              Rotation2d.fromDegrees(0)));
-
-  public static final PathPlannerTrajectory ORIGIN =
-      PathPlanner.generatePath(
-          PATH_CONSTRAINTS,
-          new PathPoint(
-              new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)),
-          new PathPoint(
-              new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)));
-
-  public static final PathPlannerTrajectory RIGHT_NODE_TO_PART_OPPOSITE_PIECE =
+  public static final PathPlannerTrajectory RIGHT_NODE_TO_OPPOSITE_PRELOAD =
       PathPlanner.generatePath(
           PATH_CONSTRAINTS,
           new PathPoint(
@@ -116,7 +83,7 @@ public class Paths {
               Rotation2d.fromDegrees(0),
               Rotation2d.fromDegrees(0)));
 
-  public static final PathPlannerTrajectory RIGHT_CENTER_NODE_TO_MIDDLE_RIGHT_CONE =
+  public static final PathPlannerTrajectory RIGHT_GRID_CENTER_TO_MIDDLE_RIGHT_PRELOAD =
       PathPlanner.generatePath(
           PATH_CONSTRAINTS,
           new PathPoint(
@@ -140,7 +107,7 @@ public class Paths {
               Rotation2d.fromDegrees(0),
               Rotation2d.fromDegrees(270)));
 
-  public static final PathPlannerTrajectory MIDDLE_RIGHT_CONE_TO_RIGHT_LEFT_NODE =
+  public static final PathPlannerTrajectory MIDDLE_RIGHT_PRELOAD_TO_RIGHT_GRID_LEFT =
       PathPlanner.generatePath(
           PATH_CONSTRAINTS,
           new PathPoint(
@@ -161,6 +128,60 @@ public class Paths {
               new Translation2d(
                   Landmarks.RED_GRID_RIGHT_NODE_LEFT.getX() - Config.ROBOT_CENTER_TO_FRONT,
                   Landmarks.RED_GRID_RIGHT_NODE_LEFT.getY()),
+              Rotation2d.fromDegrees(0),
+              Rotation2d.fromDegrees(0)));
+
+  public static final PathPlannerTrajectory LEFT_GRID_LEFT_TO_FAR_LEFT_PRELOAD =
+      PathPlanner.generatePath(
+          PATH_CONSTRAINTS,
+          new PathPoint(
+              new Translation2d(
+                  Landmarks.RED_GRID_LEFT_NODE_LEFT.getX() - Config.ROBOT_CENTER_TO_FRONT,
+                  Landmarks.RED_GRID_LEFT_NODE_LEFT.getY()),
+              Rotation2d.fromDegrees(0),
+              Rotation2d.fromDegrees(0)),
+          new PathPoint(
+              new Translation2d(
+                  Halfmarks.P1_LEFT_GRID_TO_PRELOADS.getX(),
+                  Halfmarks.P2_LEFT_GRID_TO_PRELOADS.getY()),
+              Rotation2d.fromDegrees(0),
+              Halfmarks.P1_LEFT_GRID_TO_PRELOADS.getRotation()),
+          new PathPoint(
+              new Translation2d(Units.inchesToMeters(578.5), Units.inchesToMeters(46.905)),
+              Rotation2d.fromDegrees(0),
+              Rotation2d.fromDegrees(180)),
+          new PathPoint(
+              new Translation2d(
+                  Landmarks.RED_PRELOAD_FAR_LEFT.getX() + Config.ROBOT_CENTER_TO_FRONT,
+                  Landmarks.RED_PRELOAD_FAR_LEFT.getY()),
+              Rotation2d.fromDegrees(0),
+              Rotation2d.fromDegrees(180)));
+
+  public static final PathPlannerTrajectory FAR_LEFT_PRELOAD_TO_LEFT_GRID_CENTER =
+      PathPlanner.generatePath(
+          PATH_CONSTRAINTS,
+          new PathPoint(
+              new Translation2d(
+                  Landmarks.RED_PRELOAD_FAR_LEFT.getX() + Config.ROBOT_CENTER_TO_FRONT,
+                  Landmarks.RED_PRELOAD_FAR_LEFT.getY()),
+              Rotation2d.fromDegrees(0),
+              Rotation2d.fromDegrees(180)),
+          new PathPoint(
+              new Translation2d(
+                  Halfmarks.P1_LEFT_GRID_TO_PRELOADS.getX(),
+                  Halfmarks.P2_LEFT_GRID_TO_PRELOADS.getY()),
+              Rotation2d.fromDegrees(0),
+              Halfmarks.P1_LEFT_GRID_TO_PRELOADS.getRotation()),
+          new PathPoint(
+              new Translation2d(
+                  Halfmarks.P2_LEFT_GRID_TO_PRELOADS.getX(),
+                  Halfmarks.P2_LEFT_GRID_TO_PRELOADS.getY()),
+              Rotation2d.fromDegrees(0),
+              Halfmarks.P2_LEFT_GRID_TO_PRELOADS.getRotation()),
+          new PathPoint(
+              new Translation2d(
+                  Landmarks.RED_GRID_LEFT_NODE_CENTER.getX() - Config.ROBOT_CENTER_TO_FRONT,
+                  Landmarks.RED_GRID_LEFT_NODE_CENTER.getY()),
               Rotation2d.fromDegrees(0),
               Rotation2d.fromDegrees(0)));
 }
