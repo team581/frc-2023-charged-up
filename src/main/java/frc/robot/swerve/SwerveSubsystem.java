@@ -14,7 +14,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.config.Config;
@@ -43,8 +42,6 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   private final SwerveModule backRight;
   private final SwerveModule backLeft;
   private boolean doneResetting = false;
-
-
 
   public SwerveSubsystem(
       ImuSubsystem imu,
@@ -135,10 +132,9 @@ public class SwerveSubsystem extends LifecycleSubsystem {
             .times(MAX_VELOCITY_METERS_PER_SECOND);
     Rotation2d fieldRelativeHeading = imu.getRobotHeading();
 
-        // if (DriverStation.getAlliance() == Alliance.Red) {
-        //   fieldRelativeHeading = fieldRelativeHeading.plus(Rotation2d.fromDegrees(180));
-        // }
-
+    // if (DriverStation.getAlliance() == Alliance.Red) {
+    //   fieldRelativeHeading = fieldRelativeHeading.plus(Rotation2d.fromDegrees(180));
+    // }
 
     ChassisSpeeds chassisSpeeds =
         ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -153,7 +149,6 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     Logger.getInstance().recordOutput("Swerve/getX", robotTranslation.getX());
     Logger.getInstance().recordOutput("Swerve/getY", robotTranslation.getY());
   }
-
 
   public Command getDriveTeleopCommand(DriveController controller) {
     return Commands.run(

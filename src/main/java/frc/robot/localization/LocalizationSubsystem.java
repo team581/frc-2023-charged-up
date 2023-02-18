@@ -23,6 +23,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class LocalizationSubsystem extends LifecycleSubsystem {
   private static final double MAX_APRILTAG_DISTANCE = Units.feetToMeters(15);
+  private static final int RESET_ODOMETRY_FROM_VISION_SAMPLE_COUNT = 5;
 
   private final SwerveSubsystem swerve;
   private final ImuSubsystem imu;
@@ -33,11 +34,10 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
 
   private final Pose2d startPose;
 
-  private final int resetOdometryFromVisionSampleCount = 5;
   private final CircularBuffer xVisionPoseBuffer =
-      new CircularBuffer(resetOdometryFromVisionSampleCount);
+      new CircularBuffer(RESET_ODOMETRY_FROM_VISION_SAMPLE_COUNT);
   private final CircularBuffer yVisionPoseBuffer =
-      new CircularBuffer(resetOdometryFromVisionSampleCount);
+      new CircularBuffer(RESET_ODOMETRY_FROM_VISION_SAMPLE_COUNT);
 
   public LocalizationSubsystem(SwerveSubsystem swerve, ImuSubsystem imu) {
     this.swerve = swerve;
@@ -63,7 +63,7 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
 
   @Override
   public void teleopInit() {
-    //odometry.resetPosition(imu.getRobotHeading(), swerve.getModulePositions(), startPose);
+    // odometry.resetPosition(imu.getRobotHeading(), swerve.getModulePositions(), startPose);
   }
 
   @Override
@@ -121,8 +121,6 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
         }
       }
     }
-
-
   }
 
   private boolean checkVisionPoseConsistent() {
@@ -155,11 +153,10 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
 
   public void resetGyro(Rotation2d gyroAngle) {
     imu.setAngle(gyroAngle);
-    poseEstimator.resetPosition(gyroAngle, swerve.getModulePositions(), poseEstimator.getEstimatedPosition());
+    poseEstimator.resetPosition(
+        gyroAngle, swerve.getModulePositions(), poseEstimator.getEstimatedPosition());
     odometry.resetPosition(gyroAngle, swerve.getModulePositions(), odometry.getPoseMeters());
   }
-
-  // Make a method that zeros the gyro and then use it in Robot.java
 
   public boolean isVisionWorking() {
     return visionWorking;
