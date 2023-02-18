@@ -15,7 +15,7 @@ import frc.robot.util.LifecycleSubsystem;
 public class Autobalance extends LifecycleSubsystem {
   private final SwerveSubsystem swerve;
   private final ImuSubsystem imu;
-  private final PIDController pidController = new PIDController(0.05, 0, 0);
+  private final PIDController pidController = new PIDController(0.1, 0, 0);
   private boolean enabled = false;
 
   public Autobalance(SwerveSubsystem swerve, ImuSubsystem imu) {
@@ -43,7 +43,6 @@ public class Autobalance extends LifecycleSubsystem {
   }
 
   public Command getCommand() {
-    return Commands.runOnce(() -> setEnabled(true), swerve)
-        .andThen(Commands.waitUntil(() -> atGoal()));
+    return Commands.run(() -> setEnabled(true), swerve).until(()->atGoal());
   }
 }
