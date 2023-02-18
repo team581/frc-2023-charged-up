@@ -41,6 +41,8 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   private final SwerveModule frontLeft;
   private final SwerveModule backRight;
   private final SwerveModule backLeft;
+  private boolean doneResetting = false;
+
 
   public SwerveSubsystem(
       ImuSubsystem imu,
@@ -57,7 +59,6 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
   @Override
   public void disabledPeriodic() {
-    // TODO: This causes constants loop overruns when it runs during disabled
     frontRight.resetWheelAngle();
     frontLeft.resetWheelAngle();
     backRight.resetWheelAngle();
