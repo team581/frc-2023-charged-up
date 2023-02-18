@@ -145,12 +145,9 @@ public class Robot extends LoggedRobot {
   private void configureButtonBindings() {
     swerve.setDefaultCommand(swerve.getDriveTeleopCommand(driveController));
 
-    // Intake
-    driveController
-        .leftTrigger(0.3)
-        .onTrue(superstructureManager.getIntakeCommand())
-        .onFalse(superstructureManager.getCommand(States.STOWED));
-    // Outtake/score low node
+    // Intake on floor
+    driveController.leftTrigger(0.3).onTrue(superstructureManager.getFloorIntakeCommand());
+    // Outtake/score low node/finish manual score
     driveController
         .rightTrigger(0.3)
         .onTrue(superstructureManager.getScoreCommand())
@@ -164,8 +161,8 @@ public class Robot extends LoggedRobot {
         .povDown()
         // TODO: Support cancelling this command when the button is released early
         .onTrue(superstructureManager.setIntakeModeCommand(HeldGamePiece.CONE));
-    // Outtake gamepiece when manual score is at the right position
-    driveController.rightBumper().onTrue(superstructureManager.finishManualScoreCommand());
+    // Intake on shelf
+    driveController.leftBumper().onTrue(superstructureManager.getShelfIntakeCommand());
 
     // Manual score low
     operatorController
@@ -182,7 +179,6 @@ public class Robot extends LoggedRobot {
         .y()
         .onTrue(superstructureManager.getManualScoreCommand(ManualScoringLocation.HIGH))
         .onFalse(superstructureManager.getCommand(States.STOWED));
-
     // Stow all
     operatorController.x().onTrue(superstructureManager.getCommand(States.STOWED));
     // Home superstructure
