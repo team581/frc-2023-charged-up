@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.ManualScoringLocation;
+import frc.robot.Positions;
 import frc.robot.States;
 import frc.robot.autoscore.AutoScoreLocation;
 import frc.robot.autoscore.GridKind;
@@ -111,10 +112,15 @@ public class SuperstructureManager extends LifecycleSubsystem {
     SuperstructureState coneState = States.CONE_NODE_LOW;
 
     return Commands.either(
-            getCommand(cubeState),
-            getCommand(coneState),
-            () -> intake.getGamePiece() == HeldGamePiece.CUBE)
-        .andThen(getCommand(States.STOWED));
+        finishManualScoreCommand(),
+        Commands.either(
+                getCommand(cubeState),
+                getCommand(coneState),
+                () -> intake.getGamePiece() == HeldGamePiece.CUBE)
+            .andThen(getCommand(States.STOWED)),
+        () ->
+            goal.position.height >= Positions.CUBE_NODE_MID.height
+                || goal.position.height >= Positions.CONE_NODE_MID.height);
   }
 
   public Command getManualScoreCommand(ManualScoringLocation scoringLocation) {
@@ -140,10 +146,18 @@ public class SuperstructureManager extends LifecycleSubsystem {
                 () -> intake.getGamePiece() == HeldGamePiece.CUBE));
   }
 
-  public Command getIntakeCommand() {
+  public Command getFloorIntakeCommand() {
     return Commands.either(
-            getCommand(States.INTAKING_CUBE),
-            getCommand(States.INTAKING_CONE),
+            getCommand(States.INTAKING_CUBE_FLOOR),
+            getCommand(States.INTAKING_CONE_FLOOR),
+            () -> mode == HeldGamePiece.CUBE)
+        .andThen(getCommand(States.STOWED));
+  }
+
+  public Command getShelfIntakeCommand() {
+    return Commands.either(
+            getCommand(States.INTAKING_CUBE_SHELF),
+            getCommand(States.INTAKING_CONE_SHELF),
             () -> mode == HeldGamePiece.CUBE)
         .andThen(getCommand(States.STOWED));
   }

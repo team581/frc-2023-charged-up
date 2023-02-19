@@ -79,7 +79,9 @@ public class Config {
               Rotation2d.fromDegrees(-75.42), SwerveCorner.BACK_RIGHT, false, false);
   // 104.58
   public static final int ELEVATOR_MOTOR_ID = 14;
+
   public static final double ELEVATOR_GEARING = IS_SPIKE ? 7.2 : 20.0;
+  public static final double ELEVATOR_GEARING = IS_SPIKE ? 9.0 : 16.0;
   public static final double ELEVATOR_MIN_HEIGHT = IS_SPIKE ? 0 : 0.5;
   public static final double ELEVATOR_MAX_HEIGHT = IS_SPIKE ? 25 : 12;
   public static final double ELEVATOR_KF = IS_SPIKE ? 0 : 0;
