@@ -9,6 +9,7 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -26,6 +27,7 @@ import frc.robot.intake.HeldGamePiece;
 import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.intake.commands.IntakeCommand;
+import frc.robot.localization.Halfmarks;
 import frc.robot.localization.Landmarks;
 import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.managers.SuperstructureManager;
@@ -200,17 +202,25 @@ public class Robot extends LoggedRobot {
 
     Logger.getInstance()
         .recordOutput(
-            "LocationPose",
+            "A",
             new Pose2d(
-                Landmarks.RED_GRID_RIGHT_NODE_RIGHT.getX() - Config.ROBOT_CENTER_TO_FRONT,
-                Landmarks.RED_GRID_RIGHT_NODE_RIGHT.getY(),
-                Rotation2d.fromDegrees(0)));
+              Halfmarks.RED_GRID_RIGHT_CHARGE.getX(),
+              Halfmarks.RED_GRID_RIGHT_CHARGE.getY(),
+              Halfmarks.RED_GRID_RIGHT_CHARGE.getRotation()));
+
+    Logger.getInstance()
+    .recordOutput(
+        "B",
+        new Pose2d(
+          Units.inchesToMeters(442), Units.inchesToMeters(132),
+            Rotation2d.fromDegrees(90)));
+    Logger.getInstance().recordOutput("C", new Pose2d(Units.inchesToMeters(421), Units.inchesToMeters(109), Rotation2d.fromDegrees(0)));
     Logger.getInstance()
         .recordOutput(
-            "ConePose",
+            "D",
             new Pose2d(
-                Landmarks.RED_PRELOAD_FAR_RIGHT.getX() + Config.ROBOT_CENTER_TO_FRONT,
-                Landmarks.RED_PRELOAD_FAR_RIGHT.getY(),
+                Landmarks.RED_STAGING_MARK_FAR_RIGHT.getX() + Config.ROBOT_CENTER_TO_FRONT,
+                Landmarks.RED_STAGING_MARK_FAR_RIGHT.getY(),
                 Rotation2d.fromDegrees(0)));
   }
 

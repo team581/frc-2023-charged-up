@@ -59,8 +59,6 @@ public class Autos {
 
     autoChooser.addDefaultOption("Do nothing", getDoNothingAuto());
     autoChooser.addOption("Balance Auto", getBalanceAuto());
-    autoChooser.addOption("Drive Forward", getDriveForward());
-    autoChooser.addOption("BackRightForwardAutoCommand", backRightForwardAutoCommand());
     autoChooser.addOption("RedRightThreeConeAuto", RedRightThreeConeAuto());
 
     PPSwerveControllerCommand.setLoggingCallbacks(
@@ -86,33 +84,26 @@ public class Autos {
         });
   }
 
-  private Command getDriveForward() {
-    return followTrajectoryCommand(Paths.DRIVE_BACKWARDS, true).withName("DriveForwardAutoCommand");
-  }
-
   private Command getBalanceAuto() {
     return followTrajectoryCommand(Paths.BALANCE_AUTO, true).withName("BalanceAutoCommand");
   }
 
-  private Command backRightForwardAutoCommand() {
-    return followTrajectoryCommand(Paths.BACK_RIGHT_FORWARD, true)
-        .withName("BackRightForwardAutoCommand");
-  }
-
   private Command RedRightThreeConeAuto() {
-    return superstructure
-        .setIntakeModeCommand(HeldGamePiece.CONE)
-        .andThen(() -> intake.setPreloadForAutos(HeldGamePiece.CONE))
-        .andThen(superstructure.getScoreCommand())
-        .andThen(
-            followTrajectoryCommand(Paths.RIGHT_NODE_TO_OPPOSITE_PRELOAD, true)
-                .alongWith(Commands.waitSeconds(4).andThen((superstructure.getIntakeCommand()))))
-        .andThen(followTrajectoryCommand(Paths.RIGHT_PRELOAD_TO_RED_GRID_RIGHT_CENTER, false))
-        .andThen(superstructure.getScoreCommand())
-        .andThen(followTrajectoryCommand(Paths.RIGHT_CENTER_NODE_TO_MIDDLE_RIGHT_PRELOAD, false))
-        .alongWith(Commands.waitSeconds(4.75).andThen(superstructure.getIntakeCommand()))
-        .andThen(followTrajectoryCommand(Paths.MIDDLE_RIGHT_CONE_TO_RIGHT_LEFT_NODE, false))
-        .andThen(superstructure.getScoreCommand());
+    return
+        Commands.sequence(
+        superstructure.setIntakeModeCommand(HeldGamePiece.CONE),
+        Commands.runOnce(() -> intake.setPreloadForAutos(HeldGamePiece.CONE)),
+        superstructure.getScoreCommand(),
+        followTrajectoryCommand(Paths.RIGHT_NODE_TO_OPPOSITE_STAGING_MARK, true)
+            .alongWith(Commands.waitSeconds(4))
+            .andThen((superstructure.getIntakeCommand().withTimeout(3))),
+        followTrajectoryCommand(Paths.RIGHT_STAGING_MARK_TO_RED_GRID_RIGHT_CENTER, false),
+        superstructure.getScoreCommand(),
+        followTrajectoryCommand(Paths.RIGHT_GRID_CENTER_TO_MIDDLE_RIGHT_STAGING_MARK, false)
+            .alongWith(Commands.waitSeconds(4.75))
+            .andThen(superstructure.getIntakeCommand().withTimeout(3)),
+        followTrajectoryCommand(Paths.MIDDLE_RIGHT_STAGING_MARK_TO_RIGHT_GRID_LEFT, false),
+        superstructure.getScoreCommand());
   }
 
   private CommandBase getDoNothingAuto() {

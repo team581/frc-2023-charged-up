@@ -35,7 +35,7 @@ public class Paths {
               Rotation2d.fromDegrees(45),
               Rotation2d.fromDegrees(-90)));
 
-  public static final PathPlannerTrajectory RIGHT_NODE_TO_OPPOSITE_PRELOAD =
+  public static final PathPlannerTrajectory RIGHT_NODE_TO_OPPOSITE_STAGING_MARK =
       PathPlanner.generatePath(
           PATH_CONSTRAINTS,
           new PathPoint(
@@ -45,27 +45,27 @@ public class Paths {
               Rotation2d.fromDegrees(0),
               Rotation2d.fromDegrees(0)),
           new PathPoint(
-              new Translation2d(Units.inchesToMeters(442), Units.inchesToMeters(109)),
-              Rotation2d.fromDegrees(0),
-              Rotation2d.fromDegrees(0)),
+              new Translation2d(Units.inchesToMeters(442), Units.inchesToMeters(186)),
+              Rotation2d.fromDegrees(180),
+              Rotation2d.fromDegrees(180)),
           new PathPoint(
-              new Translation2d(Units.inchesToMeters(421), Units.inchesToMeters(132)),
-              Rotation2d.fromDegrees(0),
+              new Translation2d(Units.inchesToMeters(421), Units.inchesToMeters(186)),
+              Rotation2d.fromDegrees(180),
               Rotation2d.fromDegrees(180)),
           new PathPoint(
               new Translation2d(
-                  Landmarks.RED_PRELOAD_FAR_RIGHT.getX() + Config.ROBOT_CENTER_TO_FRONT,
-                  Landmarks.RED_PRELOAD_FAR_RIGHT.getY()),
+                  Landmarks.RED_STAGING_MARK_FAR_RIGHT.getX() + Config.ROBOT_CENTER_TO_FRONT,
+                  Landmarks.RED_STAGING_MARK_FAR_RIGHT.getY()),
               Rotation2d.fromDegrees(180),
               Rotation2d.fromDegrees(180)));
 
-  public static final PathPlannerTrajectory RIGHT_PRELOAD_TO_RED_GRID_RIGHT_CENTER =
+  public static final PathPlannerTrajectory RIGHT_STAGING_MARK_TO_RED_GRID_RIGHT_CENTER =
       PathPlanner.generatePath(
           PATH_CONSTRAINTS,
           new PathPoint(
               new Translation2d(
-                  Landmarks.RED_PRELOAD_FAR_RIGHT.getX() + Config.ROBOT_CENTER_TO_FRONT,
-                  Landmarks.RED_PRELOAD_FAR_RIGHT.getY()),
+                  Landmarks.RED_STAGING_MARK_FAR_RIGHT.getX() + Config.ROBOT_CENTER_TO_FRONT,
+                  Landmarks.RED_STAGING_MARK_FAR_RIGHT.getY()),
               Rotation2d.fromDegrees(180),
               Rotation2d.fromDegrees(180)),
           new PathPoint(
@@ -83,7 +83,7 @@ public class Paths {
               Rotation2d.fromDegrees(0),
               Rotation2d.fromDegrees(0)));
 
-  public static final PathPlannerTrajectory RIGHT_GRID_CENTER_TO_MIDDLE_RIGHT_PRELOAD =
+  public static final PathPlannerTrajectory RIGHT_GRID_CENTER_TO_MIDDLE_RIGHT_STAGING_MARK =
       PathPlanner.generatePath(
           PATH_CONSTRAINTS,
           new PathPoint(
@@ -102,18 +102,18 @@ public class Paths {
               Rotation2d.fromDegrees(0)),
           new PathPoint(
               new Translation2d(
-                  Landmarks.RED_PRELOAD_RIGHT.getX() + Config.ROBOT_CENTER_TO_FRONT,
-                  Landmarks.RED_PRELOAD_RIGHT.getY()),
+                  Landmarks.RED_STAGING_MARK_RIGHT.getX() + Config.ROBOT_CENTER_TO_FRONT,
+                  Landmarks.RED_STAGING_MARK_RIGHT.getY()),
               Rotation2d.fromDegrees(0),
               Rotation2d.fromDegrees(270)));
 
-  public static final PathPlannerTrajectory MIDDLE_RIGHT_PRELOAD_TO_RIGHT_GRID_LEFT =
+  public static final PathPlannerTrajectory MIDDLE_RIGHT_STAGING_MARK_TO_RIGHT_GRID_LEFT =
       PathPlanner.generatePath(
           PATH_CONSTRAINTS,
           new PathPoint(
               new Translation2d(
-                  Landmarks.RED_PRELOAD_RIGHT.getX() + Config.ROBOT_CENTER_TO_FRONT,
-                  Landmarks.RED_PRELOAD_RIGHT.getY()),
+                  Landmarks.RED_STAGING_MARK_RIGHT.getX() + Config.ROBOT_CENTER_TO_FRONT,
+                  Landmarks.RED_STAGING_MARK_RIGHT.getY()),
               Rotation2d.fromDegrees(0),
               Rotation2d.fromDegrees(270)),
           new PathPoint(
@@ -131,7 +131,7 @@ public class Paths {
               Rotation2d.fromDegrees(0),
               Rotation2d.fromDegrees(0)));
 
-  public static final PathPlannerTrajectory LEFT_GRID_LEFT_TO_FAR_LEFT_PRELOAD =
+  public static final PathPlannerTrajectory LEFT_GRID_LEFT_TO_FAR_LEFT_STAGING_MARK =
       PathPlanner.generatePath(
           PATH_CONSTRAINTS,
           new PathPoint(
@@ -142,42 +142,42 @@ public class Paths {
               Rotation2d.fromDegrees(0)),
           new PathPoint(
               new Translation2d(
-                  Halfmarks.P1_LEFT_GRID_TO_PRELOADS.getX(),
-                  Halfmarks.P2_LEFT_GRID_TO_PRELOADS.getY()),
+                  Halfmarks.RED_GRID_LEFT_CHARGE.getX(),
+                  Halfmarks.RED_GRID_LEFT_CHARGE.getY()),
               Rotation2d.fromDegrees(0),
-              Halfmarks.P1_LEFT_GRID_TO_PRELOADS.getRotation()),
+              Halfmarks.RED_GRID_LEFT_CHARGE.getRotation()),
           new PathPoint(
               new Translation2d(Units.inchesToMeters(578.5), Units.inchesToMeters(46.905)),
               Rotation2d.fromDegrees(0),
               Rotation2d.fromDegrees(180)),
           new PathPoint(
               new Translation2d(
-                  Landmarks.RED_PRELOAD_FAR_LEFT.getX() + Config.ROBOT_CENTER_TO_FRONT,
-                  Landmarks.RED_PRELOAD_FAR_LEFT.getY()),
+                  Landmarks.RED_STAGING_MARK_FAR_LEFT.getX() + Config.ROBOT_CENTER_TO_FRONT,
+                  Landmarks.RED_STAGING_MARK_FAR_LEFT.getY()),
               Rotation2d.fromDegrees(0),
               Rotation2d.fromDegrees(180)));
 
-  public static final PathPlannerTrajectory FAR_LEFT_PRELOAD_TO_LEFT_GRID_CENTER =
+  public static final PathPlannerTrajectory FAR_LEFT_STAGING_MARK_TO_LEFT_GRID_CENTER =
       PathPlanner.generatePath(
           PATH_CONSTRAINTS,
           new PathPoint(
               new Translation2d(
-                  Landmarks.RED_PRELOAD_FAR_LEFT.getX() + Config.ROBOT_CENTER_TO_FRONT,
-                  Landmarks.RED_PRELOAD_FAR_LEFT.getY()),
+                  Landmarks.RED_STAGING_MARK_FAR_LEFT.getX() + Config.ROBOT_CENTER_TO_FRONT,
+                  Landmarks.RED_STAGING_MARK_FAR_LEFT.getY()),
               Rotation2d.fromDegrees(0),
               Rotation2d.fromDegrees(180)),
           new PathPoint(
               new Translation2d(
-                  Halfmarks.P1_LEFT_GRID_TO_PRELOADS.getX(),
-                  Halfmarks.P2_LEFT_GRID_TO_PRELOADS.getY()),
+                  Halfmarks.RED_GRID_LEFT_CHARGE.getX(),
+                  Halfmarks.RED_GRID_LEFT_CHARGE.getY()),
               Rotation2d.fromDegrees(0),
-              Halfmarks.P1_LEFT_GRID_TO_PRELOADS.getRotation()),
+              Halfmarks.RED_GRID_LEFT_CHARGE.getRotation()),
           new PathPoint(
               new Translation2d(
-                  Halfmarks.P2_LEFT_GRID_TO_PRELOADS.getX(),
-                  Halfmarks.P2_LEFT_GRID_TO_PRELOADS.getY()),
+                  Halfmarks.RED_STAGING_MARKS_LEFT_CHARGE.getX(),
+                  Halfmarks.RED_STAGING_MARKS_LEFT_CHARGE.getY()),
               Rotation2d.fromDegrees(0),
-              Halfmarks.P2_LEFT_GRID_TO_PRELOADS.getRotation()),
+              Halfmarks.RED_STAGING_MARKS_LEFT_CHARGE.getRotation()),
           new PathPoint(
               new Translation2d(
                   Landmarks.RED_GRID_LEFT_NODE_CENTER.getX() - Config.ROBOT_CENTER_TO_FRONT,

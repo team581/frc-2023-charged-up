@@ -81,7 +81,7 @@ public class Config {
   // 104.58
   public static final int ELEVATOR_MOTOR_ID = 14;
   public static final double ELEVATOR_GEARING = IS_SPIKE ? 9.0 : 20.0;
-  public static final double ELEVATOR_MIN_HEIGHT = IS_SPIKE ? 0 : 0.5;
+  public static final double ELEVATOR_MIN_HEIGHT = IS_SPIKE ? 0 : 0;
   public static final double ELEVATOR_MAX_HEIGHT = IS_SPIKE ? 25 : 12;
   public static final double ELEVATOR_KF = IS_SPIKE ? 0 : 0;
   public static final double ELEVATOR_KP = IS_SPIKE ? 0.7 : 0.8;
@@ -102,8 +102,8 @@ public class Config {
   public static final int WRIST_MOTION_CRUISE_VELOCITY = IS_SPIKE ? 27500 : 20000;
   public static final double WRIST_HOMED_CURRENT = IS_SPIKE ? 15 : 15;
   public static final Rotation2d WRIST_HOMED_ANGLE =
-      IS_SPIKE ? Rotation2d.fromDegrees(0) : Rotation2d.fromDegrees(133.0);
-  public static final double WRIST_HOMING_VOLTAGE = IS_SPIKE ? -0.15 : 0.15;
+      IS_SPIKE ? Rotation2d.fromDegrees(0) : Rotation2d.fromDegrees(0);
+  public static final double WRIST_HOMING_VOLTAGE = IS_SPIKE ? -0.15 : -0.15;
 
   public static final int INTAKE_MOTOR_ID = 17;
 
