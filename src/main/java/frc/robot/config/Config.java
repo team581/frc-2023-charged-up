@@ -79,6 +79,8 @@ public class Config {
               Rotation2d.fromDegrees(-75.42), SwerveCorner.BACK_RIGHT, false, false);
   // 104.58
   public static final int ELEVATOR_MOTOR_ID = 14;
+
+  public static final double ELEVATOR_GEARING = IS_SPIKE ? 7.2 : 20.0;
   public static final double ELEVATOR_GEARING = IS_SPIKE ? 9.0 : 16.0;
   public static final double ELEVATOR_MIN_HEIGHT = IS_SPIKE ? 0 : 0.5;
   public static final double ELEVATOR_MAX_HEIGHT = IS_SPIKE ? 25 : 12;
@@ -95,7 +97,7 @@ public class Config {
   public static final int LIGHTS_LED_COUNT = 0;
 
   public static final int WRIST_MOTOR_ID = 16;
-  public static final double WRIST_GEARING = IS_SPIKE ? 64.0 * 2 : 48.0 * 2.0;
+  public static final double WRIST_GEARING = IS_SPIKE ? 25.0 * 2 : 48.0 * 2;
   public static final int WRIST_KF = IS_SPIKE ? 0 : 0;
   public static final double WRIST_KP = IS_SPIKE ? 0.25 : 0.1;
   public static final int WRIST_KI = IS_SPIKE ? 0 : 0;
