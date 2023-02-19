@@ -5,17 +5,20 @@
 package frc.robot.intake;
 
 import com.ctre.phoenix.CANifier;
-import com.ctre.phoenix.CANifier.GeneralPin;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.util.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 public class IntakeSubsystem extends LifecycleSubsystem {
-  private static final SupplyCurrentLimitConfiguration CURRENT_LIMIT =
-      new SupplyCurrentLimitConfiguration(true, 20, 30, 0.2);
+  private static final double CUBE_CLAMP_DURATION = 0.1;
+  private static final double CONE_CLAMP_DURATION = 0.2;
 
   // numbers above are placeholders for current limits
   private HeldGamePiece gamePiece = HeldGamePiece.NOTHING;
@@ -27,11 +30,22 @@ public class IntakeSubsystem extends LifecycleSubsystem {
 
   private final LinearFilter currentFilter = LinearFilter.movingAverage(5);
 
+  private final Timer timer = new Timer();
+
+  private boolean initialGrab = false;
+
   public IntakeSubsystem(TalonFX motor, CANifier sensor) {
     this.motor = motor;
     this.sensor = sensor;
     motor.setInverted(false);
-    motor.configSupplyCurrentLimit(CURRENT_LIMIT);
+
+    motor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(false, 25, 30, 0.2));
+    motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(false, 15, 25, 0.2));
+
+    timer.start();
+
+    motor.configForwardLimitSwitchSource(
+        LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
   }
 
   @Override
@@ -40,7 +54,8 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     Logger.getInstance().recordOutput("Intake/HeldGamePiece", gamePiece.toString());
     Logger.getInstance().recordOutput("Intake/Current", motor.getSupplyCurrent());
     Logger.getInstance().recordOutput("Intake/Voltage", motor.getMotorOutputVoltage());
-    Logger.getInstance().recordOutput("Intake/Sensor", sensor.getGeneralInput(GeneralPin.LIMR));
+    Logger.getInstance().recordOutput("Intake/HasGamePiece", hasGamePiece());
+    Logger.getInstance().recordOutput("Intake/Timer", timer.get());
   }
 
   @Override
@@ -48,34 +63,53 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     double filteredCurrent = currentFilter.calculate(motor.getSupplyCurrent());
     Logger.getInstance().recordOutput("Intake/FilteredCurrent", filteredCurrent);
 
-    // TODO: Run at 100% voltage when grabbing pieces, use a timer to stop the motor (after 200ms ish) and assume we're holding something at the end of that
-    if (mode == IntakeMode.HOLDING_CUBE) {
-      if (filteredCurrent > 10) {
-        gamePiece = HeldGamePiece.CUBE;
+    double outputVoltage = 0;
+
+    if (mode == IntakeMode.OPEN) {
+      if (gamePiece == HeldGamePiece.NOTHING) {
+        outputVoltage = 0;
+      } else {
+        outputVoltage = -0.2;
       }
-    } else if (mode == IntakeMode.HOLDING_CONE) {
-      if (filteredCurrent > 15) {
-        gamePiece = HeldGamePiece.CONE;
-      }
-    } else if (mode == IntakeMode.OPEN) {
+
       if (filteredCurrent > 5) {
         gamePiece = HeldGamePiece.NOTHING;
       }
+    } else if (gamePiece == HeldGamePiece.CUBE) {
+      outputVoltage = 0.1;
+      initialGrab = false;
+    } else if (gamePiece == HeldGamePiece.CONE) {
+      outputVoltage = 0.1;
+      initialGrab = false;
+    } else if (mode == IntakeMode.HOLDING_CUBE) {
+      outputVoltage = 0.7;
+
+      if (!initialGrab && hasGamePiece()) {
+        timer.restart();
+        initialGrab = true;
+      }
+
+      if (initialGrab && timer.hasElapsed(CUBE_CLAMP_DURATION)) {
+        gamePiece = HeldGamePiece.CUBE;
+      }
+    } else if (mode == IntakeMode.HOLDING_CONE) {
+      outputVoltage = 0.7;
+
+      if (!initialGrab && hasGamePiece()) {
+        timer.restart();
+        initialGrab = true;
+      }
+
+      if (initialGrab && timer.hasElapsed(CONE_CLAMP_DURATION)) {
+        gamePiece = HeldGamePiece.CONE;
+      }
+
+    } else {
+      outputVoltage = 0;
     }
 
-    if (mode == IntakeMode.OPEN && gamePiece != HeldGamePiece.NOTHING) {
-      motor.set(TalonFXControlMode.PercentOutput, -0.2);
-    } else if (gamePiece == HeldGamePiece.CUBE) {
-      motor.set(TalonFXControlMode.PercentOutput, 0.075);
-    } else if (gamePiece == HeldGamePiece.CONE) {
-      motor.set(TalonFXControlMode.PercentOutput, 0.1);
-    } else if (mode == IntakeMode.HOLDING_CUBE) {
-      motor.set(TalonFXControlMode.PercentOutput, 0.2);
-    } else if (mode == IntakeMode.HOLDING_CONE) {
-      motor.set(TalonFXControlMode.PercentOutput, 0.3);
-    } else {
-      motor.set(TalonFXControlMode.PercentOutput, 0);
-    }
+    Logger.getInstance().recordOutput("Intake/GoalVoltage", outputVoltage);
+    motor.set(TalonFXControlMode.PercentOutput, outputVoltage);
   }
 
   public void setMode(IntakeMode mode) {
@@ -113,5 +147,9 @@ public class IntakeSubsystem extends LifecycleSubsystem {
 
   public HeldGamePiece getGamePiece() {
     return gamePiece;
+  }
+
+  private boolean hasGamePiece() {
+    return motor.isFwdLimitSwitchClosed() == 0;
   }
 }
