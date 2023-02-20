@@ -24,6 +24,10 @@ public class LifecycleSubsystem extends SubsystemBase {
 
   public LifecycleSubsystem() {
     robotInit();
+
+    if (Robot.isSimulation()) {
+      simulationInit();
+    }
   }
 
   @Override
@@ -57,6 +61,10 @@ public class LifecycleSubsystem extends SubsystemBase {
       }
       autonomousPeriodic();
     }
+
+    if (Robot.isSimulation()) {
+      simulationPeriodic();
+    }
   }
 
   /** {@link IterativeRobotBase#robotInit()} */
@@ -86,4 +94,10 @@ public class LifecycleSubsystem extends SubsystemBase {
 
   /** {@link IterativeRobotBase#disabledPeriodic()} */
   public void disabledPeriodic() {}
+
+    /** {@link IterativeRobotBase#simulationInit()} */
+    public void simulationInit() {}
+
+    /** {@link IterativeRobotBase#simulationPeriodic()} */
+    public void simulationPeriodic() {}
 }

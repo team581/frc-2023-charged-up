@@ -10,6 +10,10 @@ import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import frc.robot.config.Config;
 import frc.robot.util.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
@@ -106,5 +110,18 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
     } else {
       motor.set(ControlMode.PercentOutput, 0);
     }
+  }
+
+  private final ElevatorSim sim = new ElevatorSim(DCMotor.getFalcon500(1), Config.ELEVATOR_GEARING, 7, Units.inchesToMeters(1.2), 0, 2, true);
+
+  @Override
+  public void simulationInit() {
+
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    sim.update(0.02);
+
   }
 }

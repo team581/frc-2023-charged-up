@@ -31,6 +31,7 @@ import frc.robot.managers.SuperstructureManager;
 import frc.robot.managers.SuperstructureMotionManager;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSubsystem;
+import frc.robot.visualization.ElevatorVisualizer;
 import frc.robot.wrist.WristSubsystem;
 import frc.robot.wrist.commands.WristHomingCommand;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -92,6 +93,8 @@ public class Robot extends LoggedRobot {
           intake,
           superstructureManager,
           localization);
+
+  private final ElevatorVisualizer elevatorVisualizer = new ElevatorVisualizer(elevator::getHeight, wrist::getAngle);
 
   private final DriveController driveController = new DriveController(Config.DRIVE_CONTROLLER_PORT);
   private final CommandXboxController operatorController =
@@ -200,6 +203,8 @@ public class Robot extends LoggedRobot {
     Logger.getInstance().recordOutput("AutoScore/GoalLocation/Pose", autoScoreLocation.pose);
     Logger.getInstance()
         .recordOutput("AutoScore/GoalLocation/Node", autoScoreLocation.node.toString());
+
+    elevatorVisualizer.update();
   }
 
   @Override
