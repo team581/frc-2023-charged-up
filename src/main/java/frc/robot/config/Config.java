@@ -101,7 +101,7 @@ public class Config {
   public static final double WRIST_KP = IS_SPIKE ? 0.25 : 0.1;
   public static final int WRIST_KI = IS_SPIKE ? 0 : 0;
   public static final int WRIST_KD = IS_SPIKE ? 0 : 0;
-  public static final int WRIST_MOTION_CRUISE_VELOCITY = IS_SPIKE ? 27500 : 20000;
+  public static final int WRIST_MOTION_CRUISE_VELOCITY = IS_SPIKE ? 10000 : 20000;
   public static final int WRIST_MOTION_ACCELERATION = IS_SPIKE ? 65000 : 50000;
   public static final double WRIST_HOMED_CURRENT = IS_SPIKE ? 15 : 15;
   public static final Rotation2d WRIST_HOMED_ANGLE =
