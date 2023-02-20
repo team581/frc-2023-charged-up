@@ -8,8 +8,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -204,24 +202,44 @@ public class Robot extends LoggedRobot {
         .recordOutput(
             "A",
             new Pose2d(
-              Halfmarks.RED_GRID_RIGHT_CHARGE.getX(),
-              Halfmarks.RED_GRID_RIGHT_CHARGE.getY(),
-              Halfmarks.RED_GRID_RIGHT_CHARGE.getRotation()));
-
+                Halfmarks.RED_GRID_RIGHT_CHARGE.getX(),
+                Halfmarks.RED_GRID_RIGHT_CHARGE.getY(),
+                Halfmarks.RED_GRID_RIGHT_CHARGE.getRotation()));
     Logger.getInstance()
-    .recordOutput(
-        "B",
-        new Pose2d(
-          Units.inchesToMeters(442), Units.inchesToMeters(132),
-            Rotation2d.fromDegrees(90)));
-    Logger.getInstance().recordOutput("C", new Pose2d(Units.inchesToMeters(421), Units.inchesToMeters(109), Rotation2d.fromDegrees(0)));
+        .recordOutput(
+            "B",
+            new Pose2d(
+                Halfmarks.RED_RIGHT_CHARGE.getX(),
+                Halfmarks.RED_RIGHT_CHARGE.getY(),
+                Halfmarks.RED_RIGHT_CHARGE.getRotation()));
+    Logger.getInstance()
+        .recordOutput(
+            "C",
+            new Pose2d(
+                Halfmarks.RED_STAGING_MARKS_RIGHT_CHARGE.getX(),
+                Halfmarks.RED_STAGING_MARKS_RIGHT_CHARGE.getY(),
+                Halfmarks.RED_STAGING_MARKS_RIGHT_CHARGE.getRotation()));
     Logger.getInstance()
         .recordOutput(
             "D",
             new Pose2d(
-                Landmarks.RED_STAGING_MARK_FAR_RIGHT.getX() + Config.ROBOT_CENTER_TO_FRONT,
-                Landmarks.RED_STAGING_MARK_FAR_RIGHT.getY(),
-                Rotation2d.fromDegrees(0)));
+                Halfmarks.RED_GRID_LEFT_CHARGE.getX(),
+                Halfmarks.RED_GRID_LEFT_CHARGE.getY(),
+                Halfmarks.RED_GRID_LEFT_CHARGE.getRotation()));
+    Logger.getInstance()
+        .recordOutput(
+            "E",
+            new Pose2d(
+                Halfmarks.RED_LEFT_CHARGE.getX(),
+                Halfmarks.RED_LEFT_CHARGE.getY(),
+                Halfmarks.RED_LEFT_CHARGE.getRotation()));
+    Logger.getInstance()
+        .recordOutput(
+            "F",
+            new Pose2d(
+                Halfmarks.RED_STAGING_MARKS_LEFT_CHARGE.getX(),
+                Halfmarks.RED_STAGING_MARKS_LEFT_CHARGE.getY(),
+                Halfmarks.RED_STAGING_MARKS_LEFT_CHARGE.getRotation()));
   }
 
   @Override

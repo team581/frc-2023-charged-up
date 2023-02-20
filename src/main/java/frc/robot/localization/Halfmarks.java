@@ -9,11 +9,22 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 
 public class Halfmarks {
-  public static final Pose2d RED_GRID_RIGHT_CHARGE = new Pose2d(Units.inchesToMeters(596.77), Units.inchesToMeters(100), Rotation2d.fromDegrees(0));
-  public static final Pose2d RED_GRID_LEFT_CHARGE = new Pose2d(Units.inchesToMeters(0), Units.inchesToMeters(0), Rotation2d.fromDegrees(0));
-  public static final Pose2d RED_RIGHT_CHARGE = new Pose2d(Units.inchesToMeters(0), Units.inchesToMeters(0), Rotation2d.fromDegrees(90));
-  public static final Pose2d RED_LEFT_CHARGE = new Pose2d(Units.inchesToMeters(0), Units.inchesToMeters(0), Rotation2d.fromDegrees(90));
-  public static final Pose2d RED_STAGING_MARKS_LEFT_CHARGE = new Pose2d(Units.inchesToMeters(0), Units.inchesToMeters(0), Rotation2d.fromDegrees(180));
-  public static final Pose2d RED_STAGING_MARKS_RIGHT_CHARGE = new Pose2d(Units.inchesToMeters(0), Units.inchesToMeters(0), Rotation2d.fromDegrees(180));
+  public static final Pose2d RED_GRID_RIGHT_CHARGE =
+      new Pose2d(Units.inchesToMeters(550.5), Units.inchesToMeters(185), Rotation2d.fromDegrees(0));
+  public static final Pose2d RED_RIGHT_CHARGE =
+      new Pose2d(Units.inchesToMeters(500), Units.inchesToMeters(185), Rotation2d.fromDegrees(90));
+  public static final Pose2d RED_STAGING_MARKS_RIGHT_CHARGE =
+      new Pose2d(
+          Units.inchesToMeters(436.5), Units.inchesToMeters(185), Rotation2d.fromDegrees(180));
+
+  public static final Pose2d RED_GRID_LEFT_CHARGE =
+      new Pose2d(
+          Units.inchesToMeters(565.5), Units.inchesToMeters(37.5), Rotation2d.fromDegrees(0));
+  public static final Pose2d RED_LEFT_CHARGE =
+      new Pose2d(Units.inchesToMeters(484), Units.inchesToMeters(40), Rotation2d.fromDegrees(90));
+  public static final Pose2d RED_STAGING_MARKS_LEFT_CHARGE =
+      new Pose2d(
+          Units.inchesToMeters(436.5), Units.inchesToMeters(40), Rotation2d.fromDegrees(180));
+
   private Halfmarks() {}
 }

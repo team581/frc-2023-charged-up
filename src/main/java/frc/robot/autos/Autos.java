@@ -5,7 +5,10 @@
 package frc.robot.autos;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+import com.pathplanner.lib.server.PathPlannerServer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -13,6 +16,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.States;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.elevator.commands.ElevatorHomingCommand;
 import frc.robot.imu.ImuSubsystem;
@@ -25,6 +29,7 @@ import frc.robot.managers.SuperstructureManager;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.wrist.WristSubsystem;
 import frc.robot.wrist.commands.WristHomingCommand;
+import java.util.Map;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -36,10 +41,10 @@ public class Autos {
       new LoggedDashboardChooser<>("Auto Choices");
   private final ImuSubsystem imu;
   private SuperstructureManager superstructure;
-  // private States states;
   private ElevatorSubsystem elevator;
   private WristSubsystem wrist;
   private IntakeSubsystem intake;
+  private final SwerveAutoBuilder autoBuilder;
 
   public Autos(
       LocalizationSubsystem localization,
@@ -56,10 +61,42 @@ public class Autos {
     this.elevator = elevator;
     this.wrist = wrist;
     this.intake = intake;
+    Map<String, Command> eventMap =
+        Map.ofEntries(
+            Map.entry(
+                "intakeCone",
+                superstructure
+                    .setIntakeModeCommand(HeldGamePiece.CONE)
+                    .andThen(superstructure.getIntakeCommand())),
+            Map.entry(
+                "intakeCube",
+                superstructure
+                    .setIntakeModeCommand(HeldGamePiece.CUBE)
+                    .andThen(superstructure.getIntakeCommand())),
+            Map.entry("score", superstructure.getScoreCommand()),
+            Map.entry("stowSuperstructure", superstructure.getCommand(States.STOWED)));
+
+    autoBuilder =
+        new SwerveAutoBuilder(
+            localization::getPose,
+            (pose) -> localization.resetPose(pose, pose.getRotation()),
+            SwerveSubsystem.KINEMATICS,
+            new PIDConstants(5.0, 0.0, 0.0),
+            new PIDConstants(1.1, 0.0, 0.0),
+            (states) -> swerve.setModuleStates(states, false),
+            eventMap,
+            false,
+            swerve);
 
     autoChooser.addDefaultOption("Do nothing", getDoNothingAuto());
     autoChooser.addOption("Balance Auto", getBalanceAuto());
     autoChooser.addOption("RedRightThreeConeAuto", RedRightThreeConeAuto());
+    autoChooser.addOption("RedLeftThreeConeAuto", RedLeftThreeConeAuto());
+    autoChooser.addOption("GUIPath", DrivingGUIPath());
+    autoChooser.addOption("GUIPATH2", DrivingGUIPath2());
+    autoChooser.addOption("GUIFullAuto", getDrivingAuto());
+
+    PathPlannerServer.startServer(5811);
 
     PPSwerveControllerCommand.setLoggingCallbacks(
         (PathPlannerTrajectory activeTrajectory) -> {
@@ -89,21 +126,45 @@ public class Autos {
   }
 
   private Command RedRightThreeConeAuto() {
-    return
-        Commands.sequence(
+    return Commands.sequence(
+        // superstructure.setIntakeModeCommand(HeldGamePiece.CONE),
+        // Commands.runOnce(() -> intake.setPreloadForAutos(HeldGamePiece.CONE)),
+        // superstructure.getScoreCommand(),
+        followTrajectoryCommand(Paths.RIGHT_GRID_RIGHT_TO_FAR_RIGHT_STAGING_MARK, true)
+            .alongWith(Commands.waitSeconds(3.5))
+            .andThen((superstructure.getIntakeCommand().withTimeout(3))),
+        followTrajectoryCommand(Paths.FAR_RIGHT_STAGING_MARK_TO_RED_GRID_RIGHT_LEFT, false),
+        superstructure.getScoreCommand(),
+        followTrajectoryCommand(Paths.RIGHT_GRID_LEFT_TO_MIDDLE_RIGHT_STAGING_MARK, false)
+            .alongWith(Commands.waitSeconds(4.75))
+            .andThen(superstructure.getIntakeCommand().withTimeout(3)));
+  }
+
+  private Command DrivingGUIPath() {
+    return Commands.sequence(followTrajectoryCommand(Paths.GUI_TEST, true));
+  }
+
+  private Command getDrivingAuto() {
+    return autoBuilder.fullAuto(Paths.GUI_FULL_AUTO);
+  }
+
+  private Command DrivingGUIPath2() {
+    return Commands.sequence(followTrajectoryCommand(Paths.GUI_TEST_2, true));
+  }
+
+  private Command RedLeftThreeConeAuto() {
+    return Commands.sequence(
         superstructure.setIntakeModeCommand(HeldGamePiece.CONE),
         Commands.runOnce(() -> intake.setPreloadForAutos(HeldGamePiece.CONE)),
         superstructure.getScoreCommand(),
-        followTrajectoryCommand(Paths.RIGHT_NODE_TO_OPPOSITE_STAGING_MARK, true)
+        followTrajectoryCommand(Paths.LEFT_GRID_LEFT_TO_FAR_LEFT_STAGING_MARK, true)
             .alongWith(Commands.waitSeconds(4))
             .andThen((superstructure.getIntakeCommand().withTimeout(3))),
-        followTrajectoryCommand(Paths.RIGHT_STAGING_MARK_TO_RED_GRID_RIGHT_CENTER, false),
+        followTrajectoryCommand(Paths.FAR_LEFT_STAGING_MARK_TO_LEFT_GRID_CENTER, false),
         superstructure.getScoreCommand(),
-        followTrajectoryCommand(Paths.RIGHT_GRID_CENTER_TO_MIDDLE_RIGHT_STAGING_MARK, false)
+        followTrajectoryCommand(Paths.LEFT_GRID_RIGHT_TO_LEFT_STAGING_MARK, false)
             .alongWith(Commands.waitSeconds(4.75))
-            .andThen(superstructure.getIntakeCommand().withTimeout(3)),
-        followTrajectoryCommand(Paths.MIDDLE_RIGHT_STAGING_MARK_TO_RIGHT_GRID_LEFT, false),
-        superstructure.getScoreCommand());
+            .andThen(superstructure.getIntakeCommand().withTimeout(3)));
   }
 
   private CommandBase getDoNothingAuto() {
