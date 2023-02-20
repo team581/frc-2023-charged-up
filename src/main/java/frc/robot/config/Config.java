@@ -80,7 +80,8 @@ public class Config {
               Rotation2d.fromDegrees(-75.42), SwerveCorner.BACK_RIGHT, false, false);
   // 104.58
   public static final int ELEVATOR_MOTOR_ID = 14;
-  public static final double ELEVATOR_GEARING = IS_SPIKE ? 9.0 : 20.0;
+
+  public static final double ELEVATOR_GEARING = IS_SPIKE ? 7.2 : 16.0;
   public static final double ELEVATOR_MIN_HEIGHT = IS_SPIKE ? 0 : 0;
   public static final double ELEVATOR_MAX_HEIGHT = IS_SPIKE ? 25 : 12;
   public static final double ELEVATOR_KF = IS_SPIKE ? 0 : 0;
@@ -88,18 +89,21 @@ public class Config {
   public static final double ELEVATOR_KI = IS_SPIKE ? 0 : 0;
   public static final double ELEVATOR_KD = IS_SPIKE ? 0.1 : 0;
   public static final double ELEVATOR_ARB_F = IS_SPIKE ? 0.08 : 0;
-  public static final int ELEVATOR_CRUISE_VELOCITY = IS_SPIKE ? 20000 : 15000;
+  public static final int ELEVATOR_CRUISE_VELOCITY = IS_SPIKE ? 25000 : 15000;
   public static final int ELEVATOR_ACCELERATION = IS_SPIKE ? 30000 : 27500;
   public static final boolean ELEVATOR_INVERTED = IS_SPIKE ? false : true;
 
+  public static final int LIGHTS_CANDLE_ID = 15;
+  public static final int LIGHTS_LED_COUNT = 0;
+
   public static final int WRIST_MOTOR_ID = 16;
-  public static final double WRIST_GEARING = IS_SPIKE ? 64.0 * 2 : 48.0 * 2.0;
+  public static final double WRIST_GEARING = IS_SPIKE ? 25.0 * 2 : 48.0 * 2;
   public static final int WRIST_KF = IS_SPIKE ? 0 : 0;
   public static final double WRIST_KP = IS_SPIKE ? 0.25 : 0.1;
   public static final int WRIST_KI = IS_SPIKE ? 0 : 0;
   public static final int WRIST_KD = IS_SPIKE ? 0 : 0;
-  public static final int WRIST_MOTION_ACCELERATION = IS_SPIKE ? 65000 : 50000;
   public static final int WRIST_MOTION_CRUISE_VELOCITY = IS_SPIKE ? 27500 : 20000;
+  public static final int WRIST_MOTION_ACCELERATION = IS_SPIKE ? 65000 : 50000;
   public static final double WRIST_HOMED_CURRENT = IS_SPIKE ? 15 : 15;
   public static final Rotation2d WRIST_HOMED_ANGLE =
       IS_SPIKE ? Rotation2d.fromDegrees(0) : Rotation2d.fromDegrees(0);

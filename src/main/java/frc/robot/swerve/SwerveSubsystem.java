@@ -34,7 +34,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   public static final double MAX_VELOCITY_INCHES_PER_SECOND = 127;
   public static final double MAX_VELOCITY_METERS_PER_SECOND =
       MAX_VELOCITY_INCHES_PER_SECOND / 39.37;
-  public static final double MAX_ANGULAR_VELOCITY = 20;
+  public static final double MAX_ANGULAR_VELOCITY = 30;
 
   private final ImuSubsystem imu;
   private final SwerveModule frontRight;
@@ -130,12 +130,18 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     Translation2d robotTranslation =
         new Translation2d(forwardPercentage, sidewaysPercentage)
             .times(MAX_VELOCITY_METERS_PER_SECOND);
+    Rotation2d fieldRelativeHeading = imu.getRobotHeading();
+
+    // if (DriverStation.getAlliance() == Alliance.Red) {
+    //   fieldRelativeHeading = fieldRelativeHeading.plus(Rotation2d.fromDegrees(180));
+    // }
+
     ChassisSpeeds chassisSpeeds =
         ChassisSpeeds.fromFieldRelativeSpeeds(
             robotTranslation.getX(),
             robotTranslation.getY(),
             thetaPercentage * MAX_ANGULAR_VELOCITY,
-            fieldRelative ? imu.getRobotHeading() : new Rotation2d());
+            fieldRelative ? fieldRelativeHeading : new Rotation2d());
     SwerveModuleState[] moduleStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_VELOCITY_METERS_PER_SECOND);
     setChassisSpeeds(KINEMATICS.toChassisSpeeds(moduleStates), openLoop);
@@ -155,7 +161,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
           if (Config.IS_SPIKE) {
             driveTeleop(
-                -controller.getSidewaysPercentage(),
+                controller.getSidewaysPercentage(),
                 -controller.getForwardPercentage(),
                 -controller.getThetaPercentage(),
                 true,

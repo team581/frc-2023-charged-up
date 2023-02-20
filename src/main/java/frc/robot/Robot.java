@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
@@ -25,6 +26,7 @@ import frc.robot.intake.HeldGamePiece;
 import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.intake.commands.IntakeCommand;
+import frc.robot.lights.LightsSubsystem;
 import frc.robot.localization.Halfmarks;
 import frc.robot.localization.Landmarks;
 import frc.robot.localization.LocalizationSubsystem;
@@ -87,6 +89,12 @@ public class Robot extends LoggedRobot {
   private final LocalizationSubsystem localization = new LocalizationSubsystem(swerve, imu);
   private final SuperstructureManager superstructureManager =
       new SuperstructureManager(superstructureMotionManager, intake, localization);
+  private final LightsSubsystem lights =
+      new LightsSubsystem(
+          new CANdle(Config.LIGHTS_CANDLE_ID, "581CANivore"),
+          intake,
+          superstructureManager,
+          localization);
 
   private final DriveController driveController = new DriveController(Config.DRIVE_CONTROLLER_PORT);
   private final CommandXboxController operatorController =
@@ -141,24 +149,24 @@ public class Robot extends LoggedRobot {
   private void configureButtonBindings() {
     swerve.setDefaultCommand(swerve.getDriveTeleopCommand(driveController));
 
-    // Intake
-    driveController
-        .leftTrigger(0.3)
-        .onTrue(superstructureManager.getIntakeCommand())
-        .onFalse(superstructureManager.getCommand(States.STOWED));
-    // Score
+    // Intake on floor
+    driveController.leftTrigger(0.3).onTrue(superstructureManager.getFloorIntakeCommand());
+    // Outtake/score low node/finish manual score
     driveController
         .rightTrigger(0.3)
         .onTrue(superstructureManager.getScoreCommand())
         .onFalse(superstructureManager.getCommand(States.STOWED));
     // Zero gyro
-    driveController.back().onTrue(imu.getZeroCommand());
+    driveController.back().onTrue(localization.getZeroCommand());
     // Set mode to cubes
     driveController.povUp().onTrue(superstructureManager.setIntakeModeCommand(HeldGamePiece.CUBE));
     // Set mode to cones
     driveController
         .povDown()
+        // TODO: Support cancelling this command when the button is released early
         .onTrue(superstructureManager.setIntakeModeCommand(HeldGamePiece.CONE));
+    // Intake on shelf
+    driveController.leftBumper().onTrue(superstructureManager.getShelfIntakeCommand());
 
     // Manual score low
     operatorController
@@ -175,7 +183,6 @@ public class Robot extends LoggedRobot {
         .y()
         .onTrue(superstructureManager.getManualScoreCommand(ManualScoringLocation.HIGH))
         .onFalse(superstructureManager.getCommand(States.STOWED));
-
     // Stow all
     operatorController.x().onTrue(superstructureManager.getCommand(States.STOWED));
     // Home superstructure
