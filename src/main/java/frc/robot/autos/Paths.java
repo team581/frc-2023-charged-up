@@ -30,14 +30,14 @@ public class Paths {
               Rotation2d.fromDegrees(45),
               Rotation2d.fromDegrees(-90)));
 
-  public static final PathPlannerTrajectory GUI_TEST =
-      PathPlanner.loadPath("driving", PATH_CONSTRAINTS);
+  public static final PathPlannerTrajectory RED_2_RIGHT_CONE_TO_BALANCE =
+      PathPlanner.loadPath("Red2RightConeToBalance", PATH_CONSTRAINTS);
 
-  public static final PathPlannerTrajectory GUI_TEST_2 =
-      PathPlanner.loadPath("driving2", PATH_CONSTRAINTS);
+  public static final PathPlannerTrajectory RED_2_LEFT_CONE_TO_BALANCE =
+      PathPlanner.loadPath("Red2LeftConeToBalance", PATH_CONSTRAINTS);
 
-  public static final List<PathPlannerTrajectory> GUI_FULL_AUTO =
-      PathPlanner.loadPathGroup("driving", PATH_CONSTRAINTS);
+  public static final List<PathPlannerTrajectory> RED_3_RIGHT_CONE_AUTO =
+      PathPlanner.loadPathGroup("Red3RightConeAuto", PATH_CONSTRAINTS);
 
   public static final PathPlannerTrajectory RIGHT_GRID_RIGHT_TO_FAR_RIGHT_STAGING_MARK =
       PathPlanner.generatePath(

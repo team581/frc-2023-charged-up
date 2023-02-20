@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.ManualScoringLocation;
 import frc.robot.States;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.elevator.commands.ElevatorHomingCommand;
@@ -64,6 +65,42 @@ public class Autos {
     Map<String, Command> eventMap =
         Map.ofEntries(
             Map.entry(
+                "coneWait", Commands.waitUntil(() -> intake.getGamePiece() == HeldGamePiece.CONE)),
+            Map.entry(
+                "cubeWait", Commands.waitUntil(() -> intake.getGamePiece() == HeldGamePiece.CUBE)),
+            Map.entry(
+                "preloadCube",
+                superstructure
+                    .setIntakeModeCommand(HeldGamePiece.CUBE)
+                    .andThen(
+                        Commands.runOnce(() -> intake.setPreloadForAutos(HeldGamePiece.CUBE)))),
+            Map.entry(
+                "preloadCone",
+                superstructure
+                    .setIntakeModeCommand(HeldGamePiece.CONE)
+                    .andThen(
+                        Commands.runOnce(() -> intake.setPreloadForAutos(HeldGamePiece.CONE)))),
+            Map.entry(
+                "scoreLow",
+                superstructure
+                    .getManualScoreCommand(ManualScoringLocation.LOW)
+                    .andThen(superstructure.finishManualScoreCommand())),
+            Map.entry(
+                "scoreMid",
+                superstructure
+                    .getManualScoreCommand(ManualScoringLocation.MID)
+                    .andThen(superstructure.finishManualScoreCommand())),
+            Map.entry(
+                "scoreHigh",
+                superstructure
+                    .getManualScoreCommand(ManualScoringLocation.HIGH)
+                    .andThen(superstructure.finishManualScoreCommand())),
+            Map.entry(
+                "home",
+                new ElevatorHomingCommand(elevator)
+                    .andThen(new WristHomingCommand(wrist))
+                    .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED))),
+            Map.entry(
                 "intakeCone",
                 superstructure
                     .setIntakeModeCommand(HeldGamePiece.CONE)
@@ -74,7 +111,7 @@ public class Autos {
                     .setIntakeModeCommand(HeldGamePiece.CUBE)
                     .andThen(superstructure.getFloorIntakeCommand())),
             Map.entry("score", superstructure.getScoreCommand()),
-            Map.entry("stowSuperstructure", superstructure.getCommand(States.STOWED)));
+            Map.entry("stow", superstructure.getCommand(States.STOWED)));
 
     autoBuilder =
         new SwerveAutoBuilder(
@@ -89,13 +126,11 @@ public class Autos {
             swerve);
 
     autoChooser.addDefaultOption("Do nothing", getDoNothingAuto());
-    autoChooser.addOption("Balance Auto", getBalanceAuto());
-    autoChooser.addOption("RedRightThreeConeAuto", RedRightThreeConeAuto());
-    autoChooser.addOption("RedLeftThreeConeAuto", RedLeftThreeConeAuto());
-    autoChooser.addOption("GUIPath", DrivingGUIPath());
-    autoChooser.addOption("GUIPATH2", DrivingGUIPath2());
-    autoChooser.addOption("GUIFullAuto", getDrivingAuto());
+    autoChooser.addOption("red2LeftConeToBalance", red2LeftConeToBalance());
+    autoChooser.addOption("red2RightConeToBalance", red2RightConeToBalance());
+    autoChooser.addOption("red3RightConeAuto", red3RightConeAuto());
 
+    // TODO: Don't run this at comps
     PathPlannerServer.startServer(5811);
 
     PPSwerveControllerCommand.setLoggingCallbacks(
@@ -121,50 +156,16 @@ public class Autos {
         });
   }
 
-  private Command getBalanceAuto() {
-    return followTrajectoryCommand(Paths.BALANCE_AUTO, true).withName("BalanceAutoCommand");
+  private Command red2RightConeToBalance() {
+    return autoBuilder.fullAuto(Paths.RED_2_RIGHT_CONE_TO_BALANCE);
   }
 
-  private Command RedRightThreeConeAuto() {
-    return Commands.sequence(
-        // superstructure.setIntakeModeCommand(HeldGamePiece.CONE),
-        // Commands.runOnce(() -> intake.setPreloadForAutos(HeldGamePiece.CONE)),
-        // superstructure.getScoreCommand(),
-        followTrajectoryCommand(Paths.RIGHT_GRID_RIGHT_TO_FAR_RIGHT_STAGING_MARK, true)
-            .alongWith(Commands.waitSeconds(3.5))
-            .andThen((superstructure.getFloorIntakeCommand().withTimeout(3))),
-        followTrajectoryCommand(Paths.FAR_RIGHT_STAGING_MARK_TO_RED_GRID_RIGHT_LEFT, false),
-        superstructure.getScoreCommand(),
-        followTrajectoryCommand(Paths.RIGHT_GRID_LEFT_TO_MIDDLE_RIGHT_STAGING_MARK, false)
-            .alongWith(Commands.waitSeconds(4.75))
-            .andThen(superstructure.getFloorIntakeCommand().withTimeout(3)));
+  private Command red2LeftConeToBalance() {
+    return autoBuilder.fullAuto(Paths.RED_2_LEFT_CONE_TO_BALANCE);
   }
 
-  private Command DrivingGUIPath() {
-    return Commands.sequence(followTrajectoryCommand(Paths.GUI_TEST, true));
-  }
-
-  private Command getDrivingAuto() {
-    return autoBuilder.fullAuto(Paths.GUI_FULL_AUTO);
-  }
-
-  private Command DrivingGUIPath2() {
-    return Commands.sequence(followTrajectoryCommand(Paths.GUI_TEST_2, true));
-  }
-
-  private Command RedLeftThreeConeAuto() {
-    return Commands.sequence(
-        superstructure.setIntakeModeCommand(HeldGamePiece.CONE),
-        Commands.runOnce(() -> intake.setPreloadForAutos(HeldGamePiece.CONE)),
-        superstructure.getScoreCommand(),
-        followTrajectoryCommand(Paths.LEFT_GRID_LEFT_TO_FAR_LEFT_STAGING_MARK, true)
-            .alongWith(Commands.waitSeconds(4))
-            .andThen((superstructure.getFloorIntakeCommand().withTimeout(3))),
-        followTrajectoryCommand(Paths.FAR_LEFT_STAGING_MARK_TO_LEFT_GRID_CENTER, false),
-        superstructure.getScoreCommand(),
-        followTrajectoryCommand(Paths.LEFT_GRID_RIGHT_TO_LEFT_STAGING_MARK, false)
-            .alongWith(Commands.waitSeconds(4.75))
-            .andThen(superstructure.getFloorIntakeCommand().withTimeout(3)));
+  private Command red3RightConeAuto() {
+    return autoBuilder.fullAuto(Paths.RED_3_RIGHT_CONE_AUTO);
   }
 
   private CommandBase getDoNothingAuto() {
@@ -172,17 +173,13 @@ public class Autos {
   }
 
   public Command getAutoCommand() {
-    Command homingCommand =
-        new ElevatorHomingCommand(elevator)
-            .andThen(new WristHomingCommand(wrist))
-            .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED));
     Command command = autoChooser.get();
 
     if (command != null) {
-      return homingCommand.andThen(command);
+      return command;
     }
 
-    return homingCommand.andThen(getDoNothingAuto());
+    return getDoNothingAuto();
   }
 
   private Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {

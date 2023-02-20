@@ -91,8 +91,7 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
     if (rawPose.length > 0 && hasTargets) {
       LimelightHelpers.LimelightResults llresults = LimelightHelpers.getLatestResults("");
 
-      // TODO: Set this to true when we want to use vision to correct poses
-      boolean isValid = false;
+      boolean isValid = true;
 
       for (int i = 0; i < llresults.targetingResults.targets_Retro.length; i++) {
         LimelightHelpers.LimelightTarget_Retro item = llresults.targetingResults.targets_Retro[i];
