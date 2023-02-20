@@ -67,12 +67,12 @@ public class Autos {
                 "intakeCone",
                 superstructure
                     .setIntakeModeCommand(HeldGamePiece.CONE)
-                    .andThen(superstructure.getIntakeCommand())),
+                    .andThen(superstructure.getFloorIntakeCommand())),
             Map.entry(
                 "intakeCube",
                 superstructure
                     .setIntakeModeCommand(HeldGamePiece.CUBE)
-                    .andThen(superstructure.getIntakeCommand())),
+                    .andThen(superstructure.getFloorIntakeCommand())),
             Map.entry("score", superstructure.getScoreCommand()),
             Map.entry("stowSuperstructure", superstructure.getCommand(States.STOWED)));
 
@@ -132,12 +132,12 @@ public class Autos {
         // superstructure.getScoreCommand(),
         followTrajectoryCommand(Paths.RIGHT_GRID_RIGHT_TO_FAR_RIGHT_STAGING_MARK, true)
             .alongWith(Commands.waitSeconds(3.5))
-            .andThen((superstructure.getIntakeCommand().withTimeout(3))),
+            .andThen((superstructure.getFloorIntakeCommand().withTimeout(3))),
         followTrajectoryCommand(Paths.FAR_RIGHT_STAGING_MARK_TO_RED_GRID_RIGHT_LEFT, false),
         superstructure.getScoreCommand(),
         followTrajectoryCommand(Paths.RIGHT_GRID_LEFT_TO_MIDDLE_RIGHT_STAGING_MARK, false)
             .alongWith(Commands.waitSeconds(4.75))
-            .andThen(superstructure.getIntakeCommand().withTimeout(3)));
+            .andThen(superstructure.getFloorIntakeCommand().withTimeout(3)));
   }
 
   private Command DrivingGUIPath() {
@@ -159,12 +159,12 @@ public class Autos {
         superstructure.getScoreCommand(),
         followTrajectoryCommand(Paths.LEFT_GRID_LEFT_TO_FAR_LEFT_STAGING_MARK, true)
             .alongWith(Commands.waitSeconds(4))
-            .andThen((superstructure.getIntakeCommand().withTimeout(3))),
+            .andThen((superstructure.getFloorIntakeCommand().withTimeout(3))),
         followTrajectoryCommand(Paths.FAR_LEFT_STAGING_MARK_TO_LEFT_GRID_CENTER, false),
         superstructure.getScoreCommand(),
         followTrajectoryCommand(Paths.LEFT_GRID_RIGHT_TO_LEFT_STAGING_MARK, false)
             .alongWith(Commands.waitSeconds(4.75))
-            .andThen(superstructure.getIntakeCommand().withTimeout(3)));
+            .andThen(superstructure.getFloorIntakeCommand().withTimeout(3)));
   }
 
   private CommandBase getDoNothingAuto() {
