@@ -54,7 +54,9 @@ public class SuperstructureMotionManager extends LifecycleSubsystem {
 
       positionList.add(
           new SuperstructurePosition(elevator.getHeight(), Rotation2d.fromDegrees(50)));
-      positionList.add(new SuperstructurePosition(goalHeight, Rotation2d.fromDegrees(50))); //was intermediatePointDegrees
+      positionList.add(
+          new SuperstructurePosition(
+              goalHeight, Rotation2d.fromDegrees(50))); // was intermediatePointDegrees
     }
 
     positionList.add(new SuperstructurePosition(goalHeight, goalPosition.angle));
