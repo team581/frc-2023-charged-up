@@ -26,13 +26,26 @@ public class ForksSubsystem extends LifecycleSubsystem {
   public ForksSubsystem(TalonFX motor) {
     this.motor = motor;
     motor.configSupplyCurrentLimit(CURRENT_LIMIT);
-    //TODO: test this make sure it works
     motor.configForwardSoftLimitThreshold(0);
-    motor.configForwardSoftLimitEnable(true);
   }
 
   public void setMode(ForksMode mode) {
     this.mode = mode;
+  }
+
+  @Override
+  public void testInit() {
+    motor.configForwardSoftLimitEnable(false);
+  }
+
+  @Override
+  public void teleopInit() {
+    motor.configForwardSoftLimitEnable(true);
+  }
+
+  @Override
+  public void autonomousInit() {
+    motor.configForwardSoftLimitEnable(true);
   }
 
   @Override
