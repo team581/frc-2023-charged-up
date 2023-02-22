@@ -16,7 +16,7 @@ import frc.robot.localization.Landmarks;
 import java.util.List;
 
 public class Paths {
-  private static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(1, 4);
+  private static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(1.5, 2.5);
 
   private Paths() {}
 
@@ -36,8 +36,17 @@ public class Paths {
   public static final PathPlannerTrajectory RED_2_LEFT_CONE_TO_BALANCE =
       PathPlanner.loadPath("Red2LeftConeToBalance", PATH_CONSTRAINTS);
 
-  public static final List<PathPlannerTrajectory> RED_3_RIGHT_CONE_AUTO =
-      PathPlanner.loadPathGroup("Red3RightConeAuto", PATH_CONSTRAINTS);
+  public static final PathPlannerTrajectory RED_3_RIGHT_CONE_AUTO =
+      PathPlanner.loadPath("Red3RightConeAuto", PATH_CONSTRAINTS);
+
+  public static final PathPlannerTrajectory RED_3_LEFT_CONE_AUTO =
+      PathPlanner.loadPath("Red3LeftConeAuto", PATH_CONSTRAINTS);
+
+  public static final PathPlannerTrajectory RED_RIGHT_BALANCE_AUTO =
+      PathPlanner.loadPath("RedRightBalanceAuto", PATH_CONSTRAINTS);
+
+  public static final PathPlannerTrajectory TEST_PATH =
+      PathPlanner.loadPath("TestPath", PATH_CONSTRAINTS);
 
   public static final PathPlannerTrajectory RIGHT_GRID_RIGHT_TO_FAR_RIGHT_STAGING_MARK =
       PathPlanner.generatePath(

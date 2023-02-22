@@ -110,7 +110,6 @@ public class Autos {
                 superstructure
                     .setIntakeModeCommand(HeldGamePiece.CUBE)
                     .andThen(superstructure.getFloorIntakeCommand())),
-            Map.entry("score", superstructure.getScoreCommand()),
             Map.entry("stow", superstructure.getCommand(States.STOWED)));
 
     autoBuilder =
@@ -118,8 +117,8 @@ public class Autos {
             localization::getPose,
             (pose) -> localization.resetPose(pose, pose.getRotation()),
             SwerveSubsystem.KINEMATICS,
-            new PIDConstants(5.0, 0.0, 0.0),
-            new PIDConstants(1.1, 0.0, 0.0),
+            new PIDConstants(3, 0.0, 0.0),
+            new PIDConstants(3, 0.0, 0.0),
             (states) -> swerve.setModuleStates(states, false),
             eventMap,
             false,
@@ -129,6 +128,9 @@ public class Autos {
     autoChooser.addOption("red2LeftConeToBalance", red2LeftConeToBalance());
     autoChooser.addOption("red2RightConeToBalance", red2RightConeToBalance());
     autoChooser.addOption("red3RightConeAuto", red3RightConeAuto());
+    autoChooser.addOption("red3LeftConeAuto", red3LeftConeAuto());
+    autoChooser.addOption("redRightBalanceAuto", redRightBalanceAuto());
+    autoChooser.addOption("testPath", testPath());
 
     // TODO: Don't run this at comps
     PathPlannerServer.startServer(5811);
@@ -157,7 +159,7 @@ public class Autos {
   }
 
   private Command red2RightConeToBalance() {
-    return autoBuilder.fullAuto(Paths.RED_2_RIGHT_CONE_TO_BALANCE);
+    return autoBuilder.fullAuto(Paths.RED_2_RIGHT_CONE_TO_BALANCE).andThen(() -> swerve.setChassisSpeeds(new ChassisSpeeds(), false));
   }
 
   private Command red2LeftConeToBalance() {
@@ -166,6 +168,18 @@ public class Autos {
 
   private Command red3RightConeAuto() {
     return autoBuilder.fullAuto(Paths.RED_3_RIGHT_CONE_AUTO);
+  }
+
+  private Command red3LeftConeAuto() {
+    return autoBuilder.fullAuto(Paths.RED_3_LEFT_CONE_AUTO);
+  }
+
+  private Command redRightBalanceAuto () {
+    return autoBuilder.fullAuto(Paths.RED_RIGHT_BALANCE_AUTO);
+  }
+
+  private Command testPath() {
+    return autoBuilder.fullAuto(Paths.TEST_PATH);
   }
 
   private CommandBase getDoNothingAuto() {
