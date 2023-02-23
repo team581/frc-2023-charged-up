@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.ManualScoringLocation;
 import frc.robot.States;
+import frc.robot.config.Config;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.elevator.commands.ElevatorHomingCommand;
 import frc.robot.imu.ImuSubsystem;
@@ -136,8 +137,9 @@ public class Autos {
     autoChooser.addOption("Red short side 2.5 cone balance auto", getRedShortSide2_5ConeBalance());
     autoChooser.addOption("Red short side 2 cone balance auto", getRedShortSide2ConeBalance());
 
-    // TODO: Don't run this at comps
-    PathPlannerServer.startServer(5811);
+    if (Config.IS_DEVELOPMENT) {
+      PathPlannerServer.startServer(5811);
+    }
 
     PPSwerveControllerCommand.setLoggingCallbacks(
         (PathPlannerTrajectory activeTrajectory) -> {

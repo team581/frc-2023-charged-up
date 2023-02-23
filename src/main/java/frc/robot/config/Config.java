@@ -15,9 +15,10 @@ public class Config {
   private static final String TYKE_SERIAL_NUMBER = "031617f6";
 
   public static final String SERIAL_NUMBER = System.getenv("serialnum");
-
   public static final boolean IS_SPIKE =
       SERIAL_NUMBER == null || !SERIAL_NUMBER.equalsIgnoreCase(TYKE_SERIAL_NUMBER);
+  // TODO: Change this to false during events
+  public static final boolean IS_DEVELOPMENT = true;
 
   public static final int DRIVE_CONTROLLER_PORT = 0;
   public static final int OPERATOR_CONTROLLER_PORT = 1;
