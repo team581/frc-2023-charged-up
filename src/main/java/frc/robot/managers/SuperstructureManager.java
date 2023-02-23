@@ -200,7 +200,13 @@ public class SuperstructureManager extends LifecycleSubsystem {
   // TODO: Ignore this command when the superstructure is STOWED
   public Command finishManualScoreCommand() {
     return Commands.waitUntil(() -> atPosition(goal.position))
-    .andThen(() -> motionManager.set(new SuperstructurePosition(goal.position.height, Rotation2d.fromDegrees(goal.position.angle.getDegrees() + 10), -1)))
+        .andThen(
+            () ->
+                motionManager.set(
+                    new SuperstructurePosition(
+                        goal.position.height,
+                        Rotation2d.fromDegrees(goal.position.angle.getDegrees() + 10),
+                        -1)))
         .andThen(
             Commands.either(
                 Commands.runOnce(() -> setManualIntakeMode(IntakeMode.OUTTAKE_CUBE)),
