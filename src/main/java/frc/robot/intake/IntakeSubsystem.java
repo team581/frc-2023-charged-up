@@ -26,7 +26,6 @@ public class IntakeSubsystem extends LifecycleSubsystem {
   private IntakeMode mode = IntakeMode.OPEN;
 
   private final TalonFX motor;
-  private final CANifier sensor;
 
   private final LinearFilter currentFilter = LinearFilter.movingAverage(5);
 
@@ -34,9 +33,8 @@ public class IntakeSubsystem extends LifecycleSubsystem {
 
   private boolean initialGrab = false;
 
-  public IntakeSubsystem(TalonFX motor, CANifier sensor) {
+  public IntakeSubsystem(TalonFX motor) {
     this.motor = motor;
-    this.sensor = sensor;
     motor.setInverted(false);
 
     motor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(false, 25, 30, 0.2));
