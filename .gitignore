@@ -153,3 +153,8 @@ gradle-app.setting
 *-window.json
 
 src/main/java/frc/robot/generated
+
+# Simulator files
+*Talon FX*.dat
+simgui*.json
+networktables.json

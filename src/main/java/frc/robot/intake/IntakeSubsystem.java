@@ -8,7 +8,8 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.filter.LinearFilter;
-import frc.robot.util.LifecycleSubsystem;
+import frc.robot.config.Config;
+import frc.robot.util.scheduling.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 public class IntakeSubsystem extends LifecycleSubsystem {
@@ -22,8 +23,8 @@ public class IntakeSubsystem extends LifecycleSubsystem {
 
   private final TalonFX motor;
 
-  private final LinearFilter coneFilter = LinearFilter.movingAverage(9);
-  private final LinearFilter cubeFilter = LinearFilter.movingAverage(5);
+  private final LinearFilter coneFilter = LinearFilter.movingAverage((Config.IS_SPIKE ? 20 : 30));
+  private final LinearFilter cubeFilter = LinearFilter.movingAverage((Config.IS_SPIKE ? 15 : 10));
 
   public IntakeSubsystem(TalonFX motor) {
     this.motor = motor;
@@ -35,31 +36,31 @@ public class IntakeSubsystem extends LifecycleSubsystem {
   public void robotPeriodic() {
     Logger.getInstance().recordOutput("Intake/Mode", mode.toString());
     Logger.getInstance().recordOutput("Intake/HeldGamePiece", gamePiece.toString());
-    Logger.getInstance().recordOutput("Intake/Current", motor.getSupplyCurrent());
+    Logger.getInstance().recordOutput("Intake/Current", motor.getStatorCurrent());
     Logger.getInstance().recordOutput("Intake/Voltage", motor.getMotorOutputVoltage());
   }
 
   @Override
   public void enabledPeriodic() {
-    double coneCurrent = coneFilter.calculate(motor.getSupplyCurrent());
-    double cubeCurrent = cubeFilter.calculate(motor.getSupplyCurrent());
+    double coneCurrent = coneFilter.calculate(motor.getStatorCurrent());
+    double cubeCurrent = cubeFilter.calculate(motor.getStatorCurrent());
     Logger.getInstance().recordOutput("Intake/FilteredConeCurrent", coneCurrent);
     Logger.getInstance().recordOutput("Intake/FilteredCubeCurrent", cubeCurrent);
 
     if (mode == IntakeMode.INTAKE_CUBE) {
-      if (cubeCurrent > 15) {
+      if (cubeCurrent > 40) {
         gamePiece = HeldGamePiece.CUBE;
       }
     } else if (mode == IntakeMode.INTAKE_CONE) {
-      if (coneCurrent > 20) {
+      if (coneCurrent > (Config.IS_SPIKE ? 80 : 70)) {
         gamePiece = HeldGamePiece.CONE;
       }
     } else if (mode == IntakeMode.OUTTAKE_CUBE) {
-      if (cubeCurrent < 7 && coneCurrent > 2) {
+      if (cubeCurrent < 10 && cubeCurrent > (Config.IS_SPIKE ? 0 : 4)) {
         gamePiece = HeldGamePiece.NOTHING;
       }
     } else if (mode == IntakeMode.OUTTAKE_CONE) {
-      if (coneCurrent < 1.3 && coneCurrent > 0.2) {
+      if (coneCurrent < 30) {
         gamePiece = HeldGamePiece.NOTHING;
       }
     }
@@ -69,11 +70,11 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     } else if (mode == IntakeMode.OUTTAKE_CONE) {
       motor.set(TalonFXControlMode.PercentOutput, 0.15);
     } else if (gamePiece == HeldGamePiece.CUBE) {
-      motor.set(TalonFXControlMode.PercentOutput, 0.075);
+      motor.set(TalonFXControlMode.PercentOutput, 0.1);
     } else if (gamePiece == HeldGamePiece.CONE) {
       motor.set(TalonFXControlMode.PercentOutput, -0.2);
     } else if (mode == IntakeMode.INTAKE_CUBE) {
-      motor.set(TalonFXControlMode.PercentOutput, 0.4);
+      motor.set(TalonFXControlMode.PercentOutput, 0.5);
     } else if (mode == IntakeMode.INTAKE_CONE) {
       motor.set(TalonFXControlMode.PercentOutput, -0.5);
     } else {
@@ -113,5 +114,9 @@ public class IntakeSubsystem extends LifecycleSubsystem {
 
   public HeldGamePiece getGamePiece() {
     return gamePiece;
+  }
+
+  public void setPreloadForAutos(HeldGamePiece gamePiece) {
+    this.gamePiece = gamePiece;
   }
 }
