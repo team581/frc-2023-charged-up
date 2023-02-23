@@ -8,7 +8,6 @@ import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,7 +26,6 @@ import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.intake.commands.IntakeCommand;
 import frc.robot.lights.LightsSubsystem;
-import frc.robot.localization.Halfmarks;
 import frc.robot.localization.Landmarks;
 import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.managers.SuperstructureManager;
@@ -218,7 +216,6 @@ public class Robot extends LoggedRobot {
   @Override
   public void teleopInit() {
     autoCommand.cancel();
-    localization.resetPose(Landmarks.RED_GRID_RIGHT_NODE_RIGHT, imu.getRobotHeading());
   }
 
   @Override
