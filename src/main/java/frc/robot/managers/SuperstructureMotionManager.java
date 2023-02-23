@@ -13,12 +13,15 @@ import frc.robot.util.LifecycleSubsystem;
 import frc.robot.wrist.WristSubsystem;
 import java.util.ArrayList;
 
+import org.littletonrobotics.junction.Logger;
+
 public class SuperstructureMotionManager extends LifecycleSubsystem {
   public final ElevatorSubsystem elevator;
   public final WristSubsystem wrist;
   private final ArrayList<SuperstructurePosition> positionList =
       new ArrayList<SuperstructurePosition>();
   private SuperstructurePosition currentPoint = Positions.STOWED;
+  private double previousHeight;
 
   public SuperstructureMotionManager(ElevatorSubsystem elevator, WristSubsystem wrist) {
     this.elevator = elevator;
@@ -46,24 +49,18 @@ public class SuperstructureMotionManager extends LifecycleSubsystem {
 
     if ((wristGoalInCollisionArea || currentWristAngleInCollisionArea)
         && (leavingBumperArea || goingToBumperArea)) {
-      // if (goalDegrees > 50) {
-      //   intermediatePointDegrees = goalDegrees;
-      // } else {
-      //   intermediatePointDegrees = 50;
-      // }
-
       positionList.add(
-          new SuperstructurePosition(elevator.getHeight(), Rotation2d.fromDegrees(50)));
+          new SuperstructurePosition(elevator.getHeight(), Rotation2d.fromDegrees(50), -1));
       positionList.add(
           new SuperstructurePosition(
-              goalHeight, Rotation2d.fromDegrees(50))); // was intermediatePointDegrees
+              goalHeight, Rotation2d.fromDegrees(50), goalHeight / 3));
     }
 
-    positionList.add(new SuperstructurePosition(goalHeight, goalPosition.angle));
+    positionList.add(new SuperstructurePosition(goalHeight, goalPosition.angle, -1));
   }
 
   public boolean atGoal(SuperstructurePosition position) {
-    if (wrist.atAngle(position.angle) && elevator.atHeight(position.height)) {
+    if ((wrist.atAngle(position.angle) && elevator.atHeight(position.height)) || ((position.earlyTransitionHeight > previousHeight && position.earlyTransitionHeight < elevator.getHeight())) || (position.earlyTransitionHeight < previousHeight && position.earlyTransitionHeight > elevator.getHeight())) {
       return true;
     } else {
       return false;
@@ -82,5 +79,9 @@ public class SuperstructureMotionManager extends LifecycleSubsystem {
     }
     wrist.setAngle(currentPoint.angle);
     elevator.setGoalPosition(currentPoint.height);
+    previousHeight = elevator.getHeight();
+
+    Logger.getInstance().recordOutput("SuperstructureMotionManager/NextPointAngle", currentPoint.angle.getDegrees());
+    Logger.getInstance().recordOutput("SuperstructureMotionManager/NextPointHeight", currentPoint.height);
   }
 }

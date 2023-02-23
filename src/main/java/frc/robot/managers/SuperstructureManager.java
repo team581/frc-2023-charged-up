@@ -5,6 +5,7 @@
 package frc.robot.managers;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -199,6 +200,7 @@ public class SuperstructureManager extends LifecycleSubsystem {
   // TODO: Ignore this command when the superstructure is STOWED
   public Command finishManualScoreCommand() {
     return Commands.waitUntil(() -> atPosition(goal.position))
+    .andThen(() -> motionManager.set(new SuperstructurePosition(goal.position.height, Rotation2d.fromDegrees(goal.position.angle.getDegrees() + 10), -1)))
         .andThen(
             Commands.either(
                 Commands.runOnce(() -> setManualIntakeMode(IntakeMode.OUTTAKE_CUBE)),
