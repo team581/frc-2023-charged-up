@@ -75,9 +75,10 @@ public class Robot extends LoggedRobot {
       new ElevatorSubsystem(new TalonFX(Config.ELEVATOR_MOTOR_ID, "581CANivore"));
   private final WristSubsystem wrist =
       new WristSubsystem(new TalonFX(Config.WRIST_MOTOR_ID, "581CANivore"));
-      // TODO: Use CANivore once clampy claw is attached to a real robot
+  // TODO: Use CANivore once clampy claw is attached to a real robot
   private final IntakeSubsystem intake =
-      new IntakeSubsystem(new TalonFX(Config.INTAKE_MOTOR_ID), new CANifier(Config.INTAKE_CANIFIER_ID));
+      new IntakeSubsystem(
+          new TalonFX(Config.INTAKE_MOTOR_ID), new CANifier(Config.INTAKE_CANIFIER_ID));
   private final SuperstructureMotionManager superstructureMotionManager =
       new SuperstructureMotionManager(elevator, wrist);
   private final ImuSubsystem imu = new ImuSubsystem(new Pigeon2(Config.PIGEON_ID, "581CANivore"));
