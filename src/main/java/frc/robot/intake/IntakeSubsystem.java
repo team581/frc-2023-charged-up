@@ -47,7 +47,7 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     Logger.getInstance().recordOutput("Intake/FilteredCubeCurrent", cubeCurrent);
 
     if (mode == IntakeMode.INTAKE_CUBE) {
-      if (cubeCurrent > 15) {
+      if (cubeCurrent > 999) {
         gamePiece = HeldGamePiece.CUBE;
       }
     } else if (mode == IntakeMode.INTAKE_CONE) {
