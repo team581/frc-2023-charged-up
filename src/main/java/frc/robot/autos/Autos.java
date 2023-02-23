@@ -127,14 +127,14 @@ public class Autos {
     autoChooser.addDefaultOption("Do nothing", getDoNothingAuto());
     autoChooser.addOption("Blue long side cone auto", getBlueLongSideConeAuto());
     autoChooser.addOption("Blue short side cone auto", getBlueShortSideConeAuto());
-    autoChooser.addOption("Red long side 1.5 cone balance auto", getRedLongSide1_5ConeBalanceAuto());
+    autoChooser.addOption(
+        "Red long side 1.5 cone balance auto", getRedLongSide1_5ConeBalanceAuto());
     autoChooser.addOption("Red long side 1 cone auto", getRedLongSide1ConeAuto());
     autoChooser.addOption("Red mid 1.5 cone balance auto", getRedMid1_5ConeBalanceAuto());
-    autoChooser.addOption("Red mid 1 cone balance auto",getRedMid1ConeBalanceAuto());
+    autoChooser.addOption("Red mid 1 cone balance auto", getRedMid1ConeBalanceAuto());
     autoChooser.addOption("Red short side 1 cone auto", getRedShortSide1Cone());
     autoChooser.addOption("Red short side 2.5 cone balance auto", getRedShortSide2_5ConeBalance());
     autoChooser.addOption("Red short side 2 cone balance auto", getRedShortSide2ConeBalance());
-
 
     // TODO: Don't run this at comps
     PathPlannerServer.startServer(5811);
@@ -177,6 +177,7 @@ public class Autos {
   private Command getRedLongSide1ConeAuto() {
     return autoBuilder.fullAuto(Paths.RED_LONG_SIDE_1_CONE);
   }
+
   private Command getRedMid1_5ConeBalanceAuto() {
     return autoBuilder.fullAuto(Paths.RED_MID_1_5_CONE_BALANCE);
   }
@@ -196,8 +197,6 @@ public class Autos {
   private Command getRedShortSide2ConeBalance() {
     return autoBuilder.fullAuto(Paths.RED_SHORT_SIDE_2_CONE_BALANCE);
   }
-
-
 
   private CommandBase getDoNothingAuto() {
     return Commands.none().withName("DoNothingAutoCommand");
