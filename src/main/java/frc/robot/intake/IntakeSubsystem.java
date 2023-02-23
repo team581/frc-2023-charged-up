@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.filter.LinearFilter;
+import frc.robot.config.Config;
 import frc.robot.util.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
 
@@ -22,8 +23,8 @@ public class IntakeSubsystem extends LifecycleSubsystem {
 
   private final TalonFX motor;
 
-  private final LinearFilter coneFilter = LinearFilter.movingAverage(20);
-  private final LinearFilter cubeFilter = LinearFilter.movingAverage(15);
+  private final LinearFilter coneFilter = LinearFilter.movingAverage((Config.IS_SPIKE ? 20 : 30));
+  private final LinearFilter cubeFilter = LinearFilter.movingAverage((Config.IS_SPIKE ? 15 : 10));
 
   public IntakeSubsystem(TalonFX motor) {
     this.motor = motor;
@@ -51,11 +52,11 @@ public class IntakeSubsystem extends LifecycleSubsystem {
         gamePiece = HeldGamePiece.CUBE;
       }
     } else if (mode == IntakeMode.INTAKE_CONE) {
-      if (coneCurrent > 80) {
+      if (coneCurrent > (Config.IS_SPIKE ? 80 : 70)) {
         gamePiece = HeldGamePiece.CONE;
       }
     } else if (mode == IntakeMode.OUTTAKE_CUBE) {
-      if (cubeCurrent < 10) {
+      if (cubeCurrent < 10 && cubeCurrent > (Config.IS_SPIKE ? 0: 4 )) {
         gamePiece = HeldGamePiece.NOTHING;
       }
     } else if (mode == IntakeMode.OUTTAKE_CONE) {
@@ -76,9 +77,6 @@ public class IntakeSubsystem extends LifecycleSubsystem {
       motor.set(TalonFXControlMode.PercentOutput, 0.5);
     } else if (mode == IntakeMode.INTAKE_CONE) {
       motor.set(TalonFXControlMode.PercentOutput, -0.5);
-
-
-
     } else {
       motor.set(TalonFXControlMode.PercentOutput, 0);
     }
