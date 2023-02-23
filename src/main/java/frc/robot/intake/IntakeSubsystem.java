@@ -4,7 +4,6 @@
 
 package frc.robot.intake;
 
-import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
