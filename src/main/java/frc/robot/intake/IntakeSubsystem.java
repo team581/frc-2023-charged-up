@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.filter.LinearFilter;
 import frc.robot.config.Config;
 import frc.robot.util.scheduling.LifecycleSubsystem;
+import frc.robot.util.scheduling.SubsystemPriority;
 import org.littletonrobotics.junction.Logger;
 
 public class IntakeSubsystem extends LifecycleSubsystem {
@@ -27,6 +28,8 @@ public class IntakeSubsystem extends LifecycleSubsystem {
   private final LinearFilter cubeFilter = LinearFilter.movingAverage((Config.IS_SPIKE ? 15 : 10));
 
   public IntakeSubsystem(TalonFX motor) {
+    super(SubsystemPriority.INTAKE);
+
     this.motor = motor;
     motor.setInverted(true);
     motor.configSupplyCurrentLimit(CURRENT_LIMIT);

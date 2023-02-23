@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
+import frc.robot.util.scheduling.SubsystemPriority;
 import org.littletonrobotics.junction.Logger;
 
 public class LocalizationSubsystem extends LifecycleSubsystem {
@@ -40,6 +41,8 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
       new CircularBuffer(RESET_ODOMETRY_FROM_VISION_SAMPLE_COUNT);
 
   public LocalizationSubsystem(SwerveSubsystem swerve, ImuSubsystem imu) {
+    super(SubsystemPriority.LOCALIZATION);
+
     this.swerve = swerve;
     this.imu = imu;
     poseEstimator =
