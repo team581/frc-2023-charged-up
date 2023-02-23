@@ -98,7 +98,8 @@ public class Robot extends LoggedRobot {
   private final CommandXboxController operatorController =
       new CommandXboxController(Config.OPERATOR_CONTROLLER_PORT);
 
-  private final Autos autos = new Autos(localization, swerve, imu);
+  private final Autos autos =
+      new Autos(localization, swerve, imu, superstructureManager, elevator, wrist, intake);
 
   private Command autoCommand = autos.getAutoCommand();
 

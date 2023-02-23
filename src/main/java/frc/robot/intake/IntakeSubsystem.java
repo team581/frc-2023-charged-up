@@ -13,7 +13,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.util.LifecycleSubsystem;
+import frc.robot.util.scheduling.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 public class IntakeSubsystem extends LifecycleSubsystem {
@@ -52,7 +52,7 @@ public class IntakeSubsystem extends LifecycleSubsystem {
   public void robotPeriodic() {
     Logger.getInstance().recordOutput("Intake/Mode", mode.toString());
     Logger.getInstance().recordOutput("Intake/HeldGamePiece", gamePiece.toString());
-    Logger.getInstance().recordOutput("Intake/Current", motor.getSupplyCurrent());
+    Logger.getInstance().recordOutput("Intake/Current", motor.getStatorCurrent());
     Logger.getInstance().recordOutput("Intake/Voltage", motor.getMotorOutputVoltage());
     Logger.getInstance().recordOutput("Intake/HasGamePiece", hasGamePiece());
     Logger.getInstance().recordOutput("Intake/Timer", timer.get());
@@ -60,6 +60,7 @@ public class IntakeSubsystem extends LifecycleSubsystem {
 
   @Override
   public void enabledPeriodic() {
+    // TODO: Change to stator current
     double filteredCurrent = currentFilter.calculate(motor.getSupplyCurrent());
     Logger.getInstance().recordOutput("Intake/FilteredCurrent", filteredCurrent);
 
@@ -147,6 +148,10 @@ public class IntakeSubsystem extends LifecycleSubsystem {
 
   public HeldGamePiece getGamePiece() {
     return gamePiece;
+  }
+
+  public void setPreloadForAutos(HeldGamePiece gamePiece) {
+    this.gamePiece = gamePiece;
   }
 
   private boolean hasGamePiece() {

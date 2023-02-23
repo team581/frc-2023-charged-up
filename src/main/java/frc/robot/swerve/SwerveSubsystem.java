@@ -20,7 +20,7 @@ import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
-import frc.robot.util.LifecycleSubsystem;
+import frc.robot.util.scheduling.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveSubsystem extends LifecycleSubsystem {
@@ -34,7 +34,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   public static final double MAX_VELOCITY_INCHES_PER_SECOND = 127;
   public static final double MAX_VELOCITY_METERS_PER_SECOND =
       MAX_VELOCITY_INCHES_PER_SECOND / 39.37;
-  public static final double MAX_ANGULAR_VELOCITY = 20;
+  public static final double MAX_ANGULAR_VELOCITY = 30;
 
   private final ImuSubsystem imu;
   private final SwerveModule frontRight;

@@ -99,29 +99,29 @@ public class Landmarks {
       new Pose2d(
           Units.inchesToMeters(596.77), Units.inchesToMeters(152), Rotation2d.fromDegrees(180));
 
-  public static final Pose2d BLUE_PRELOAD_FAR_RIGHT =
+  public static final Pose2d BLUE_STAGING_MARK_FAR_RIGHT =
       new Pose2d(
           Units.inchesToMeters(278.05), Units.inchesToMeters(36.19), Rotation2d.fromDegrees(180));
-  public static final Pose2d BLUE_PRELOAD_RIGHT =
+  public static final Pose2d BLUE_STAGING_MARK_RIGHT =
       new Pose2d(
           Units.inchesToMeters(278.05), Units.inchesToMeters(84.19), Rotation2d.fromDegrees(180));
-  public static final Pose2d BLUE_PRELOAD_LEFT =
+  public static final Pose2d BLUE_STAGING_MARK_LEFT =
       new Pose2d(
           Units.inchesToMeters(278.05), Units.inchesToMeters(132.19), Rotation2d.fromDegrees(180));
-  public static final Pose2d BLUE_PRELOAD_FAR_LEFT =
+  public static final Pose2d BLUE_STAGING_MARK_FAR_LEFT =
       new Pose2d(
           Units.inchesToMeters(278.05), Units.inchesToMeters(180.19), Rotation2d.fromDegrees(180));
 
-  public static final Pose2d RED_PRELOAD_FAR_LEFT =
+  public static final Pose2d RED_STAGING_MARK_FAR_LEFT =
       new Pose2d(
           Units.inchesToMeters(372.77), Units.inchesToMeters(36.19), Rotation2d.fromDegrees(0));
-  public static final Pose2d RED_PRELOAD_LEFT =
+  public static final Pose2d RED_STAGING_MARK_LEFT =
       new Pose2d(
           Units.inchesToMeters(372.77), Units.inchesToMeters(84.19), Rotation2d.fromDegrees(0));
-  public static final Pose2d RED_PRELOAD_RIGHT =
+  public static final Pose2d RED_STAGING_MARK_RIGHT =
       new Pose2d(
           Units.inchesToMeters(372.77), Units.inchesToMeters(132.19), Rotation2d.fromDegrees(0));
-  public static final Pose2d RED_PRELOAD_FAR_RIGHT =
+  public static final Pose2d RED_STAGING_MARK_FAR_RIGHT =
       new Pose2d(
           Units.inchesToMeters(372.77), Units.inchesToMeters(180.19), Rotation2d.fromDegrees(0));
 
