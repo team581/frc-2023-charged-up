@@ -9,7 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Positions;
 import frc.robot.config.Config;
 import frc.robot.elevator.ElevatorSubsystem;
-import frc.robot.util.LifecycleSubsystem;
+import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.wrist.WristSubsystem;
 import java.util.ArrayList;
 import org.littletonrobotics.junction.Logger;

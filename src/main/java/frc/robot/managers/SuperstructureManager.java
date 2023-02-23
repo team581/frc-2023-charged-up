@@ -21,7 +21,7 @@ import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.localization.Landmarks;
 import frc.robot.localization.LocalizationSubsystem;
-import frc.robot.util.LifecycleSubsystem;
+import frc.robot.util.scheduling.LifecycleSubsystem;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
 

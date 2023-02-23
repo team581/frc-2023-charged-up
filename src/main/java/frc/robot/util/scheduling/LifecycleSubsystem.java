@@ -2,61 +2,30 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.util;
+package frc.robot.util.scheduling;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
+import frc.robot.util.Stopwatch;
 
 /**
  * Extends {@link SubsystemBase} by adding in lifecycle methods for robotInit, teleopPeriodic, etc.,
  * similar to {@link Robot}.
  */
 public class LifecycleSubsystem extends SubsystemBase {
-  private enum Mode {
-    TELEOP,
-    AUTONOMOUS,
-    DISABLED
-  }
+  private final String loggerName;
+  private final Stopwatch stopwatch = Stopwatch.getInstance();
 
-  private Mode mode = null;
+  private LifecycleStage previousStage = null;
 
   public LifecycleSubsystem() {
+    String name = this.getClass().getSimpleName();
+    name = name.substring(name.lastIndexOf('.') + 1);
+    loggerName = "Scheduler/LifecycleSubsystem/" + name + ".periodic()";
+
     robotInit();
-  }
-
-  @Override
-  public void periodic() {
-    super.periodic();
-    robotPeriodic();
-
-    if (DriverStation.isEnabled()) {
-      if (mode == Mode.DISABLED) {
-        enabledInit();
-      }
-      enabledPeriodic();
-    } else {
-      if (mode != Mode.DISABLED) {
-        disabledInit();
-        mode = Mode.DISABLED;
-      }
-      disabledPeriodic();
-    }
-
-    if (DriverStation.isTeleopEnabled()) {
-      if (mode != Mode.TELEOP) {
-        teleopInit();
-        mode = Mode.TELEOP;
-      }
-      teleopPeriodic();
-    } else if (DriverStation.isAutonomousEnabled()) {
-      if (mode != Mode.AUTONOMOUS) {
-        autonomousInit();
-        mode = Mode.AUTONOMOUS;
-      }
-      autonomousPeriodic();
-    }
   }
 
   /** {@link IterativeRobotBase#robotInit()} */
@@ -86,4 +55,56 @@ public class LifecycleSubsystem extends SubsystemBase {
 
   /** {@link IterativeRobotBase#disabledPeriodic()} */
   public void disabledPeriodic() {}
+
+  @Override
+  public void periodic() {
+    stopwatch.start(loggerName);
+    LifecycleStage stage;
+
+    if (DriverStation.isTeleopEnabled()) {
+      stage = LifecycleStage.TELEOP;
+    } else if (DriverStation.isAutonomousEnabled()) {
+      stage = LifecycleStage.AUTONOMOUS;
+    } else {
+      stage = LifecycleStage.DISABLED;
+    }
+
+    boolean isInit = previousStage != stage;
+
+    robotPeriodic();
+
+    if (stage == LifecycleStage.DISABLED) {
+      if (isInit) {
+        disabledInit();
+      }
+
+      disabledPeriodic();
+    } else {
+      if (isInit) {
+        enabledInit();
+      }
+
+      enabledPeriodic();
+    }
+
+    if (stage == LifecycleStage.TELEOP) {
+      if (isInit) {
+        teleopInit();
+      }
+
+      teleopPeriodic();
+    }
+
+    if (stage == LifecycleStage.AUTONOMOUS) {
+      if (isInit) {
+        autonomousInit();
+      }
+
+      autonomousPeriodic();
+    }
+
+    stopwatch.stop(loggerName);
+
+    previousStage = stage;
+  }
 }
