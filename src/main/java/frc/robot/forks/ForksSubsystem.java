@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.config.Config;
 import frc.robot.util.HomingState;
-import frc.robot.util.LifecycleSubsystem;
+import frc.robot.util.scheduling.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 public class ForksSubsystem extends LifecycleSubsystem {
@@ -33,10 +33,10 @@ public class ForksSubsystem extends LifecycleSubsystem {
     this.mode = mode;
   }
 
-  @Override
-  public void testInit() {
-    motor.configForwardSoftLimitEnable(false);
-  }
+  // @Override
+  // public void testInit() {
+  //   motor.configForwardSoftLimitEnable(false);
+  // }
 
   @Override
   public void teleopInit() {
