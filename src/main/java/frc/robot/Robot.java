@@ -204,49 +204,6 @@ public class Robot extends LoggedRobot {
     Logger.getInstance().recordOutput("AutoScore/GoalLocation/Pose", autoScoreLocation.pose);
     Logger.getInstance()
         .recordOutput("AutoScore/GoalLocation/Node", autoScoreLocation.node.toString());
-
-    Logger.getInstance()
-        .recordOutput(
-            "A",
-            new Pose2d(
-                Halfmarks.RED_GRID_RIGHT_CHARGE.getX(),
-                Halfmarks.RED_GRID_RIGHT_CHARGE.getY(),
-                Halfmarks.RED_GRID_RIGHT_CHARGE.getRotation()));
-    Logger.getInstance()
-        .recordOutput(
-            "B",
-            new Pose2d(
-                Halfmarks.RED_RIGHT_CHARGE.getX(),
-                Halfmarks.RED_RIGHT_CHARGE.getY(),
-                Halfmarks.RED_RIGHT_CHARGE.getRotation()));
-    Logger.getInstance()
-        .recordOutput(
-            "C",
-            new Pose2d(
-                Halfmarks.RED_STAGING_MARKS_RIGHT_CHARGE.getX(),
-                Halfmarks.RED_STAGING_MARKS_RIGHT_CHARGE.getY(),
-                Halfmarks.RED_STAGING_MARKS_RIGHT_CHARGE.getRotation()));
-    Logger.getInstance()
-        .recordOutput(
-            "D",
-            new Pose2d(
-                Halfmarks.RED_GRID_LEFT_CHARGE.getX(),
-                Halfmarks.RED_GRID_LEFT_CHARGE.getY(),
-                Halfmarks.RED_GRID_LEFT_CHARGE.getRotation()));
-    Logger.getInstance()
-        .recordOutput(
-            "E",
-            new Pose2d(
-                Halfmarks.RED_LEFT_CHARGE.getX(),
-                Halfmarks.RED_LEFT_CHARGE.getY(),
-                Halfmarks.RED_LEFT_CHARGE.getRotation()));
-    Logger.getInstance()
-        .recordOutput(
-            "F",
-            new Pose2d(
-                Halfmarks.RED_STAGING_MARKS_LEFT_CHARGE.getX(),
-                Halfmarks.RED_STAGING_MARKS_LEFT_CHARGE.getY(),
-                Halfmarks.RED_STAGING_MARKS_LEFT_CHARGE.getRotation()));
   }
 
   @Override
