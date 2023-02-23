@@ -7,34 +7,18 @@ package frc.robot.autos;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.PathPoint;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import frc.robot.config.Config;
-import frc.robot.localization.Halfmarks;
-import frc.robot.localization.Landmarks;
-import java.util.List;
 
 public class Paths {
-  private static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(1.5, 2.5);
 
   private Paths() {}
 
-  public static final PathPlannerTrajectory RED_2_RIGHT_CONE_TO_BALANCE =
-      PathPlanner.loadPath("Red2RightConeToBalance", PATH_CONSTRAINTS);
-
-  public static final PathPlannerTrajectory RED_2_LEFT_CONE_TO_BALANCE =
-      PathPlanner.loadPath("Red2LeftConeToBalance", PATH_CONSTRAINTS);
-
-  public static final PathPlannerTrajectory RED_3_RIGHT_CONE_AUTO =
-      PathPlanner.loadPath("Red3RightConeAuto", PATH_CONSTRAINTS);
-
-  public static final PathPlannerTrajectory RED_3_LEFT_CONE_AUTO =
-      PathPlanner.loadPath("Red3LeftConeAuto", PATH_CONSTRAINTS);
-
-  public static final PathPlannerTrajectory RED_RIGHT_BALANCE_AUTO =
-      PathPlanner.loadPath("RedRightBalanceAuto", PATH_CONSTRAINTS);
-
-  public static final PathPlannerTrajectory TEST_PATH =
-      PathPlanner.loadPath("TestPath", PATH_CONSTRAINTS);
+  public static final PathPlannerTrajectory BLUE_LONG_SIDE_CONE = PathPlanner.loadPath("BlueLongSideCone", new PathConstraints(1.0, 0.75));
+  public static final PathPlannerTrajectory BLUE_SHORT_SIDE_CONE = PathPlanner.loadPath("BlueShortSideCone", new PathConstraints(1, 0.75));
+  public static final PathPlannerTrajectory RED_LONG_SIDE_1_5_CONE_BALANCE = PathPlanner.loadPath("RedLongSide1.5ConeBalance", new PathConstraints(1.5, 0.75));
+  public static final PathPlannerTrajectory RED_LONG_SIDE_1_CONE = PathPlanner.loadPath("RedLongSide1Cone", new PathConstraints(1, 0.75));
+  public static final PathPlannerTrajectory RED_MID_1_5_CONE_BALANCE = PathPlanner.loadPath("RedMid1.5ConeBalance", new PathConstraints(2.5, 0.75));
+  public static final PathPlannerTrajectory RED_MID_1_CONE_BALANCE = PathPlanner.loadPath("RedMid1ConeBalance", new PathConstraints(1.5, 2.5));
+  public static final PathPlannerTrajectory RED_SHORT_SIDE_ONE_CONE = PathPlanner.loadPath("RedShortSide1Cone", new PathConstraints(1.5, 2.5));
+  public static final PathPlannerTrajectory RED_SHORT_SIDE_2_5_CONE_BALANCE = PathPlanner.loadPath("RedShortSide2.5ConeBalance", new PathConstraints(4.0, 3.0));
+  public static final PathPlannerTrajectory RED_SHORT_SIDE_2_CONE_BALANCE = PathPlanner.loadPath("RedShortSide2ConeBalance", new PathConstraints(1.75, 2.0));
 }

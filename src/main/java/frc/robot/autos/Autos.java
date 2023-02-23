@@ -125,12 +125,16 @@ public class Autos {
             swerve);
 
     autoChooser.addDefaultOption("Do nothing", getDoNothingAuto());
-    autoChooser.addOption("red2LeftConeToBalance", red2LeftConeToBalance());
-    autoChooser.addOption("red2RightConeToBalance", red2RightConeToBalance());
-    autoChooser.addOption("red3RightConeAuto", red3RightConeAuto());
-    autoChooser.addOption("red3LeftConeAuto", red3LeftConeAuto());
-    autoChooser.addOption("redRightBalanceAuto", redRightBalanceAuto());
-    autoChooser.addOption("testPath", testPath());
+    autoChooser.addOption("Blue long side cone auto", getBlueLongSideConeAuto());
+    autoChooser.addOption("Blue short side cone auto", getBlueShortSideConeAuto());
+    autoChooser.addOption("Red long side 1.5 cone balance auto", getRedLongSide1_5ConeBalanceAuto());
+    autoChooser.addOption("Red long side 1 cone auto", getRedLongSide1ConeAuto());
+    autoChooser.addOption("Red mid 1.5 cone balance auto", getRedMid1_5ConeBalanceAuto());
+    autoChooser.addOption("Red mid 1 cone balance auto",getRedMid1ConeBalanceAuto());
+    autoChooser.addOption("Red short side 1 cone auto", getRedShortSide1Cone());
+    autoChooser.addOption("Red short side 2.5 cone balance auto", getRedShortSide2_5ConeBalance());
+    autoChooser.addOption("Red short side 2 cone balance auto", getRedShortSide2ConeBalance());
+
 
     // TODO: Don't run this at comps
     PathPlannerServer.startServer(5811);
@@ -158,29 +162,42 @@ public class Autos {
         });
   }
 
-  private Command red2RightConeToBalance() {
-    return autoBuilder.fullAuto(Paths.RED_2_RIGHT_CONE_TO_BALANCE).andThen(() -> swerve.setChassisSpeeds(new ChassisSpeeds(), false));
+  private Command getBlueLongSideConeAuto() {
+    return autoBuilder.fullAuto(Paths.BLUE_LONG_SIDE_CONE);
   }
 
-  private Command red2LeftConeToBalance() {
-    return autoBuilder.fullAuto(Paths.RED_2_LEFT_CONE_TO_BALANCE);
+  private Command getBlueShortSideConeAuto() {
+    return autoBuilder.fullAuto(Paths.BLUE_SHORT_SIDE_CONE);
   }
 
-  private Command red3RightConeAuto() {
-    return autoBuilder.fullAuto(Paths.RED_3_RIGHT_CONE_AUTO);
+  private Command getRedLongSide1_5ConeBalanceAuto() {
+    return autoBuilder.fullAuto(Paths.RED_LONG_SIDE_1_5_CONE_BALANCE);
   }
 
-  private Command red3LeftConeAuto() {
-    return autoBuilder.fullAuto(Paths.RED_3_LEFT_CONE_AUTO);
+  private Command getRedLongSide1ConeAuto() {
+    return autoBuilder.fullAuto(Paths.RED_LONG_SIDE_1_CONE);
+  }
+  private Command getRedMid1_5ConeBalanceAuto() {
+    return autoBuilder.fullAuto(Paths.RED_MID_1_5_CONE_BALANCE);
   }
 
-  private Command redRightBalanceAuto () {
-    return autoBuilder.fullAuto(Paths.RED_RIGHT_BALANCE_AUTO);
+  private Command getRedMid1ConeBalanceAuto() {
+    return autoBuilder.fullAuto(Paths.RED_MID_1_CONE_BALANCE);
   }
 
-  private Command testPath() {
-    return autoBuilder.fullAuto(Paths.TEST_PATH);
+  private Command getRedShortSide1Cone() {
+    return autoBuilder.fullAuto(Paths.RED_SHORT_SIDE_ONE_CONE);
   }
+
+  private Command getRedShortSide2_5ConeBalance() {
+    return autoBuilder.fullAuto(Paths.RED_SHORT_SIDE_2_CONE_BALANCE);
+  }
+
+  private Command getRedShortSide2ConeBalance() {
+    return autoBuilder.fullAuto(Paths.RED_SHORT_SIDE_2_CONE_BALANCE);
+  }
+
+
 
   private CommandBase getDoNothingAuto() {
     return Commands.none().withName("DoNothingAutoCommand");

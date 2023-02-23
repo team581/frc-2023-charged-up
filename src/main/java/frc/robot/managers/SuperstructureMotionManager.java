@@ -12,7 +12,6 @@ import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.util.LifecycleSubsystem;
 import frc.robot.wrist.WristSubsystem;
 import java.util.ArrayList;
-
 import org.littletonrobotics.junction.Logger;
 
 public class SuperstructureMotionManager extends LifecycleSubsystem {
@@ -52,15 +51,18 @@ public class SuperstructureMotionManager extends LifecycleSubsystem {
       positionList.add(
           new SuperstructurePosition(elevator.getHeight(), Rotation2d.fromDegrees(50), -1));
       positionList.add(
-          new SuperstructurePosition(
-              goalHeight, Rotation2d.fromDegrees(50), goalHeight / 3));
+          new SuperstructurePosition(goalHeight, Rotation2d.fromDegrees(50), goalHeight / 3));
     }
 
     positionList.add(new SuperstructurePosition(goalHeight, goalPosition.angle, -1));
   }
 
   public boolean atGoal(SuperstructurePosition position) {
-    if ((wrist.atAngle(position.angle) && elevator.atHeight(position.height)) || ((position.earlyTransitionHeight > previousHeight && position.earlyTransitionHeight < elevator.getHeight())) || (position.earlyTransitionHeight < previousHeight && position.earlyTransitionHeight > elevator.getHeight())) {
+    if ((wrist.atAngle(position.angle) && elevator.atHeight(position.height))
+        || ((position.earlyTransitionHeight > previousHeight
+            && position.earlyTransitionHeight < elevator.getHeight()))
+        || (position.earlyTransitionHeight < previousHeight
+            && position.earlyTransitionHeight > elevator.getHeight())) {
       return true;
     } else {
       return false;
@@ -81,7 +83,10 @@ public class SuperstructureMotionManager extends LifecycleSubsystem {
     elevator.setGoalPosition(currentPoint.height);
     previousHeight = elevator.getHeight();
 
-    Logger.getInstance().recordOutput("SuperstructureMotionManager/NextPointAngle", currentPoint.angle.getDegrees());
-    Logger.getInstance().recordOutput("SuperstructureMotionManager/NextPointHeight", currentPoint.height);
+    Logger.getInstance()
+        .recordOutput(
+            "SuperstructureMotionManager/NextPointAngle", currentPoint.angle.getDegrees());
+    Logger.getInstance()
+        .recordOutput("SuperstructureMotionManager/NextPointHeight", currentPoint.height);
   }
 }
