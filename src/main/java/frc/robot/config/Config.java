@@ -6,6 +6,7 @@ package frc.robot.config;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.swerve.SwerveCorner;
 import frc.robot.swerve.SwerveModuleConstants;
@@ -14,9 +15,10 @@ public class Config {
   private static final String TYKE_SERIAL_NUMBER = "031617f6";
 
   public static final String SERIAL_NUMBER = System.getenv("serialnum");
-
   public static final boolean IS_SPIKE =
       SERIAL_NUMBER == null || !SERIAL_NUMBER.equalsIgnoreCase(TYKE_SERIAL_NUMBER);
+  // TODO: Change this to false during events
+  public static final boolean IS_DEVELOPMENT = true;
 
   public static final int DRIVE_CONTROLLER_PORT = 0;
   public static final int OPERATOR_CONTROLLER_PORT = 1;
@@ -81,7 +83,7 @@ public class Config {
   public static final int ELEVATOR_MOTOR_ID = 14;
 
   public static final double ELEVATOR_GEARING = IS_SPIKE ? 7.2 : 16.0;
-  public static final double ELEVATOR_MIN_HEIGHT = IS_SPIKE ? 0 : 0.5;
+  public static final double ELEVATOR_MIN_HEIGHT = IS_SPIKE ? 0 : 0;
   public static final double ELEVATOR_MAX_HEIGHT = IS_SPIKE ? 25 : 12;
   public static final double ELEVATOR_KF = IS_SPIKE ? 0 : 0;
   public static final double ELEVATOR_KP = IS_SPIKE ? 0.7 : 0.8;
@@ -133,6 +135,8 @@ public class Config {
   public static final double SUPERSTRUCTURE_COLLISION_HEIGHT = IS_SPIKE ? 0.75 : 26;
   public static final Rotation2d SUPERSTRUCTURE_WRIST_RANGE =
       IS_SPIKE ? Rotation2d.fromDegrees(50) : Rotation2d.fromDegrees(13);
+
+  public static final double ROBOT_CENTER_TO_FRONT = IS_SPIKE ? 0.0 : Units.inchesToMeters(17.5);
 
   private Config() {}
 }

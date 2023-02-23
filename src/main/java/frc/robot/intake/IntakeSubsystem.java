@@ -115,4 +115,8 @@ public class IntakeSubsystem extends LifecycleSubsystem {
   public HeldGamePiece getGamePiece() {
     return gamePiece;
   }
+
+  public void setPreloadForAutos(HeldGamePiece gamePiece) {
+    this.gamePiece = gamePiece;
+  }
 }

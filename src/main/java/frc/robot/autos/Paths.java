@@ -7,48 +7,27 @@ package frc.robot.autos;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.PathPoint;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 
 public class Paths {
-  private static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(1, 4);
 
   private Paths() {}
 
-  public static final PathPlannerTrajectory BALANCE_AUTO =
-      PathPlanner.generatePath(
-          PATH_CONSTRAINTS,
-          new PathPoint(
-              new Translation2d(1.0, 1.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)),
-          new PathPoint(
-              new Translation2d(3.0, 3.0),
-              Rotation2d.fromDegrees(45),
-              Rotation2d.fromDegrees(-90)));
-
-  public static final PathPlannerTrajectory DRIVE_BACKWARDS =
-      PathPlanner.generatePath(
-          PATH_CONSTRAINTS,
-          new PathPoint(
-              new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)),
-          new PathPoint(
-              new Translation2d(-0.5, 0.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)));
-
-  public static final PathPlannerTrajectory BACK_RIGHT_FORWARD =
-      PathPlanner.generatePath(
-          PATH_CONSTRAINTS,
-          new PathPoint(
-              new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)),
-          new PathPoint(
-              new Translation2d(-1.21, 0.0),
-              Rotation2d.fromDegrees(90),
-              Rotation2d.fromDegrees(-90)),
-          new PathPoint(
-              new Translation2d(-1.21, -1.95),
-              Rotation2d.fromDegrees(0),
-              Rotation2d.fromDegrees(0)),
-          new PathPoint(
-              new Translation2d(0.0, -1.95),
-              Rotation2d.fromDegrees(-90),
-              Rotation2d.fromDegrees(0)));
+  public static final PathPlannerTrajectory BLUE_LONG_SIDE_CONE =
+      PathPlanner.loadPath("BlueLongSideCone", new PathConstraints(1.0, 0.75));
+  public static final PathPlannerTrajectory BLUE_SHORT_SIDE_CONE =
+      PathPlanner.loadPath("BlueShortSideCone", new PathConstraints(1, 0.75));
+  public static final PathPlannerTrajectory RED_LONG_SIDE_1_5_CONE_BALANCE =
+      PathPlanner.loadPath("RedLongSide1.5ConeBalance", new PathConstraints(1.5, 0.75));
+  public static final PathPlannerTrajectory RED_LONG_SIDE_1_CONE =
+      PathPlanner.loadPath("RedLongSide1Cone", new PathConstraints(1, 0.75));
+  public static final PathPlannerTrajectory RED_MID_1_5_CONE_BALANCE =
+      PathPlanner.loadPath("RedMid1.5ConeBalance", new PathConstraints(2.5, 0.75));
+  public static final PathPlannerTrajectory RED_MID_1_CONE_BALANCE =
+      PathPlanner.loadPath("RedMid1ConeBalance", new PathConstraints(1.5, 2.5));
+  public static final PathPlannerTrajectory RED_SHORT_SIDE_ONE_CONE =
+      PathPlanner.loadPath("RedShortSide1Cone", new PathConstraints(1.5, 2.5));
+  public static final PathPlannerTrajectory RED_SHORT_SIDE_2_5_CONE_BALANCE =
+      PathPlanner.loadPath("RedShortSide2.5ConeBalance", new PathConstraints(4.0, 3.0));
+  public static final PathPlannerTrajectory RED_SHORT_SIDE_2_CONE_BALANCE =
+      PathPlanner.loadPath("RedShortSide2ConeBalance", new PathConstraints(1.75, 2.0));
 }
