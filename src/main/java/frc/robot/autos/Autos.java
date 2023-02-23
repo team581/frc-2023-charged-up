@@ -36,16 +36,15 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class Autos {
-
   private final LocalizationSubsystem localization;
   private final SwerveSubsystem swerve;
   private final LoggedDashboardChooser<Command> autoChooser =
       new LoggedDashboardChooser<>("Auto Choices");
   private final ImuSubsystem imu;
-  private SuperstructureManager superstructure;
-  private ElevatorSubsystem elevator;
-  private WristSubsystem wrist;
-  private IntakeSubsystem intake;
+  private final SuperstructureManager superstructure;
+  private final ElevatorSubsystem elevator;
+  private final WristSubsystem wrist;
+  private final IntakeSubsystem intake;
   private final SwerveAutoBuilder autoBuilder;
 
   public Autos(

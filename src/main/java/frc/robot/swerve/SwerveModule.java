@@ -26,7 +26,6 @@ import frc.robot.util.GearingConverter;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule {
-
   private static final GearingConverter STEER_MOTOR_GEARING_CONVERTER =
       GearingConverter.fromReduction(Config.SWERVE_STEER_GEARING_REDUCTION);
 

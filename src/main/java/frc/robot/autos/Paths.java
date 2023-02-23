@@ -9,7 +9,6 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
 public class Paths {
-
   private Paths() {}
 
   public static final PathPlannerTrajectory BLUE_LONG_SIDE_CONE =
