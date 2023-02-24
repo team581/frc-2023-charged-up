@@ -8,9 +8,6 @@ import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -190,15 +187,12 @@ public class Robot extends LoggedRobot {
                 .andThen(new WristHomingCommand(wrist))
                 .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
 
-    operatorController
-        .povRight()
-        .onTrue(
-            swerve.goToPoseCommand(
-                new Pose2d(
-                    Units.inchesToMeters(596.77),
-                    Units.inchesToMeters(64),
-                    Rotation2d.fromDegrees(45)),
-                localization));
+    // operatorController
+    //     .rightTrigger()
+    //     .whileTrue(
+    //         swerve.goToPoseCommand(
+    //             Landmarks.RED_STAGING_MARK_FAR_RIGHT,
+    //             localization));
   }
 
   @Override
@@ -211,14 +205,6 @@ public class Robot extends LoggedRobot {
     Logger.getInstance().recordOutput("AutoScore/GoalLocation/Pose", autoScoreLocation.pose);
     Logger.getInstance()
         .recordOutput("AutoScore/GoalLocation/Node", autoScoreLocation.node.toString());
-
-    Logger.getInstance()
-        .recordOutput(
-            "Pose for test",
-            new Pose2d(
-                Units.inchesToMeters(596.77),
-                Units.inchesToMeters(64),
-                Rotation2d.fromDegrees(45)));
   }
 
   @Override

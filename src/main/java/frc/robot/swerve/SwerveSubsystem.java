@@ -15,6 +15,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.config.Config;
@@ -44,9 +45,21 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   private final SwerveModule backLeft;
   private boolean doneResetting = false;
 
-  private final PIDController xController = new PIDController(5, 0, 0);
-  private final PIDController yController = new PIDController(5, 0, 0);
-  private final PIDController thetaController = new PIDController(1, 0, 0);
+  private final PIDController xController =
+      new PIDController(
+          Config.SWERVE_TRANSLATION_PID.kP,
+          Config.SWERVE_TRANSLATION_PID.kI,
+          Config.SWERVE_TRANSLATION_PID.kD);
+  private final PIDController yController =
+      new PIDController(
+          Config.SWERVE_TRANSLATION_PID.kP,
+          Config.SWERVE_TRANSLATION_PID.kI,
+          Config.SWERVE_TRANSLATION_PID.kD);
+  private final PIDController thetaController =
+      new PIDController(
+          Config.SWERVE_ROTATION_PID.kP,
+          Config.SWERVE_ROTATION_PID.kI,
+          Config.SWERVE_ROTATION_PID.kD);
 
   public SwerveSubsystem(
       ImuSubsystem imu,
@@ -137,9 +150,9 @@ public class SwerveSubsystem extends LifecycleSubsystem {
             .times(MAX_VELOCITY_METERS_PER_SECOND);
     Rotation2d fieldRelativeHeading = imu.getRobotHeading();
 
-    // if (DriverStation.getAlliance() == Alliance.Red) {
-    //   fieldRelativeHeading = fieldRelativeHeading.plus(Rotation2d.fromDegrees(180));
-    // }
+    if (DriverStation.getAlliance() == Alliance.Red) {
+      fieldRelativeHeading = fieldRelativeHeading.plus(Rotation2d.fromDegrees(180));
+    }
 
     ChassisSpeeds chassisSpeeds =
         ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -203,29 +216,28 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   // Create a command that accepts a Pose2d and drives to it using a PPHolonomicDriveController
   // The command should exit once it's at the pose
   public Command goToPoseCommand(Pose2d goal, LocalizationSubsystem localization) {
-    return Commands.run(
-            () -> {
-              Pose2d pose = localization.getPose();
-              double xVelocity = xController.calculate(pose.getX(), goal.getX());
-              double yVelocity = yController.calculate(pose.getY(), goal.getY());
-              double thetaVelocity =
-                  thetaController.calculate(
-                      pose.getRotation().getRadians(), goal.getRotation().getRadians());
+    return run(() -> {
+          Logger.getInstance().recordOutput("AutoAlign/TargetPose", goal);
+          Pose2d pose = localization.getPose();
+          double xVelocity = xController.calculate(pose.getX(), goal.getX());
+          double yVelocity = yController.calculate(pose.getY(), goal.getY());
+          double thetaVelocity =
+              thetaController.calculate(
+                  pose.getRotation().getRadians(), goal.getRotation().getRadians());
 
-              ChassisSpeeds chassisSpeeds =
-                  ChassisSpeeds.fromFieldRelativeSpeeds(
-                      xVelocity, yVelocity, thetaVelocity, pose.getRotation());
+          ChassisSpeeds chassisSpeeds =
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  xVelocity, yVelocity, thetaVelocity, pose.getRotation());
 
-              setChassisSpeeds(chassisSpeeds, false);
-            },
-            this)
+          setChassisSpeeds(chassisSpeeds, false);
+        })
         .until(
             () -> {
               // 3 degree rotation and 0.1 meter distance
               Pose2d pose = localization.getPose();
               double distanceRelative = goal.getTranslation().getDistance(pose.getTranslation());
               Rotation2d rotationDifference = goal.getRotation().minus(pose.getRotation());
-              if (distanceRelative < 0.1 && rotationDifference.getDegrees() < 3) {
+              if (distanceRelative < 0.1 && Math.abs(rotationDifference.getDegrees()) < 3) {
                 return true;
               } else {
                 return false;
