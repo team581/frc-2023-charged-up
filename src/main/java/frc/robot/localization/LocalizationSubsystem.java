@@ -107,8 +107,7 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
       for (int i = 0; i < results.targetingResults.targets_Fiducials.length; ++i) {
         Pose2d fiducialPose =
             results.targetingResults.targets_Fiducials[i].getRobotPose_FieldSpace2D();
-        double fiducialDistanceAway =
-            new Translation2d().getDistance(fiducialPose.getTranslation());
+        double fiducialDistanceAway = Math.sqrt(Math.pow(fiducialPose.getX(), 2) + Math.pow(fiducialPose.getY(), 2));
         averageDistanceToIndividualFiducialTags += fiducialDistanceAway;
         fiducialTagCount++;
       }
