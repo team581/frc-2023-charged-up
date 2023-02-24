@@ -11,7 +11,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.CircularBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -19,6 +18,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.imu.ImuSubsystem;
+import frc.robot.localization.LimelightHelpers.LimelightResults;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
@@ -83,47 +83,65 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
     poseEstimator.update(imu.getRobotHeading(), swerve.getModulePositions());
     odometry.update(imu.getRobotHeading(), swerve.getModulePositions());
 
-    double[] emptyArray = {};
-    double[] rawPose =
-        NetworkTableInstance.getDefault()
-            .getTable("limelight")
-            .getEntry("botpose_wpiblue")
-            .getDoubleArray(emptyArray);
+    LimelightResults results = LimelightHelpers.getLatestResults("");
+    Pose2d currentVisionPose = results.targetingResults.getBotPose2d_wpiBlue();
+    // Pose2d angleAdjustedVisionPose = new Pose2d(currentVisionPose.getTranslation(),
+    // imu.getRobotHeading());
+    Pose2d angleAdjustedVisionPose = currentVisionPose;
 
-    boolean hasTargets =
-        NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0) == 1;
+    double visionTimestamp = Timer.getFPGATimestamp() - 0.02;
+    double visionTimestampB =
+        results.targetingResults.timestamp_RIOFPGA_capture
+            - ((results.targetingResults.latency_capture
+                    + results.targetingResults.latency_jsonParse
+                    + results.targetingResults.latency_pipeline)
+                / 1000);
 
-    if (false && rawPose.length > 0 && hasTargets) {
-      LimelightHelpers.LimelightResults llresults = LimelightHelpers.getLatestResults("");
+    boolean visionIsValid = false;
+    double averageDistanceToIndividualFiducialTags = 0;
+    double fiducialTagCount = 0;
 
-      boolean isValid = true;
-
-      for (int i = 0; i < llresults.targetingResults.targets_Retro.length; i++) {
-        LimelightHelpers.LimelightTarget_Retro item = llresults.targetingResults.targets_Retro[i];
-        Pose2d apriltagPose = item.getTargetPose_RobotSpace2D();
-        if (Math.abs(apriltagPose.getX()) > MAX_APRILTAG_DISTANCE
-            || Math.abs(apriltagPose.getY()) > MAX_APRILTAG_DISTANCE) {
-          isValid = false;
-          break;
-        }
+    if (results.targetingResults.valid
+        && currentVisionPose.getX() != 0.0
+        && currentVisionPose.getY() != 0.0) {
+      for (int i = 0; i < results.targetingResults.targets_Fiducials.length; ++i) {
+        Pose2d fiducialPose =
+            results.targetingResults.targets_Fiducials[i].getRobotPose_FieldSpace2D();
+        double fiducialDistanceAway =
+            new Translation2d().getDistance(fiducialPose.getTranslation());
+        averageDistanceToIndividualFiducialTags += fiducialDistanceAway;
+        fiducialTagCount++;
       }
+      averageDistanceToIndividualFiducialTags =
+          averageDistanceToIndividualFiducialTags / fiducialTagCount;
+      visionIsValid = true;
+    }
 
-      Pose2d visionPose = new Pose2d(rawPose[0], rawPose[1], imu.getRobotHeading());
+    double trustMultiplier = Math.pow(averageDistanceToIndividualFiducialTags, 3);
+    Logger.getInstance().recordOutput("Localization/FiducialLength", fiducialTagCount);
+    Logger.getInstance()
+        .recordOutput(
+            "Localization/AverageFiducialDistanceAway", averageDistanceToIndividualFiducialTags);
+    Logger.getInstance().recordOutput("Localization/StaticLatency", visionTimestamp);
+    Logger.getInstance().recordOutput("Localization/DynamicLatency", visionTimestampB);
 
-      if (rawPose[0] == 0.0 && rawPose[1] == 0.0) {
-        isValid = false;
-      }
+    if (visionIsValid) {
+      xVisionPoseBuffer.addFirst(angleAdjustedVisionPose.getX());
+      yVisionPoseBuffer.addFirst(angleAdjustedVisionPose.getY());
+      poseEstimator.addVisionMeasurement(
+          angleAdjustedVisionPose,
+          visionTimestampB,
+          VecBuilder.fill(
+              0.05 * trustMultiplier,
+              0.05 * trustMultiplier,
+              Units.degreesToRadians(5 * trustMultiplier)));
+      Logger.getInstance().recordOutput("Localization/VisionPose", angleAdjustedVisionPose);
+      visionWorking = true;
 
-      if (isValid) {
-        xVisionPoseBuffer.addFirst(visionPose.getX());
-        yVisionPoseBuffer.addFirst(visionPose.getY());
-        poseEstimator.addVisionMeasurement(visionPose, Timer.getFPGATimestamp() - 0.02);
-        Logger.getInstance().recordOutput("Localization/VisionPose", visionPose);
-        visionWorking = true;
-
-        if (checkVisionPoseConsistent()) {
-          odometry.resetPosition(imu.getRobotHeading(), swerve.getModulePositions(), visionPose);
-        }
+      if (checkVisionPoseConsistent()) {
+        odometry.resetPosition(
+            imu.getRobotHeading(), swerve.getModulePositions(), angleAdjustedVisionPose);
+        // resetPose(angleAdjustedVisionPose, imu.getRobotHeading());
       }
     }
   }
