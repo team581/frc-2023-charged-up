@@ -125,16 +125,21 @@ public class Autos {
             swerve);
 
     autoChooser.addDefaultOption("Do nothing", getDoNothingAuto());
-    autoChooser.addOption("Blue long side cone auto", getBlueLongSideConeAuto());
-    autoChooser.addOption("Blue short side cone auto", getBlueShortSideConeAuto());
-    autoChooser.addOption(
-        "Red long side 1.5 cone balance auto", getRedLongSide1_5ConeBalanceAuto());
-    autoChooser.addOption("Red long side 1 cone auto", getRedLongSide1ConeAuto());
-    autoChooser.addOption("Red mid 1.5 cone balance auto", getRedMid1_5ConeBalanceAuto());
-    autoChooser.addOption("Red mid 1 cone balance auto", getRedMid1ConeBalanceAuto());
-    autoChooser.addOption("Red short side 1 cone auto", getRedShortSide1Cone());
-    autoChooser.addOption("Red short side 2.5 cone balance auto", getRedShortSide2_5ConeBalance());
-    autoChooser.addOption("Red short side 2 cone balance auto", getRedShortSide2ConeBalance());
+    autoChooser.addOption("Blue long side 1 cone", getBlueLongSideConeAuto());
+    autoChooser.addOption("Blue short side 1 cone", getBlueShortSideConeAuto());
+    autoChooser.addOption("Blue long sie 1.5 cone balance", getBlueLongSide1_5ConeBalance());
+    autoChooser.addOption("Blue mid 1.5 cone balance", getBlueMid1_5ConeBalance());
+    autoChooser.addOption("Blue mid 1 cone balance", getBlueMid1ConeBalance());
+    autoChooser.addOption("Blue short side 2.5 cone balance", getBlueShortSide2_5ConeBalance());
+    autoChooser.addOption("Blue short side 2 cone balance", getBlueShortSide2ConeBalance());
+
+    autoChooser.addOption("Red long side 1.5 cone balance", getRedLongSide1_5ConeBalanceAuto());
+    autoChooser.addOption("Red long side 1 cone", getRedLongSide1ConeAuto());
+    autoChooser.addOption("Red mid 1.5 cone balance", getRedMid1_5ConeBalanceAuto());
+    autoChooser.addOption("Red mid 1 cone balance", getRedMid1ConeBalanceAuto());
+    autoChooser.addOption("Red short side 1 cone", getRedShortSide1Cone());
+    autoChooser.addOption("Red short side 2.5 cone balance", getRedShortSide2_5ConeBalance());
+    autoChooser.addOption("Red short side 2 cone balance", getRedShortSide2ConeBalance());
 
     if (Config.IS_DEVELOPMENT) {
       PathPlannerServer.startServer(5811);
@@ -164,11 +169,31 @@ public class Autos {
   }
 
   private Command getBlueLongSideConeAuto() {
-    return autoBuilder.fullAuto(Paths.BLUE_LONG_SIDE_CONE);
+    return autoBuilder.fullAuto(Paths.BLUE_LONG_SIDE_1_CONE);
   }
 
   private Command getBlueShortSideConeAuto() {
-    return autoBuilder.fullAuto(Paths.BLUE_SHORT_SIDE_CONE);
+    return autoBuilder.fullAuto(Paths.BLUE_SHORT_SIDE_1_CONE);
+  }
+
+  private Command getBlueLongSide1_5ConeBalance() {
+    return autoBuilder.fullAuto(Paths.BLUE_LONG_SIDE_1_5_CONE_BALANCE);
+  }
+
+  private Command getBlueMid1_5ConeBalance() {
+    return autoBuilder.fullAuto(Paths.BLUE_MID_1_5_CONE_BALANCE);
+  }
+
+  private Command getBlueMid1ConeBalance() {
+    return autoBuilder.fullAuto(Paths.BLUE_MID_1_CONE_BALANCE);
+  }
+
+  private Command getBlueShortSide2_5ConeBalance() {
+    return autoBuilder.fullAuto(Paths.BLUE_SHORT_SIDE_2_5_CONE_BALANCE);
+  }
+
+  public Command getBlueShortSide2ConeBalance() {
+    return autoBuilder.fullAuto(Paths.BLUE_SHORT_SIDE_2_CONE_BALANCE);
   }
 
   private Command getRedLongSide1_5ConeBalanceAuto() {
@@ -188,7 +213,7 @@ public class Autos {
   }
 
   private Command getRedShortSide1Cone() {
-    return autoBuilder.fullAuto(Paths.RED_SHORT_SIDE_ONE_CONE);
+    return autoBuilder.fullAuto(Paths.RED_SHORT_SIDE_1_CONE);
   }
 
   private Command getRedShortSide2_5ConeBalance() {

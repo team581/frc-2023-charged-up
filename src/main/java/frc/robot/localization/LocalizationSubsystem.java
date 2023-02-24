@@ -88,7 +88,7 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
     boolean hasTargets =
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0) == 1;
 
-    if (rawPose.length > 0 && hasTargets) {
+    if (false && rawPose.length > 0 && hasTargets) {
       LimelightHelpers.LimelightResults llresults = LimelightHelpers.getLatestResults("");
 
       boolean isValid = true;
