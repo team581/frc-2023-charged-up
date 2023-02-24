@@ -4,6 +4,7 @@
 
 package frc.robot.config;
 
+import com.pathplanner.lib.auto.PIDConstants;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -131,6 +132,8 @@ public class Config {
 
   public static final double STEER_MOTOR_LIMITS = IS_SPIKE ? 35 : 0.0;
   public static final boolean SWERVE_MOTOR_LIMITS_ENABLED = IS_SPIKE ? true : true;
+  public static final PIDConstants SWERVE_TRANSLATION_PID = new PIDConstants(3, 0, 0);
+  public static final PIDConstants SWERVE_ROTATION_PID = new PIDConstants(3, 0, 0);
 
   public static final double SUPERSTRUCTURE_COLLISION_HEIGHT = IS_SPIKE ? 0.75 : 26;
   public static final Rotation2d SUPERSTRUCTURE_WRIST_RANGE =

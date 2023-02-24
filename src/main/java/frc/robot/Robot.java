@@ -186,6 +186,13 @@ public class Robot extends LoggedRobot {
             new ElevatorHomingCommand(elevator)
                 .andThen(new WristHomingCommand(wrist))
                 .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
+
+    // operatorController
+    //     .rightTrigger()
+    //     .whileTrue(
+    //         swerve.goToPoseCommand(
+    //             Landmarks.RED_STAGING_MARK_FAR_RIGHT,
+    //             localization));
   }
 
   @Override
