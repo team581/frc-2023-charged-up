@@ -10,6 +10,7 @@ import frc.robot.Positions;
 import frc.robot.config.Config;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
+import frc.robot.util.scheduling.SubsystemPriority;
 import frc.robot.wrist.WristSubsystem;
 import java.util.ArrayList;
 import org.littletonrobotics.junction.Logger;
@@ -23,6 +24,8 @@ public class SuperstructureMotionManager extends LifecycleSubsystem {
   private double previousHeight;
 
   public SuperstructureMotionManager(ElevatorSubsystem elevator, WristSubsystem wrist) {
+    super(SubsystemPriority.SUPERSTRUCTURE_MOTION_MANAGER);
+
     this.elevator = elevator;
     this.wrist = wrist;
   }

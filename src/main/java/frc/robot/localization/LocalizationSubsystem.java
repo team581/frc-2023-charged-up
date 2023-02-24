@@ -13,12 +13,15 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.CircularBuffer;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
+import frc.robot.util.scheduling.SubsystemPriority;
 import org.littletonrobotics.junction.Logger;
 
 public class LocalizationSubsystem extends LifecycleSubsystem {
@@ -40,6 +43,8 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
       new CircularBuffer(RESET_ODOMETRY_FROM_VISION_SAMPLE_COUNT);
 
   public LocalizationSubsystem(SwerveSubsystem swerve, ImuSubsystem imu) {
+    super(SubsystemPriority.LOCALIZATION);
+
     this.swerve = swerve;
     this.imu = imu;
     poseEstimator =
@@ -145,17 +150,15 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
     return odometry.getPoseMeters();
   }
 
-  public void resetPose(Pose2d pose, Rotation2d gyroAngle) {
-    imu.setAngle(gyroAngle);
-    poseEstimator.resetPosition(gyroAngle, swerve.getModulePositions(), pose);
-    odometry.resetPosition(gyroAngle, swerve.getModulePositions(), pose);
+  public void resetPose(Pose2d pose) {
+    imu.setAngle(pose.getRotation());
+    poseEstimator.resetPosition(pose.getRotation(), swerve.getModulePositions(), pose);
+    odometry.resetPosition(pose.getRotation(), swerve.getModulePositions(), pose);
   }
 
   public void resetGyro(Rotation2d gyroAngle) {
-    imu.setAngle(gyroAngle);
-    poseEstimator.resetPosition(
-        gyroAngle, swerve.getModulePositions(), poseEstimator.getEstimatedPosition());
-    odometry.resetPosition(gyroAngle, swerve.getModulePositions(), odometry.getPoseMeters());
+    Pose2d pose = new Pose2d(getPose().getTranslation(), gyroAngle);
+    resetPose(pose);
   }
 
   public boolean isVisionWorking() {
@@ -163,6 +166,9 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
   }
 
   public Command getZeroCommand() {
-    return Commands.runOnce(() -> resetGyro(new Rotation2d(0)));
+    return Commands.runOnce(
+        () ->
+            resetGyro(
+                Rotation2d.fromDegrees(DriverStation.getAlliance() == Alliance.Red ? 180 : 0)));
   }
 }

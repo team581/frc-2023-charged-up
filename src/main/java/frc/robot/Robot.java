@@ -31,6 +31,7 @@ import frc.robot.managers.SuperstructureManager;
 import frc.robot.managers.SuperstructureMotionManager;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSubsystem;
+import frc.robot.util.scheduling.LifecycleSubsystemManager;
 import frc.robot.wrist.WristSubsystem;
 import frc.robot.wrist.commands.WristHomingCommand;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -103,7 +104,6 @@ public class Robot extends LoggedRobot {
   private Command autoCommand = autos.getAutoCommand();
 
   public Robot() {
-
     // Log to a USB stick
     Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/"));
     // Publish data to NetworkTables
@@ -132,6 +132,9 @@ public class Robot extends LoggedRobot {
     }
 
     Logger.getInstance().start();
+
+    // This must be run before any commands are scheduled
+    LifecycleSubsystemManager.getInstance().ready();
 
     configureButtonBindings();
   }
@@ -186,6 +189,13 @@ public class Robot extends LoggedRobot {
             new ElevatorHomingCommand(elevator)
                 .andThen(new WristHomingCommand(wrist))
                 .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
+
+    // operatorController
+    //     .rightTrigger()
+    //     .whileTrue(
+    //         swerve.goToPoseCommand(
+    //             Landmarks.RED_STAGING_MARK_FAR_RIGHT,
+    //             localization));
   }
 
   @Override

@@ -17,6 +17,7 @@ import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.managers.ScoringState;
 import frc.robot.managers.SuperstructureManager;
 import frc.robot.util.scheduling.LifecycleSubsystem;
+import frc.robot.util.scheduling.SubsystemPriority;
 import org.littletonrobotics.junction.Logger;
 
 public class LightsSubsystem extends LifecycleSubsystem {
@@ -39,6 +40,8 @@ public class LightsSubsystem extends LifecycleSubsystem {
       IntakeSubsystem intake,
       SuperstructureManager superstructure,
       LocalizationSubsystem localization) {
+    super(SubsystemPriority.LIGHTS);
+
     this.superstructure = superstructure;
     this.intake = intake;
     this.candle = candle;

@@ -5,7 +5,6 @@
 package frc.robot.autos;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import com.pathplanner.lib.server.PathPlannerServer;
@@ -115,10 +114,10 @@ public class Autos {
     autoBuilder =
         new SwerveAutoBuilder(
             localization::getPose,
-            (pose) -> localization.resetPose(pose, pose.getRotation()),
+            localization::resetPose,
             SwerveSubsystem.KINEMATICS,
-            new PIDConstants(3, 0.0, 0.0),
-            new PIDConstants(3, 0.0, 0.0),
+            Config.SWERVE_TRANSLATION_PID,
+            Config.SWERVE_ROTATION_PID,
             (states) -> swerve.setModuleStates(states, false),
             eventMap,
             false,
@@ -242,7 +241,7 @@ public class Autos {
     return Commands.runOnce(
             () -> {
               if (isFirstPath) {
-                localization.resetPose(traj.getInitialHolonomicPose(), imu.getRobotHeading());
+                localization.resetPose(traj.getInitialHolonomicPose());
               }
             })
         .andThen(swerve.getFollowTrajectoryCommand(traj, localization));
