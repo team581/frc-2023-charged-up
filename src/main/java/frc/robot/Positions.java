@@ -51,7 +51,7 @@ public class Positions {
           : new SuperstructurePosition(0.5, Rotation2d.fromDegrees(145), -1);
   public static final SuperstructurePosition CONE_NODE_MID =
       Config.IS_SPIKE
-          ? new SuperstructurePosition(23, Rotation2d.fromDegrees(165), -1)
+          ? new SuperstructurePosition(23, Rotation2d.fromDegrees(155), -1)
           : new SuperstructurePosition(25, Rotation2d.fromDegrees(175), -1);
   public static final SuperstructurePosition CONE_NODE_HIGH =
       Config.IS_SPIKE

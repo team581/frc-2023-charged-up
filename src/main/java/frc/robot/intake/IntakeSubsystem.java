@@ -14,7 +14,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class IntakeSubsystem extends LifecycleSubsystem {
   private static final SupplyCurrentLimitConfiguration CURRENT_LIMIT =
-      new SupplyCurrentLimitConfiguration(true, 20, 30, 0.2);
+      new SupplyCurrentLimitConfiguration(true, 15, 30, 0.2);
 
   // numbers above are placeholders for current limits
   private HeldGamePiece gamePiece = HeldGamePiece.NOTHING;
@@ -56,7 +56,7 @@ public class IntakeSubsystem extends LifecycleSubsystem {
         gamePiece = HeldGamePiece.CONE;
       }
     } else if (mode == IntakeMode.OUTTAKE_CUBE) {
-      if (cubeCurrent < 10 && cubeCurrent > (Config.IS_SPIKE ? 0 : 4)) {
+      if (cubeCurrent < (Config.IS_SPIKE ? 16 : 10) && cubeCurrent > (Config.IS_SPIKE ? 0 : 4)) {
         gamePiece = HeldGamePiece.NOTHING;
       }
     } else if (mode == IntakeMode.OUTTAKE_CONE) {

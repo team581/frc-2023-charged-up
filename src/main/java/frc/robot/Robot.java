@@ -152,10 +152,7 @@ public class Robot extends LoggedRobot {
     // Intake on floor
     driveController.leftTrigger(0.3).onTrue(superstructureManager.getFloorIntakeCommand());
     // Outtake/score low node/finish manual score
-    driveController
-        .rightTrigger(0.3)
-        .onTrue(superstructureManager.getScoreCommand())
-        .onFalse(superstructureManager.getCommand(States.STOWED));
+    driveController.rightTrigger(0.3).onTrue(superstructureManager.getScoreCommand());
     // Zero gyro
     driveController.back().onTrue(localization.getZeroCommand());
     // Set mode to cubes
