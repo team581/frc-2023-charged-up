@@ -177,21 +177,12 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
           boolean openLoop = false;
 
-          if (Config.IS_SPIKE) {
-            driveTeleop(
-                controller.getSidewaysPercentage(),
-                -controller.getForwardPercentage(),
-                -controller.getThetaPercentage(),
-                true,
-                openLoop);
-          } else {
-            driveTeleop(
-                -controller.getSidewaysPercentage(),
-                controller.getForwardPercentage(),
-                controller.getThetaPercentage(),
-                true,
-                openLoop);
-          }
+          driveTeleop(
+              -controller.getSidewaysPercentage(),
+              controller.getForwardPercentage(),
+              controller.getThetaPercentage(),
+              true,
+              openLoop);
         },
         this);
   }
