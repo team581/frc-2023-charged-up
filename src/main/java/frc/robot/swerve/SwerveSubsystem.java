@@ -7,6 +7,7 @@ package frc.robot.swerve;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -14,6 +15,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -61,6 +63,25 @@ public class SwerveSubsystem extends LifecycleSubsystem {
           Config.SWERVE_ROTATION_PID.kP,
           Config.SWERVE_ROTATION_PID.kI,
           Config.SWERVE_ROTATION_PID.kD);
+
+  private final ProfiledPIDController xProfiledController =
+      new ProfiledPIDController(
+          Config.SWERVE_TRANSLATION_PID.kP,
+          Config.SWERVE_TRANSLATION_PID.kI,
+          Config.SWERVE_TRANSLATION_PID.kD,
+          new TrapezoidProfile.Constraints(2.0, 1.5));
+  private final ProfiledPIDController yProfiledController =
+      new ProfiledPIDController(
+          Config.SWERVE_TRANSLATION_PID.kP,
+          Config.SWERVE_TRANSLATION_PID.kI,
+          Config.SWERVE_TRANSLATION_PID.kD,
+          new TrapezoidProfile.Constraints(2.0, 1.5));
+  private final ProfiledPIDController thetaProfiledController =
+      new ProfiledPIDController(
+          Config.SWERVE_ROTATION_PID.kP,
+          Config.SWERVE_ROTATION_PID.kI,
+          Config.SWERVE_ROTATION_PID.kD,
+          new TrapezoidProfile.Constraints(Math.PI * 2.0, Math.PI * 0.75));
 
   public SwerveSubsystem(
       ImuSubsystem imu,
@@ -222,10 +243,10 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     return run(() -> {
           Logger.getInstance().recordOutput("AutoAlign/TargetPose", goal);
           Pose2d pose = localization.getPose();
-          double xVelocity = xController.calculate(pose.getX(), goal.getX());
-          double yVelocity = yController.calculate(pose.getY(), goal.getY());
+          double xVelocity = xProfiledController.calculate(pose.getX(), goal.getX());
+          double yVelocity = yProfiledController.calculate(pose.getY(), goal.getY());
           double thetaVelocity =
-              thetaController.calculate(
+              thetaProfiledController.calculate(
                   pose.getRotation().getRadians(), goal.getRotation().getRadians());
 
           ChassisSpeeds chassisSpeeds =
