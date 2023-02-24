@@ -27,7 +27,6 @@ import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 
 public class LimelightHelpers {
-
   public static class LimelightTarget_Retro {
 
     @JsonProperty("t6c_ts")

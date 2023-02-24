@@ -9,7 +9,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.filter.LinearFilter;
 import frc.robot.config.Config;
-import frc.robot.util.LifecycleSubsystem;
+import frc.robot.util.scheduling.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 public class IntakeSubsystem extends LifecycleSubsystem {
@@ -56,7 +56,7 @@ public class IntakeSubsystem extends LifecycleSubsystem {
         gamePiece = HeldGamePiece.CONE;
       }
     } else if (mode == IntakeMode.OUTTAKE_CUBE) {
-      if (cubeCurrent < (Config.IS_SPIKE ? 16 : 10 ) && cubeCurrent > (Config.IS_SPIKE ? 0 : 4 )) {
+      if (cubeCurrent < (Config.IS_SPIKE ? 16 : 10) && cubeCurrent > (Config.IS_SPIKE ? 0 : 4)) {
         gamePiece = HeldGamePiece.NOTHING;
       }
     } else if (mode == IntakeMode.OUTTAKE_CONE) {
@@ -114,5 +114,9 @@ public class IntakeSubsystem extends LifecycleSubsystem {
 
   public HeldGamePiece getGamePiece() {
     return gamePiece;
+  }
+
+  public void setPreloadForAutos(HeldGamePiece gamePiece) {
+    this.gamePiece = gamePiece;
   }
 }

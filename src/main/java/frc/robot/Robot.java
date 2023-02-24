@@ -97,7 +97,8 @@ public class Robot extends LoggedRobot {
   private final CommandXboxController operatorController =
       new CommandXboxController(Config.OPERATOR_CONTROLLER_PORT);
 
-  private final Autos autos = new Autos(localization, swerve, imu);
+  private final Autos autos =
+      new Autos(localization, swerve, imu, superstructureManager, elevator, wrist, intake);
 
   private Command autoCommand = autos.getAutoCommand();
 
@@ -148,9 +149,7 @@ public class Robot extends LoggedRobot {
     // Intake on floor
     driveController.leftTrigger(0.3).onTrue(superstructureManager.getFloorIntakeCommand());
     // Outtake/score low node/finish manual score
-    driveController
-        .rightTrigger(0.3)
-        .onTrue(superstructureManager.getScoreCommand());
+    driveController.rightTrigger(0.3).onTrue(superstructureManager.getScoreCommand());
     // Zero gyro
     driveController.back().onTrue(localization.getZeroCommand());
     // Set mode to cubes

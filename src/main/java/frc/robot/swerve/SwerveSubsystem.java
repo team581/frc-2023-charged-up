@@ -20,7 +20,7 @@ import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
-import frc.robot.util.LifecycleSubsystem;
+import frc.robot.util.scheduling.LifecycleSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveSubsystem extends LifecycleSubsystem {
