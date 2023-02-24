@@ -22,6 +22,7 @@ import frc.robot.intake.IntakeSubsystem;
 import frc.robot.localization.Landmarks;
 import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
+import frc.robot.util.scheduling.SubsystemPriority;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
@@ -39,6 +40,8 @@ public class SuperstructureManager extends LifecycleSubsystem {
       SuperstructureMotionManager motionManager,
       IntakeSubsystem intake,
       LocalizationSubsystem localization) {
+    super(SubsystemPriority.SUPERSTRUCTURE_MANAGER);
+
     this.motionManager = motionManager;
     this.intake = intake;
     this.localization = localization;

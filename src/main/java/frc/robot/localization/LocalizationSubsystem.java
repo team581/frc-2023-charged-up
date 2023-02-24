@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
+import frc.robot.util.scheduling.SubsystemPriority;
 import org.littletonrobotics.junction.Logger;
 
 public class LocalizationSubsystem extends LifecycleSubsystem {
@@ -42,6 +43,8 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
       new CircularBuffer(RESET_ODOMETRY_FROM_VISION_SAMPLE_COUNT);
 
   public LocalizationSubsystem(SwerveSubsystem swerve, ImuSubsystem imu) {
+    super(SubsystemPriority.LOCALIZATION);
+
     this.swerve = swerve;
     this.imu = imu;
     poseEstimator =
@@ -90,7 +93,7 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
     boolean hasTargets =
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0) == 1;
 
-    if (rawPose.length > 0 && hasTargets) {
+    if (false && rawPose.length > 0 && hasTargets) {
       LimelightHelpers.LimelightResults llresults = LimelightHelpers.getLatestResults("");
 
       boolean isValid = true;

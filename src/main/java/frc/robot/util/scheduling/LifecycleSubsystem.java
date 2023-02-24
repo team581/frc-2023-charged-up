@@ -15,12 +15,18 @@ import frc.robot.util.Stopwatch;
  * similar to {@link Robot}.
  */
 public class LifecycleSubsystem extends SubsystemBase {
-  private final String loggerName;
+  final SubsystemPriority priority;
+
   private final Stopwatch stopwatch = Stopwatch.getInstance();
+  private final String loggerName;
 
   private LifecycleStage previousStage = null;
 
-  public LifecycleSubsystem() {
+  public LifecycleSubsystem(SubsystemPriority priority) {
+    this.priority = priority;
+
+    LifecycleSubsystemManager.getInstance().registerSubsystem(this);
+
     String name = this.getClass().getSimpleName();
     name = name.substring(name.lastIndexOf('.') + 1);
     loggerName = "Scheduler/LifecycleSubsystem/" + name + ".periodic()";

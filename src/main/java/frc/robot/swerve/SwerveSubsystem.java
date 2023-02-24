@@ -23,6 +23,7 @@ import frc.robot.controller.DriveController;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
+import frc.robot.util.scheduling.SubsystemPriority;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveSubsystem extends LifecycleSubsystem {
@@ -67,6 +68,8 @@ public class SwerveSubsystem extends LifecycleSubsystem {
       SwerveModule frontLeft,
       SwerveModule backRight,
       SwerveModule backLeft) {
+    super(SubsystemPriority.SWERVE);
+
     this.imu = imu;
     this.frontRight = frontRight;
     this.frontLeft = frontLeft;
