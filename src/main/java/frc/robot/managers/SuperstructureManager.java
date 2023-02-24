@@ -204,7 +204,7 @@ public class SuperstructureManager extends LifecycleSubsystem {
             () ->
                 motionManager.set(
                     new SuperstructurePosition(
-                        goal.position.height,
+                        goal.position.height + 0.5,
                         Rotation2d.fromDegrees(goal.position.angle.getDegrees() + 15),
                         -1)))
         .andThen(
