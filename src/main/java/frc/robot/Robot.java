@@ -105,8 +105,6 @@ public class Robot extends LoggedRobot {
 
   private final Autobalance autobalance = new Autobalance(swerve, imu);
 
-  private final Autobalance autobalance = new Autobalance(swerve, imu);
-
   private Command autoCommand = autos.getAutoCommand();
 
   public Robot() {
@@ -203,10 +201,11 @@ public class Robot extends LoggedRobot {
     //             Landmarks.RED_STAGING_MARK_FAR_RIGHT,
     //             localization));
 
-    operatorController
-        .rightTrigger()
-        .onTrue(autobalance.getCommand())
-        .onFalse(Commands.runOnce(() -> autobalance.setEnabled(false)));
+    // Autobalance
+    // operatorController
+    //     .rightTrigger()
+    //     .onTrue(autobalance.getCommand())
+    //     .onFalse(Commands.runOnce(() -> autobalance.setEnabled(false)));
   }
 
   @Override
