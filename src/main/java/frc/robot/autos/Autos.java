@@ -97,8 +97,7 @@ public class Autos {
             Map.entry(
                 "home",
                 new ElevatorHomingCommand(elevator)
-                    .andThen(new WristHomingCommand(wrist))
-                    .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED))),
+                    .andThen(new WristHomingCommand(wrist))),
             Map.entry(
                 "intakeCone",
                 superstructure
