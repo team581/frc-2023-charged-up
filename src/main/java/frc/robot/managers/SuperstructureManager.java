@@ -150,10 +150,21 @@ public class SuperstructureManager extends LifecycleSubsystem {
                 () -> intake.getGamePiece() == HeldGamePiece.CUBE));
   }
 
-  public Command getFloorIntakeCommand() {
+  public Command getFloorIntakeIdleCommand() {
     return Commands.either(
-            getCommand(States.INTAKING_CUBE_FLOOR),
-            getCommand(States.INTAKING_CONE_FLOOR),
+            getCommand(States.INTAKING_CUBE_FLOOR_IDLE),
+            getCommand(States.INTAKING_CONE_FLOOR_IDLE),
+            () -> mode == HeldGamePiece.CUBE)
+        .unless(
+            () ->
+                intake.getGamePiece() == HeldGamePiece.CUBE
+                    || intake.getGamePiece() == HeldGamePiece.CONE);
+  }
+
+  public Command getFloorIntakeSpinningCommand() {
+    return Commands.either(
+            getCommand(States.INTAKING_CUBE_FLOOR_SPINNING),
+            getCommand(States.INTAKING_CONE_FLOOR_SPINNING),
             () -> mode == HeldGamePiece.CUBE)
         .andThen(getCommand(States.STOWED));
   }

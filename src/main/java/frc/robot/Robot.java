@@ -150,7 +150,10 @@ public class Robot extends LoggedRobot {
     swerve.setDefaultCommand(swerve.getDriveTeleopCommand(driveController));
 
     // Intake on floor
-    driveController.leftTrigger(0.3).onTrue(superstructureManager.getFloorIntakeCommand());
+    driveController
+        .leftTrigger(0.3)
+        .onTrue(superstructureManager.getFloorIntakeSpinningCommand())
+        .onFalse(superstructureManager.getFloorIntakeIdleCommand());
     // Outtake/score low node/finish manual score
     driveController.rightTrigger(0.3).onTrue(superstructureManager.getScoreCommand());
     // Zero gyro
