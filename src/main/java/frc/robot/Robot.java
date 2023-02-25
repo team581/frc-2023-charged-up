@@ -168,6 +168,16 @@ public class Robot extends LoggedRobot {
     // Intake on shelf
     driveController.leftBumper().onTrue(superstructureManager.getShelfIntakeCommand());
 
+    // Manual intake
+    operatorController
+        .leftTrigger(0.3)
+        .onTrue(superstructureManager.setManualIntakeCommand(IntakeMode.INTAKE_CONE))
+        .onFalse(superstructureManager.setManualIntakeCommand(null));
+    // Manual outtake
+    operatorController
+        .rightTrigger(0.3)
+        .onTrue(superstructureManager.setManualIntakeCommand(IntakeMode.INTAKE_CUBE))
+        .onFalse(superstructureManager.setManualIntakeCommand(null));
     // Manual score low
     operatorController
         .a()

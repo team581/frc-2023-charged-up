@@ -177,14 +177,6 @@ public class SuperstructureManager extends LifecycleSubsystem {
         .andThen(getCommand(States.STOWED));
   }
 
-  public Command setIntakeModeCommand(HeldGamePiece gamePiece) {
-    return Commands.runOnce(() -> setIntakeMode(gamePiece));
-  }
-
-  public void setIntakeMode(HeldGamePiece gamePiece) {
-    mode = gamePiece;
-  }
-
   public AutoScoreLocation getAutoScoreLocation(NodeKind node) {
     List<Pose2d> grids =
         DriverStation.getAlliance() == Alliance.Red ? Landmarks.RED_GRIDS : Landmarks.BLUE_GRIDS;
@@ -207,8 +199,20 @@ public class SuperstructureManager extends LifecycleSubsystem {
     autoScoreEnabled = enabled;
   }
 
+  public Command setIntakeModeCommand(HeldGamePiece gamePiece) {
+    return Commands.runOnce(() -> setIntakeMode(gamePiece));
+  }
+
+  public void setIntakeMode(HeldGamePiece gamePiece) {
+    mode = gamePiece;
+  }
+
   public void setManualIntakeMode(IntakeMode manualIntakeMode) {
     this.manualIntakeMode = manualIntakeMode;
+  }
+
+  public Command setManualIntakeCommand(IntakeMode manualIntakeMode) {
+    return Commands.runOnce(() -> setManualIntakeMode(manualIntakeMode));
   }
 
   // TODO: Ignore this command when the superstructure is STOWED
