@@ -13,7 +13,9 @@ public class States {
   public static final SuperstructureState FULL_EXTENSION =
       new SuperstructureState(Positions.FULL_EXTENSION, IntakeMode.STOPPED, true);
 
-  public static final SuperstructureState INTAKING_CUBE_FLOOR =
+  public static final SuperstructureState INTAKING_CUBE_FLOOR_IDLE =
+      new SuperstructureState(Positions.INTAKING_CUBE_FLOOR, IntakeMode.STOPPED, true);
+  public static final SuperstructureState INTAKING_CUBE_FLOOR_SPINNING =
       new SuperstructureState(Positions.INTAKING_CUBE_FLOOR, IntakeMode.INTAKE_CUBE, true);
   public static final SuperstructureState INTAKING_CUBE_SHELF =
       new SuperstructureState(Positions.INTAKING_CUBE_SHELF, IntakeMode.INTAKE_CUBE, true);
@@ -24,7 +26,9 @@ public class States {
   public static final SuperstructureState CUBE_NODE_HIGH =
       new SuperstructureState(Positions.CUBE_NODE_HIGH, IntakeMode.OUTTAKE_CUBE, false);
 
-  public static final SuperstructureState INTAKING_CONE_FLOOR =
+  public static final SuperstructureState INTAKING_CONE_FLOOR_IDLE =
+      new SuperstructureState(Positions.INTAKING_CONE_FLOOR, IntakeMode.STOPPED, true);
+  public static final SuperstructureState INTAKING_CONE_FLOOR_SPINNING =
       new SuperstructureState(Positions.INTAKING_CONE_FLOOR, IntakeMode.INTAKE_CONE, true);
   public static final SuperstructureState INTAKING_CONE_SHELF =
       new SuperstructureState(Positions.INTAKING_CONE_SHELF, IntakeMode.INTAKE_CONE, true);

@@ -47,7 +47,7 @@ public class Config {
   public static final SwerveModuleConstants SWERVE_FL_CONSTANTS =
       IS_SPIKE
           ? new SwerveModuleConstants(
-              Rotation2d.fromDegrees(135.61), SwerveCorner.FRONT_LEFT, true, false)
+              Rotation2d.fromDegrees(135.61), SwerveCorner.FRONT_LEFT, true, true)
           : new SwerveModuleConstants(
               Rotation2d.fromDegrees(117.19), SwerveCorner.FRONT_LEFT, false, false);
   // -62.84
@@ -57,7 +57,7 @@ public class Config {
   public static final SwerveModuleConstants SWERVE_FR_CONSTANTS =
       IS_SPIKE
           ? new SwerveModuleConstants(
-              Rotation2d.fromDegrees(67.94), SwerveCorner.FRONT_RIGHT, true, false)
+              Rotation2d.fromDegrees(67.94), SwerveCorner.FRONT_RIGHT, true, true)
           : new SwerveModuleConstants(
               Rotation2d.fromDegrees(32.2), SwerveCorner.FRONT_RIGHT, false, false);
   // -147.8
@@ -67,7 +67,7 @@ public class Config {
   public static final SwerveModuleConstants SWERVE_BL_CONSTANTS =
       IS_SPIKE
           ? new SwerveModuleConstants(
-              Rotation2d.fromDegrees(307.0), SwerveCorner.BACK_LEFT, true, false)
+              Rotation2d.fromDegrees(307.0), SwerveCorner.BACK_LEFT, true, true)
           : new SwerveModuleConstants(
               Rotation2d.fromDegrees(-101.25), SwerveCorner.BACK_LEFT, false, false);
   // 78.75
@@ -77,7 +77,7 @@ public class Config {
   public static final SwerveModuleConstants SWERVE_BR_CONSTANTS =
       IS_SPIKE
           ? new SwerveModuleConstants(
-              Rotation2d.fromDegrees(68.82), SwerveCorner.BACK_RIGHT, true, false)
+              Rotation2d.fromDegrees(68.82), SwerveCorner.BACK_RIGHT, true, true)
           : new SwerveModuleConstants(
               Rotation2d.fromDegrees(-75.42), SwerveCorner.BACK_RIGHT, false, false);
   // 104.58
@@ -85,7 +85,7 @@ public class Config {
 
   public static final double ELEVATOR_GEARING = IS_SPIKE ? 7.2 : 16.0;
   public static final double ELEVATOR_MIN_HEIGHT = IS_SPIKE ? 0 : 0;
-  public static final double ELEVATOR_MAX_HEIGHT = IS_SPIKE ? 25 : 12;
+  public static final double ELEVATOR_MAX_HEIGHT = IS_SPIKE ? 25.3 : 12;
   public static final double ELEVATOR_KF = IS_SPIKE ? 0 : 0;
   public static final double ELEVATOR_KP = IS_SPIKE ? 0.7 : 0.8;
   public static final double ELEVATOR_KI = IS_SPIKE ? 0 : 0;

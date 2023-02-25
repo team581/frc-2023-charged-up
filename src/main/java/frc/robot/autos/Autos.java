@@ -102,12 +102,12 @@ public class Autos {
                 "intakeCone",
                 superstructure
                     .setIntakeModeCommand(HeldGamePiece.CONE)
-                    .andThen(superstructure.getFloorIntakeCommand())),
+                    .andThen(superstructure.getFloorIntakeIdleCommand())),
             Map.entry(
                 "intakeCube",
                 superstructure
                     .setIntakeModeCommand(HeldGamePiece.CUBE)
-                    .andThen(superstructure.getFloorIntakeCommand())),
+                    .andThen(superstructure.getFloorIntakeIdleCommand())),
             Map.entry("stow", superstructure.getCommand(States.STOWED)));
 
     autoBuilder =
