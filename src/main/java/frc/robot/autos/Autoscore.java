@@ -98,9 +98,13 @@ public class Autoscore extends LifecycleSubsystem {
     double multiplier = DriverStation.getAlliance() == Alliance.Red ? 1.0 : -1.0;
     double offset = 0;
 
-    if (node == NodeKind.LEFT_HYBRID || node == NodeKind.LEFT_MID_CONE || node == NodeKind.LEFT_HIGH_CONE) {
+    if (node == NodeKind.LEFT_HYBRID
+        || node == NodeKind.LEFT_MID_CONE
+        || node == NodeKind.LEFT_HIGH_CONE) {
       offset = Units.inchesToMeters(22);
-    } else if (node == NodeKind.RIGHT_HYBRID || node == NodeKind.RIGHT_MID_CONE || node == NodeKind.RIGHT_HIGH_CONE) {
+    } else if (node == NodeKind.RIGHT_HYBRID
+        || node == NodeKind.RIGHT_MID_CONE
+        || node == NodeKind.RIGHT_HIGH_CONE) {
       offset = Units.inchesToMeters(-22);
     }
 
@@ -154,7 +158,6 @@ public class Autoscore extends LifecycleSubsystem {
         .recordOutput("Autoscore/GoalLocation/NodeHeight", autoScoreLocation.nodeHeight.toString());
     Logger.getInstance()
         .recordOutput("Autoscore/GoalLocation/Grid", autoScoreLocation.grid.toString());
-    Logger.getInstance()
-        .recordOutput("Autoscore/LocationOffset", getScoreLocationForwardOffset());
+    Logger.getInstance().recordOutput("Autoscore/LocationOffset", getScoreLocationForwardOffset());
   }
 }
