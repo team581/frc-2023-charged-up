@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.autos.Autos;
-import frc.robot.autoscore.AutoScoreLocation;
+import frc.robot.autos.Autoscore;
 import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
 import frc.robot.elevator.ElevatorSubsystem;
@@ -73,6 +73,10 @@ public class Robot extends LoggedRobot {
           new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_BR_STEER_MOTOR_ID, "581CANivore"),
           new CANCoder(Config.SWERVE_BR_CANCODER_ID, "581CANivore"));
 
+  private final DriveController driveController = new DriveController(Config.DRIVE_CONTROLLER_PORT);
+  private final CommandXboxController operatorController =
+      new CommandXboxController(Config.OPERATOR_CONTROLLER_PORT);
+
   private final ElevatorSubsystem elevator =
       new ElevatorSubsystem(new TalonFX(Config.ELEVATOR_MOTOR_ID, "581CANivore"));
   private final WristSubsystem wrist =
@@ -86,17 +90,15 @@ public class Robot extends LoggedRobot {
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
   private final LocalizationSubsystem localization = new LocalizationSubsystem(swerve, imu);
   private final SuperstructureManager superstructureManager =
-      new SuperstructureManager(superstructureMotionManager, intake, localization);
+      new SuperstructureManager(superstructureMotionManager, intake);
+  private final Autoscore autoscore =
+      new Autoscore(localization, swerve, superstructureManager, driveController, intake);
   private final LightsSubsystem lights =
       new LightsSubsystem(
           new CANdle(Config.LIGHTS_CANDLE_ID, "581CANivore"),
           intake,
           superstructureManager,
           localization);
-
-  private final DriveController driveController = new DriveController(Config.DRIVE_CONTROLLER_PORT);
-  private final CommandXboxController operatorController =
-      new CommandXboxController(Config.OPERATOR_CONTROLLER_PORT);
 
   private final Autos autos =
       new Autos(localization, swerve, imu, superstructureManager, elevator, wrist, intake);
@@ -154,8 +156,11 @@ public class Robot extends LoggedRobot {
         .leftTrigger(0.3)
         .onTrue(superstructureManager.getFloorIntakeSpinningCommand())
         .onFalse(superstructureManager.getFloorIntakeIdleCommand());
-    // Outtake/score low node/finish manual score
-    driveController.rightTrigger(0.3).onTrue(superstructureManager.getScoreCommand());
+    // Autoscore/finish manual score
+    driveController
+        .rightTrigger(0.3)
+        .onTrue(autoscore.getAutoAlignCommand())
+        .onFalse(autoscore.setEnabledCommand(false));
     // Zero gyro
     driveController.back().onTrue(localization.getZeroCommand());
     // Set mode to cubes
@@ -215,12 +220,6 @@ public class Robot extends LoggedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     SmartDashboard.putData(CommandScheduler.getInstance());
-
-    AutoScoreLocation autoScoreLocation =
-        superstructureManager.getAutoScoreLocation(driveController.getAutoScoreNodeKind());
-    Logger.getInstance().recordOutput("AutoScore/GoalLocation/Pose", autoScoreLocation.pose);
-    Logger.getInstance()
-        .recordOutput("AutoScore/GoalLocation/Node", autoScoreLocation.node.toString());
   }
 
   @Override
