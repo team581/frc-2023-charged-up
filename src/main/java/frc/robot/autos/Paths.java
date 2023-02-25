@@ -12,9 +12,9 @@ public class Paths {
   private Paths() {}
 
   public static final PathPlannerTrajectory BLUE_LONG_SIDE_1_CONE =
-      PathPlanner.loadPath("BlueLongSideCone", new PathConstraints(1.0, 0.75));
+      PathPlanner.loadPath("BlueLongSide1Cone", new PathConstraints(1.0, 0.75));
   public static final PathPlannerTrajectory BLUE_SHORT_SIDE_1_CONE =
-      PathPlanner.loadPath("BlueShortSideCone", new PathConstraints(1, 0.75));
+      PathPlanner.loadPath("BlueShortSide1Cone", new PathConstraints(1, 0.75));
   public static final PathPlannerTrajectory BLUE_LONG_SIDE_1_5_CONE_BALANCE =
       PathPlanner.loadPath("BlueLongSide1.5ConeBalance", new PathConstraints(1.5, 0.75));
   public static final PathPlannerTrajectory BLUE_MID_1_5_CONE_BALANCE =
