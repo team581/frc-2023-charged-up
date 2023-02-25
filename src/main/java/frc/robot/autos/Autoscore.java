@@ -5,9 +5,12 @@
 package frc.robot.autos;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import frc.robot.States;
 import frc.robot.autoscore.AutoScoreLocation;
 import frc.robot.autoscore.GridKind;
@@ -32,7 +35,8 @@ public class Autoscore extends LifecycleSubsystem {
   private final IntakeSubsystem intake;
   private final DriveController controller;
   private boolean autoScoreEnabled = false;
-  private AutoScoreLocation autoScoreLocation;
+  private AutoScoreLocation autoScoreLocation =
+      new AutoScoreLocation(GridKind.CENTER, NodeKind.LEFT_HIGH_CONE, new Pose2d());
 
   public Autoscore(
       LocalizationSubsystem localization,
@@ -55,9 +59,9 @@ public class Autoscore extends LifecycleSubsystem {
     Pose2d nearestGrid = localization.getPose().nearest(grids);
     Pose2d scorePoint =
         new Pose2d(
-            nearestGrid.getX(),
-            nearestGrid.getY() - getScoreLocationOffset(node),
-            nearestGrid.getRotation());
+            nearestGrid.getX() - getScoreLocationForwardOffset(),
+            nearestGrid.getY() - getScoreLocationSidewaysOffset(),
+            nearestGrid.getRotation().plus(Rotation2d.fromDegrees(180)));
 
     if (nearestGrid == Landmarks.RED_GRID_LEFT || nearestGrid == Landmarks.BLUE_GRID_LEFT) {
       return new AutoScoreLocation(GridKind.LEFT, node, scorePoint);
@@ -69,20 +73,35 @@ public class Autoscore extends LifecycleSubsystem {
     }
   }
 
-  private double getScoreLocationOffset(NodeKind node) {
-    double multiplier = DriverStation.getAlliance() == Alliance.Red ? -1.0 : 1.0;
+  private double getScoreLocationForwardOffset() {
+    NodeKind node = autoScoreLocation.node;
+    double multiplier = DriverStation.getAlliance() == Alliance.Red ? 1.0 : -1.0;
     double offset = Config.ROBOT_CENTER_TO_FRONT;
 
-    if (node == NodeKind.CENTER_MID_CUBE
-        || node == NodeKind.CENTER_HIGH_CUBE
-        || intake.getGamePiece() == HeldGamePiece.CUBE
-        || node == NodeKind.LEFT_HIGH_CONE
-        || node == NodeKind.RIGHT_HIGH_CONE) {
-      // no offset needed for cubes or high cones
-    } else if (node == NodeKind.RIGHT_MID_CONE
-        || node == NodeKind.LEFT_MID_CONE
-        || intake.getGamePiece() == HeldGamePiece.CONE) {
-      offset = 0.127;
+    if (node == NodeKind.LEFT_MID_CONE || node == NodeKind.RIGHT_MID_CONE) {
+      // Cone mid
+      offset += 0.127;
+    } else if (superstructure.getMode() == HeldGamePiece.CONE
+        && (node == NodeKind.LEFT_HYBRID
+            || node == NodeKind.CENTER_HYBRID
+            || node == NodeKind.RIGHT_HYBRID)) {
+      // Cone low
+      offset += 0.127;
+    }
+    // No offset for cone high or any cubes
+
+    return multiplier * offset;
+  }
+
+  private double getScoreLocationSidewaysOffset() {
+    NodeKind node = autoScoreLocation.node;
+    double multiplier = DriverStation.getAlliance() == Alliance.Red ? 1.0 : -1.0;
+    double offset = 0;
+
+    if (node == NodeKind.LEFT_HYBRID || node == NodeKind.LEFT_MID_CONE || node == NodeKind.LEFT_HIGH_CONE) {
+      offset = Units.inchesToMeters(22);
+    } else if (node == NodeKind.RIGHT_HYBRID || node == NodeKind.RIGHT_MID_CONE || node == NodeKind.RIGHT_HIGH_CONE) {
+      offset = Units.inchesToMeters(-22);
     }
 
     return multiplier * offset;
@@ -97,26 +116,26 @@ public class Autoscore extends LifecycleSubsystem {
   }
 
   public Command getCommand() {
-    return setEnabledCommand(true)
-        .andThen(
-            runOnce(
-                () -> {
-                  autoScoreLocation = getAutoScoreLocation();
-                }))
-        .andThen(swerve.goToPoseCommand(autoScoreLocation.pose, localization))
-        .andThen(superstructure.getScoreCommand(autoScoreLocation.nodeHeight))
-        .handleInterrupt(() -> superstructure.set(States.STOWED));
+    return new ProxyCommand(
+        () ->
+            setEnabledCommand(true)
+                .andThen(runOnce(() -> autoScoreLocation = getAutoScoreLocation()))
+                .andThen(swerve.goToPoseCommand(autoScoreLocation.pose, localization))
+                .andThen(superstructure.getScoreCommand(autoScoreLocation.nodeHeight))
+                .handleInterrupt(() -> superstructure.set(States.STOWED)));
   }
 
   public Command getAutoAlignCommand() {
-    return setEnabledCommand(true)
-        .andThen(
-            runOnce(
-                () -> {
-                  autoScoreLocation = getAutoScoreLocation();
-                }))
-        .andThen(swerve.goToPoseCommand(autoScoreLocation.pose, localization))
-        .handleInterrupt(() -> superstructure.set(States.STOWED));
+    return new ProxyCommand(
+        () ->
+            setEnabledCommand(true)
+                .andThen(
+                    runOnce(
+                        () -> {
+                          autoScoreLocation = getAutoScoreLocation();
+                        }))
+                .andThen(swerve.goToPoseCommand(autoScoreLocation.pose, localization))
+                .handleInterrupt(() -> superstructure.set(States.STOWED)));
   }
 
   public Command setEnabledCommand(boolean enabled) {
@@ -125,15 +144,17 @@ public class Autoscore extends LifecycleSubsystem {
 
   @Override
   public void robotPeriodic() {
-    if (autoScoreLocation != null) {
-      Logger.getInstance().recordOutput("AutoScore/GoalLocation/Pose", autoScoreLocation.pose);
-      Logger.getInstance()
-          .recordOutput("AutoScore/GoalLocation/Node", autoScoreLocation.node.toString());
-      Logger.getInstance()
-          .recordOutput(
-              "AutoScore/GoalLocation/NodeHeight", autoScoreLocation.nodeHeight.toString());
-      Logger.getInstance()
-          .recordOutput("Autoscore/GoalLocation/Grid", autoScoreLocation.grid.toString());
-    }
+    // Remove this, it's temporary and just for logging
+    autoScoreLocation = getAutoScoreLocation();
+
+    Logger.getInstance().recordOutput("Autoscore/GoalLocation/Pose", autoScoreLocation.pose);
+    Logger.getInstance()
+        .recordOutput("Autoscore/GoalLocation/Node", autoScoreLocation.node.toString());
+    Logger.getInstance()
+        .recordOutput("Autoscore/GoalLocation/NodeHeight", autoScoreLocation.nodeHeight.toString());
+    Logger.getInstance()
+        .recordOutput("Autoscore/GoalLocation/Grid", autoScoreLocation.grid.toString());
+    Logger.getInstance()
+        .recordOutput("Autoscore/LocationOffset", getScoreLocationForwardOffset());
   }
 }

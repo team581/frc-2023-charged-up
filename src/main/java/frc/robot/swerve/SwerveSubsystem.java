@@ -69,13 +69,13 @@ public class SwerveSubsystem extends LifecycleSubsystem {
           Config.SWERVE_TRANSLATION_PID.kP,
           Config.SWERVE_TRANSLATION_PID.kI,
           Config.SWERVE_TRANSLATION_PID.kD,
-          new TrapezoidProfile.Constraints(2.0, 1.5));
+          new TrapezoidProfile.Constraints(0.25, 1.5));
   private final ProfiledPIDController yProfiledController =
       new ProfiledPIDController(
           Config.SWERVE_TRANSLATION_PID.kP,
           Config.SWERVE_TRANSLATION_PID.kI,
           Config.SWERVE_TRANSLATION_PID.kD,
-          new TrapezoidProfile.Constraints(2.0, 1.5));
+          new TrapezoidProfile.Constraints(0.25, 1.5));
   private final ProfiledPIDController thetaProfiledController =
       new ProfiledPIDController(
           Config.SWERVE_ROTATION_PID.kP,
@@ -232,13 +232,18 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   // The command should exit once it's at the pose
   public Command goToPoseCommand(Pose2d goal, LocalizationSubsystem localization) {
     return run(() -> {
-          Logger.getInstance().recordOutput("AutoAlign/TargetPose", goal);
+          Logger.getInstance().recordOutput("Autoscore/TargetPose", goal);
           Pose2d pose = localization.getPose();
           double xVelocity = xProfiledController.calculate(pose.getX(), goal.getX());
           double yVelocity = yProfiledController.calculate(pose.getY(), goal.getY());
           double thetaVelocity =
               thetaProfiledController.calculate(
                   pose.getRotation().getRadians(), goal.getRotation().getRadians());
+
+          if (Config.IS_SPIKE) {
+            xVelocity = -xVelocity;
+            yVelocity = -yVelocity;
+          }
 
           ChassisSpeeds chassisSpeeds =
               ChassisSpeeds.fromFieldRelativeSpeeds(
