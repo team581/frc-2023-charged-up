@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.util.LifecycleSubsystem;
+import org.littletonrobotics.junction.Logger;
 
 public class ImuSubsystem extends LifecycleSubsystem {
   private final Pigeon2 imu;
@@ -20,18 +21,20 @@ public class ImuSubsystem extends LifecycleSubsystem {
 
   public void robotPeriodic() {
     SmartDashboard.putNumber("Gyro sensor", this.getRobotHeading().getDegrees());
+    Logger.getInstance().recordOutput("Roll", imu.getRoll());
   }
 
   public Rotation2d getRobotHeading() {
     return Rotation2d.fromDegrees(imu.getYaw());
   }
 
-  public Rotation2d getPitch() {
-    return Rotation2d.fromDegrees(imu.getPitch());
+  public Rotation2d getRoll() {
+    return Rotation2d.fromDegrees(imu.getRoll());
   }
 
   public void zero() {
     this.imu.setYaw(0);
+    this.imu.configMountPoseRoll(this.imu.getRoll());
   }
 
   public void setAngle(Rotation2d zeroAngle) {

@@ -5,6 +5,8 @@
 package frc.robot.managers;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -15,8 +17,12 @@ import frc.robot.util.LifecycleSubsystem;
 public class Autobalance extends LifecycleSubsystem {
   private final SwerveSubsystem swerve;
   private final ImuSubsystem imu;
-  private final PIDController pidController = new PIDController(0.1, 0, 0);
   private boolean enabled = false;
+  private double driveVelocity = 0.35;
+  private double angleThreshold = 10;
+  private final LinearFilter autoBalanceFilter = LinearFilter.movingAverage(13);
+  private Rotation2d averageRoll = new Rotation2d();
+  private PIDController yawController = new PIDController(0.05, 0, 0);
 
   public Autobalance(SwerveSubsystem swerve, ImuSubsystem imu) {
     this.swerve = swerve;
@@ -28,21 +34,34 @@ public class Autobalance extends LifecycleSubsystem {
   }
 
   @Override
+  public void robotPeriodic() {
+    averageRoll = Rotation2d.fromDegrees(autoBalanceFilter.calculate(angleThreshold));
+  }
+
+  @Override
   public void enabledPeriodic() {
     if (enabled) {
-      double velocity = pidController.calculate(imu.getPitch().getDegrees());
-
-      ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0, velocity, 0);
-
+      ChassisSpeeds chassisSpeeds = new ChassisSpeeds(getDriveVelocity(), 0, yawController.calculate(imu.getRobotHeading().getDegrees(), 0));
       swerve.setChassisSpeeds(chassisSpeeds, false);
     }
   }
 
-  public boolean atGoal() {
-    return Math.abs(imu.getPitch().getDegrees()) < 2.0;
+  private double getDriveVelocity() {
+    if (imu.getRoll().getDegrees() > angleThreshold) {
+      return driveVelocity * -1;
+    } else if (imu.getRoll().getDegrees() < -angleThreshold) {
+      return driveVelocity;
+    } else {
+      return driveVelocity * 0;
+    }
+  }
+
+  private boolean atGoal() {
+    return averageRoll.getDegrees() < angleThreshold
+        && averageRoll.getDegrees() > -angleThreshold;
   }
 
   public Command getCommand() {
-    return Commands.run(() -> setEnabled(true), swerve).until(()->atGoal());
+    return Commands.run(() -> setEnabled(true), swerve).until(() -> atGoal());
   }
 }

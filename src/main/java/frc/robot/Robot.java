@@ -198,7 +198,7 @@ public class Robot extends LoggedRobot {
                 .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
     operatorController
         .rightTrigger()
-        .onTrue(autobalance.getCommand())
+        .whileTrue(autobalance.getCommand())
         .onFalse(Commands.runOnce(() -> autobalance.setEnabled(false)));
   }
 
