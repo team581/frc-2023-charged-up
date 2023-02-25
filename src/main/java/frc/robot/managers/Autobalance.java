@@ -41,7 +41,11 @@ public class Autobalance extends LifecycleSubsystem {
   @Override
   public void enabledPeriodic() {
     if (enabled) {
-      ChassisSpeeds chassisSpeeds = new ChassisSpeeds(getDriveVelocity(), 0, yawController.calculate(imu.getRobotHeading().getDegrees(), 0));
+      ChassisSpeeds chassisSpeeds =
+          new ChassisSpeeds(
+              getDriveVelocity(),
+              0,
+              yawController.calculate(imu.getRobotHeading().getDegrees(), 0));
       swerve.setChassisSpeeds(chassisSpeeds, false);
     }
   }
@@ -57,8 +61,7 @@ public class Autobalance extends LifecycleSubsystem {
   }
 
   private boolean atGoal() {
-    return averageRoll.getDegrees() < angleThreshold
-        && averageRoll.getDegrees() > -angleThreshold;
+    return averageRoll.getDegrees() < angleThreshold && averageRoll.getDegrees() > -angleThreshold;
   }
 
   public Command getCommand() {

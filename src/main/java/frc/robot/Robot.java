@@ -33,6 +33,7 @@ import frc.robot.managers.SuperstructureManager;
 import frc.robot.managers.SuperstructureMotionManager;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSubsystem;
+import frc.robot.util.scheduling.LifecycleSubsystemManager;
 import frc.robot.wrist.WristSubsystem;
 import frc.robot.wrist.commands.WristHomingCommand;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -99,14 +100,16 @@ public class Robot extends LoggedRobot {
   private final CommandXboxController operatorController =
       new CommandXboxController(Config.OPERATOR_CONTROLLER_PORT);
 
-  private final Autos autos = new Autos(localization, swerve, imu);
+  private final Autos autos =
+      new Autos(localization, swerve, imu, superstructureManager, elevator, wrist, intake);
+
+  private final Autobalance autobalance = new Autobalance(swerve, imu);
 
   private final Autobalance autobalance = new Autobalance(swerve, imu);
 
   private Command autoCommand = autos.getAutoCommand();
 
   public Robot() {
-
     // Log to a USB stick
     Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/"));
     // Publish data to NetworkTables
@@ -136,6 +139,9 @@ public class Robot extends LoggedRobot {
 
     Logger.getInstance().start();
 
+    // This must be run before any commands are scheduled
+    LifecycleSubsystemManager.getInstance().ready();
+
     configureButtonBindings();
   }
 
@@ -149,18 +155,12 @@ public class Robot extends LoggedRobot {
   private void configureButtonBindings() {
     swerve.setDefaultCommand(swerve.getDriveTeleopCommand(driveController));
 
-    // Intake
-    driveController
-        .leftTrigger(0.3)
-        .onTrue(superstructureManager.getIntakeCommand())
-        .onFalse(superstructureManager.getCommand(States.STOWED));
-    // Outtake/score low node
-    driveController
-        .rightTrigger(0.3)
-        .onTrue(superstructureManager.getScoreCommand())
-        .onFalse(superstructureManager.getCommand(States.STOWED));
+    // Intake on floor
+    driveController.leftTrigger(0.3).onTrue(superstructureManager.getFloorIntakeCommand());
+    // Outtake/score low node/finish manual score
+    driveController.rightTrigger(0.3).onTrue(superstructureManager.getScoreCommand());
     // Zero gyro
-    driveController.back().onTrue(imu.getZeroCommand());
+    driveController.back().onTrue(localization.getZeroCommand());
     // Set mode to cubes
     driveController.povUp().onTrue(superstructureManager.setIntakeModeCommand(HeldGamePiece.CUBE));
     // Set mode to cones
@@ -168,8 +168,8 @@ public class Robot extends LoggedRobot {
         .povDown()
         // TODO: Support cancelling this command when the button is released early
         .onTrue(superstructureManager.setIntakeModeCommand(HeldGamePiece.CONE));
-    // Outtake gamepiece when manual score is at the right position
-    driveController.rightBumper().onTrue(superstructureManager.finishManualScoreCommand());
+    // Intake on shelf
+    driveController.leftBumper().onTrue(superstructureManager.getShelfIntakeCommand());
 
     // Manual score low
     operatorController
@@ -186,7 +186,6 @@ public class Robot extends LoggedRobot {
         .y()
         .onTrue(superstructureManager.getManualScoreCommand(ManualScoringLocation.HIGH))
         .onFalse(superstructureManager.getCommand(States.STOWED));
-
     // Stow all
     operatorController.x().onTrue(superstructureManager.getCommand(States.STOWED));
     // Home superstructure
@@ -196,9 +195,17 @@ public class Robot extends LoggedRobot {
             new ElevatorHomingCommand(elevator)
                 .andThen(new WristHomingCommand(wrist))
                 .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
+
+    // operatorController
+    //     .rightTrigger()
+    //     .whileTrue(
+    //         swerve.goToPoseCommand(
+    //             Landmarks.RED_STAGING_MARK_FAR_RIGHT,
+    //             localization));
+
     operatorController
         .rightTrigger()
-        .whileTrue(autobalance.getCommand())
+        .onTrue(autobalance.getCommand())
         .onFalse(Commands.runOnce(() -> autobalance.setEnabled(false)));
   }
 

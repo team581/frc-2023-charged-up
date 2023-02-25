@@ -26,7 +26,6 @@ import frc.robot.util.GearingConverter;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule {
-
   private static final GearingConverter STEER_MOTOR_GEARING_CONVERTER =
       GearingConverter.fromReduction(Config.SWERVE_STEER_GEARING_REDUCTION);
 
@@ -44,6 +43,7 @@ public class SwerveModule {
       new VelocityVoltage(0, true, 0, 0, false);
   private Rotation2d previousAngle = new Rotation2d();
   private double commandedDriveVelocity = 0;
+  private boolean rotorPositionSet = false;
 
   public SwerveModule(
       SwerveModuleConstants constants, TalonFX driveMotor, TalonFX steerMotor, CANCoder encoder) {
@@ -210,10 +210,15 @@ public class SwerveModule {
   }
 
   public void resetWheelAngle() {
-    final var absolutePosition = getCancoderPosition();
-    double rotations = absolutePosition.getRotations();
-    double rotationsBeforeGearing = STEER_MOTOR_GEARING_CONVERTER.gearingToMotor(rotations);
-    steerMotor.setRotorPosition(rotationsBeforeGearing);
+    if (!rotorPositionSet) {
+      final var absolutePosition = getCancoderPosition();
+      double rotations = absolutePosition.getRotations();
+      double rotationsBeforeGearing = STEER_MOTOR_GEARING_CONVERTER.gearingToMotor(rotations);
+      StatusCode status = steerMotor.setRotorPosition(rotationsBeforeGearing);
+      if (!status.isError()) {
+        rotorPositionSet = true;
+      }
+    }
   }
 
   private final Rotation2d getCancoderPosition() {
