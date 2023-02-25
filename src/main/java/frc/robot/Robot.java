@@ -27,6 +27,7 @@ import frc.robot.intake.IntakeSubsystem;
 import frc.robot.intake.commands.IntakeCommand;
 import frc.robot.lights.LightsSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
+import frc.robot.managers.Autobalance;
 import frc.robot.managers.SuperstructureManager;
 import frc.robot.managers.SuperstructureMotionManager;
 import frc.robot.swerve.SwerveModule;
@@ -100,6 +101,8 @@ public class Robot extends LoggedRobot {
 
   private final Autos autos =
       new Autos(localization, swerve, imu, superstructureManager, elevator, wrist, intake);
+
+  private final Autobalance autobalance = new Autobalance(swerve, imu);
 
   private Command autoCommand = autos.getAutoCommand();
 
@@ -209,6 +212,12 @@ public class Robot extends LoggedRobot {
     //         swerve.goToPoseCommand(
     //             Landmarks.RED_STAGING_MARK_FAR_RIGHT,
     //             localization));
+
+    // Autobalance
+    // operatorController
+    //     .rightTrigger()
+    //     .onTrue(autobalance.getCommand())
+    //     .onFalse(Commands.runOnce(() -> autobalance.setEnabled(false)));
   }
 
   @Override
