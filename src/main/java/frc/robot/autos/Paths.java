@@ -12,19 +12,19 @@ public class Paths {
   private Paths() {}
 
   public static final PathPlannerTrajectory BLUE_LONG_SIDE_1_CONE =
-      PathPlanner.loadPath("BlueLongSideCone", new PathConstraints(1.0, 0.75));
+      PathPlanner.loadPath("BlueLongSide1Cone", new PathConstraints(1.0, 0.75));
   public static final PathPlannerTrajectory BLUE_SHORT_SIDE_1_CONE =
-      PathPlanner.loadPath("BlueShortSideCone", new PathConstraints(1, 0.75));
+      PathPlanner.loadPath("BlueShortSide1Cone", new PathConstraints(1, 0.75));
   public static final PathPlannerTrajectory BLUE_LONG_SIDE_1_5_CONE_BALANCE =
       PathPlanner.loadPath("BlueLongSide1.5ConeBalance", new PathConstraints(1.5, 0.75));
   public static final PathPlannerTrajectory BLUE_MID_1_5_CONE_BALANCE =
       PathPlanner.loadPath("BlueMid1.5ConeBalance", new PathConstraints(2.5, 0.75));
   public static final PathPlannerTrajectory BLUE_MID_1_CONE_BALANCE =
-       PathPlanner.loadPath("BlueMid1ConeBalance", new PathConstraints(1.5, 2.5));
+      PathPlanner.loadPath("BlueMid1ConeBalance", new PathConstraints(1.5, 2.5));
   public static final PathPlannerTrajectory BLUE_SHORT_SIDE_2_5_CONE_BALANCE =
-       PathPlanner.loadPath("BlueShortSide2.5ConeBalance", new PathConstraints(4.0, 3.0));
+      PathPlanner.loadPath("BlueShortSide2.5ConeBalance", new PathConstraints(4.0, 3.0));
   public static final PathPlannerTrajectory BLUE_SHORT_SIDE_2_CONE_BALANCE =
-       PathPlanner.loadPath("BlueShortSide2ConeBalance", new PathConstraints(1.75, 2.0));
+      PathPlanner.loadPath("BlueShortSide2ConeBalance", new PathConstraints(1.75, 2.0));
 
   public static final PathPlannerTrajectory RED_LONG_SIDE_1_CONE =
       PathPlanner.loadPath("RedLongSide1Cone", new PathConstraints(1, 0.75));
