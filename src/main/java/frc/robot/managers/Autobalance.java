@@ -12,7 +12,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
-import frc.robot.util.LifecycleSubsystem;
+import frc.robot.util.scheduling.LifecycleSubsystem;
+import frc.robot.util.scheduling.SubsystemPriority;
 
 public class Autobalance extends LifecycleSubsystem {
   private final SwerveSubsystem swerve;
@@ -25,6 +26,7 @@ public class Autobalance extends LifecycleSubsystem {
   private PIDController yawController = new PIDController(0.05, 0, 0);
 
   public Autobalance(SwerveSubsystem swerve, ImuSubsystem imu) {
+    super(SubsystemPriority.AUTOBALANCE);
     this.swerve = swerve;
     this.imu = imu;
   }
