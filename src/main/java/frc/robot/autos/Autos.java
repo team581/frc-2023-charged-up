@@ -22,9 +22,7 @@ import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.elevator.commands.ElevatorHomingCommand;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.intake.HeldGamePiece;
-import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
-import frc.robot.intake.commands.IntakeCommand;
 import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.managers.Autobalance;
 import frc.robot.managers.SuperstructureManager;
@@ -99,9 +97,7 @@ public class Autos {
                     .getManualScoreCommand(ManualScoringLocation.HIGH)
                     .andThen(superstructure.finishManualScoreCommand())),
             Map.entry(
-                "home",
-                new ElevatorHomingCommand(elevator)
-                    .andThen(new WristHomingCommand(wrist))),
+                "home", new ElevatorHomingCommand(elevator).andThen(new WristHomingCommand(wrist))),
             Map.entry(
                 "intakeCone",
                 superstructure
