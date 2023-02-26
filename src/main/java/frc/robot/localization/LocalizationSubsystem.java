@@ -8,10 +8,9 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.CircularBuffer;
+import edu.wpi.first.util.InterpolatingTreeMap;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
@@ -25,8 +24,6 @@ import frc.robot.util.scheduling.SubsystemPriority;
 import org.littletonrobotics.junction.Logger;
 
 public class LocalizationSubsystem extends LifecycleSubsystem {
-  private static final double MAX_APRILTAG_DISTANCE = Units.feetToMeters(15);
-  private static final int RESET_ODOMETRY_FROM_VISION_SAMPLE_COUNT = 5;
 
   private final SwerveSubsystem swerve;
   private final ImuSubsystem imu;
@@ -35,12 +32,8 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
   private final SwerveDriveOdometry odometry;
   private boolean visionWorking = false;
 
-  private final Pose2d startPose;
-
-  private final CircularBuffer xVisionPoseBuffer =
-      new CircularBuffer(RESET_ODOMETRY_FROM_VISION_SAMPLE_COUNT);
-  private final CircularBuffer yVisionPoseBuffer =
-      new CircularBuffer(RESET_ODOMETRY_FROM_VISION_SAMPLE_COUNT);
+  private final InterpolatingTreeMap<Double, Double> visionStdLookup =
+      new InterpolatingTreeMap<Double, Double>();
 
   public LocalizationSubsystem(SwerveSubsystem swerve, ImuSubsystem imu) {
     super(SubsystemPriority.LOCALIZATION);
@@ -60,15 +53,20 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
         new SwerveDriveOdometry(
             SwerveSubsystem.KINEMATICS, imu.getRobotHeading(), swerve.getModulePositions());
 
-    startPose =
-        new Pose2d(
-            new Translation2d(Units.inchesToMeters(582.0), Units.inchesToMeters(15.0)),
-            imu.getRobotHeading());
-  }
-
-  @Override
-  public void teleopInit() {
-    // odometry.resetPosition(imu.getRobotHeading(), swerve.getModulePositions(), startPose);
+    // visionStdLookup.put(0.5, 0.1);
+    // visionStdLookup.put(1.0, 0.5);
+    // visionStdLookup.put(2.0, 1.0);
+    visionStdLookup.put(0.752358, 0.005);
+    visionStdLookup.put(1.016358, 0.0135);
+    visionStdLookup.put(1.296358, 0.016);
+    visionStdLookup.put(1.574358, 0.038);
+    visionStdLookup.put(1.913358, 0.0515);
+    visionStdLookup.put(2.184358, 0.0925);
+    visionStdLookup.put(2.493358, 0.0695);
+    visionStdLookup.put(2.758358, 0.046);
+    visionStdLookup.put(3.223358, 0.1245);
+    visionStdLookup.put(4.093358, 0.0815);
+    visionStdLookup.put(4.726358, 0.193);
   }
 
   @Override
@@ -83,31 +81,32 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
     poseEstimator.update(imu.getRobotHeading(), swerve.getModulePositions());
     odometry.update(imu.getRobotHeading(), swerve.getModulePositions());
 
+    boolean visionIsValid = false; // Indicates if vision is valid in this loop.
+
     LimelightResults results = LimelightHelpers.getLatestResults("");
     Pose2d currentVisionPose = results.targetingResults.getBotPose2d_wpiBlue();
-    // Pose2d angleAdjustedVisionPose = new Pose2d(currentVisionPose.getTranslation(),
-    // imu.getRobotHeading());
-    Pose2d angleAdjustedVisionPose = currentVisionPose;
+    Pose2d angleAdjustedVisionPose =
+        new Pose2d(currentVisionPose.getTranslation(), imu.getRobotHeading());
 
-    double visionTimestamp = Timer.getFPGATimestamp() - 0.02;
-    double visionTimestampB =
-        results.targetingResults.timestamp_RIOFPGA_capture
+    double visionTimestamp =
+        Timer.getFPGATimestamp()
             - ((results.targetingResults.latency_capture
                     + results.targetingResults.latency_jsonParse
                     + results.targetingResults.latency_pipeline)
                 / 1000);
 
-    boolean visionIsValid = false;
     double averageDistanceToIndividualFiducialTags = 0;
     double fiducialTagCount = 0;
 
+    // Calculate average distance of each tag seen.
     if (results.targetingResults.valid
         && currentVisionPose.getX() != 0.0
         && currentVisionPose.getY() != 0.0) {
       for (int i = 0; i < results.targetingResults.targets_Fiducials.length; ++i) {
         Pose2d fiducialPose =
-            results.targetingResults.targets_Fiducials[i].getRobotPose_FieldSpace2D();
-        double fiducialDistanceAway = Math.sqrt(Math.pow(fiducialPose.getX(), 2) + Math.pow(fiducialPose.getY(), 2));
+            results.targetingResults.targets_Fiducials[i].getTargetPose_RobotSpace2D();
+        double fiducialDistanceAway =
+            Math.sqrt(Math.pow(fiducialPose.getX(), 2) + Math.pow(fiducialPose.getY(), 2));
         averageDistanceToIndividualFiducialTags += fiducialDistanceAway;
         fiducialTagCount++;
       }
@@ -116,47 +115,18 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
       visionIsValid = true;
     }
 
-    double trustMultiplier = Math.pow(averageDistanceToIndividualFiducialTags, 3);
-    Logger.getInstance().recordOutput("Localization/FiducialLength", fiducialTagCount);
-    Logger.getInstance()
-        .recordOutput(
-            "Localization/AverageFiducialDistanceAway", averageDistanceToIndividualFiducialTags);
-    Logger.getInstance().recordOutput("Localization/StaticLatency", visionTimestamp);
-    Logger.getInstance().recordOutput("Localization/DynamicLatency", visionTimestampB);
-
+    // Update pose estimator if vision is valid.
     if (visionIsValid) {
-      xVisionPoseBuffer.addFirst(angleAdjustedVisionPose.getX());
-      yVisionPoseBuffer.addFirst(angleAdjustedVisionPose.getY());
+      // Adjust vision measurement standard deviation by average distance from tags.
+      double stdForVision =
+          visionStdLookup.get(averageDistanceToIndividualFiducialTags) / fiducialTagCount;
       poseEstimator.addVisionMeasurement(
           angleAdjustedVisionPose,
-          visionTimestampB,
-          VecBuilder.fill(
-              0.05 * trustMultiplier,
-              0.05 * trustMultiplier,
-              Units.degreesToRadians(5 * trustMultiplier)));
+          visionTimestamp,
+          VecBuilder.fill(stdForVision, stdForVision, Units.degreesToRadians(5)));
       Logger.getInstance().recordOutput("Localization/VisionPose", angleAdjustedVisionPose);
       visionWorking = true;
-
-      if (checkVisionPoseConsistent()) {
-        odometry.resetPosition(
-            imu.getRobotHeading(), swerve.getModulePositions(), angleAdjustedVisionPose);
-        // resetPose(angleAdjustedVisionPose, imu.getRobotHeading());
-      }
     }
-  }
-
-  private boolean checkVisionPoseConsistent() {
-    double firstX = xVisionPoseBuffer.get(0);
-    double firstY = yVisionPoseBuffer.get(0);
-    boolean valid = true;
-    for (int i = 1; i < xVisionPoseBuffer.size(); i++) {
-      if (Math.abs(firstX - xVisionPoseBuffer.get(i)) > 0.025
-          || Math.abs(firstY - yVisionPoseBuffer.get(i)) > 0.025) {
-        valid = false;
-      }
-    }
-
-    return valid;
   }
 
   public Pose2d getPose() {
