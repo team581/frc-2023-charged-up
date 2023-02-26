@@ -52,41 +52,50 @@ public class Robot extends LoggedRobot {
   private final SwerveModule frontLeft =
       new SwerveModule(
           Config.SWERVE_FL_CONSTANTS,
-          new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_FL_DRIVE_MOTOR_ID, "581CANivore"),
-          new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_FL_STEER_MOTOR_ID, "581CANivore"),
-          new CANCoder(Config.SWERVE_FL_CANCODER_ID, "581CANivore"));
+          new com.ctre.phoenixpro.hardware.TalonFX(
+              Config.SWERVE_FL_DRIVE_MOTOR_ID, Config.CANIVORE_ID),
+          new com.ctre.phoenixpro.hardware.TalonFX(
+              Config.SWERVE_FL_STEER_MOTOR_ID, Config.CANIVORE_ID),
+          new CANCoder(Config.SWERVE_FL_CANCODER_ID, Config.CANIVORE_ID));
   private final SwerveModule frontRight =
       new SwerveModule(
           Config.SWERVE_FR_CONSTANTS,
-          new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_FR_DRIVE_MOTOR_ID, "581CANivore"),
-          new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_FR_STEER_MOTOR_ID, "581CANivore"),
-          new CANCoder(Config.SWERVE_FR_CANCODER_ID, "581CANivore"));
+          new com.ctre.phoenixpro.hardware.TalonFX(
+              Config.SWERVE_FR_DRIVE_MOTOR_ID, Config.CANIVORE_ID),
+          new com.ctre.phoenixpro.hardware.TalonFX(
+              Config.SWERVE_FR_STEER_MOTOR_ID, Config.CANIVORE_ID),
+          new CANCoder(Config.SWERVE_FR_CANCODER_ID, Config.CANIVORE_ID));
   private final SwerveModule backLeft =
       new SwerveModule(
           Config.SWERVE_BL_CONSTANTS,
-          new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_BL_DRIVE_MOTOR_ID, "581CANivore"),
-          new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_BL_STEER_MOTOR_ID, "581CANivore"),
-          new CANCoder(Config.SWERVE_BL_CANCODER_ID, "581CANivore"));
+          new com.ctre.phoenixpro.hardware.TalonFX(
+              Config.SWERVE_BL_DRIVE_MOTOR_ID, Config.CANIVORE_ID),
+          new com.ctre.phoenixpro.hardware.TalonFX(
+              Config.SWERVE_BL_STEER_MOTOR_ID, Config.CANIVORE_ID),
+          new CANCoder(Config.SWERVE_BL_CANCODER_ID, Config.CANIVORE_ID));
   private final SwerveModule backRight =
       new SwerveModule(
           Config.SWERVE_BR_CONSTANTS,
-          new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_BR_DRIVE_MOTOR_ID, "581CANivore"),
-          new com.ctre.phoenixpro.hardware.TalonFX(Config.SWERVE_BR_STEER_MOTOR_ID, "581CANivore"),
-          new CANCoder(Config.SWERVE_BR_CANCODER_ID, "581CANivore"));
+          new com.ctre.phoenixpro.hardware.TalonFX(
+              Config.SWERVE_BR_DRIVE_MOTOR_ID, Config.CANIVORE_ID),
+          new com.ctre.phoenixpro.hardware.TalonFX(
+              Config.SWERVE_BR_STEER_MOTOR_ID, Config.CANIVORE_ID),
+          new CANCoder(Config.SWERVE_BR_CANCODER_ID, Config.CANIVORE_ID));
 
   private final DriveController driveController = new DriveController(Config.DRIVE_CONTROLLER_PORT);
   private final CommandXboxController operatorController =
       new CommandXboxController(Config.OPERATOR_CONTROLLER_PORT);
 
   private final ElevatorSubsystem elevator =
-      new ElevatorSubsystem(new TalonFX(Config.ELEVATOR_MOTOR_ID, "581CANivore"));
+      new ElevatorSubsystem(new TalonFX(Config.ELEVATOR_MOTOR_ID, Config.CANIVORE_ID));
   private final WristSubsystem wrist =
-      new WristSubsystem(new TalonFX(Config.WRIST_MOTOR_ID, "581CANivore"));
+      new WristSubsystem(new TalonFX(Config.WRIST_MOTOR_ID, Config.CANIVORE_ID));
   private final IntakeSubsystem intake =
-      new IntakeSubsystem(new TalonFX(Config.INTAKE_MOTOR_ID, "581CANivore"));
+      new IntakeSubsystem(new TalonFX(Config.INTAKE_MOTOR_ID, Config.CANIVORE_ID));
   private final SuperstructureMotionManager superstructureMotionManager =
       new SuperstructureMotionManager(elevator, wrist);
-  private final ImuSubsystem imu = new ImuSubsystem(new Pigeon2(Config.PIGEON_ID, "581CANivore"));
+  private final ImuSubsystem imu =
+      new ImuSubsystem(new Pigeon2(Config.PIGEON_ID, Config.CANIVORE_ID));
   private final SwerveSubsystem swerve =
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
   private final LocalizationSubsystem localization = new LocalizationSubsystem(swerve, imu);
@@ -96,15 +105,16 @@ public class Robot extends LoggedRobot {
       new Autoscore(localization, swerve, superstructureManager, driveController, intake);
   private final LightsSubsystem lights =
       new LightsSubsystem(
-          new CANdle(Config.LIGHTS_CANDLE_ID, "581CANivore"),
+          new CANdle(Config.LIGHTS_CANDLE_ID, Config.CANIVORE_ID),
           intake,
           superstructureManager,
           localization);
 
-  private final Autos autos =
-      new Autos(localization, swerve, imu, superstructureManager, elevator, wrist, intake);
-
   private final Autobalance autobalance = new Autobalance(swerve, imu);
+
+  private final Autos autos =
+      new Autos(
+          localization, swerve, imu, superstructureManager, elevator, wrist, intake, autobalance);
 
   private Command autoCommand = autos.getAutoCommand();
 
@@ -160,9 +170,7 @@ public class Robot extends LoggedRobot {
         .onTrue(superstructureManager.getFloorIntakeSpinningCommand())
         .onFalse(superstructureManager.getFloorIntakeIdleCommand());
     // Autoscore/finish manual score
-    driveController
-        .rightBumper()
-        .whileTrue(autoscore.getAutoAlignCommand());
+    driveController.rightBumper().whileTrue(autoscore.getAutoAlignCommand());
     // Zero gyro
     driveController.back().onTrue(localization.getZeroCommand());
     // Set mode to cubes

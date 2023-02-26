@@ -275,8 +275,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     double xVelocity = xController.calculate(pose.getX(), goal.getX());
     double yVelocity = yController.calculate(pose.getY(), goal.getY());
     double thetaVelocity =
-        thetaController.calculate(
-            pose.getRotation().getRadians(), goal.getRotation().getRadians());
+        thetaController.calculate(pose.getRotation().getRadians(), goal.getRotation().getRadians());
 
     xVelocity = -xVelocity;
     yVelocity = -yVelocity;
