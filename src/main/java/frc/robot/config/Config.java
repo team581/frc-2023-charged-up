@@ -17,12 +17,14 @@ public class Config {
 
   public static final String SERIAL_NUMBER = System.getenv("serialnum");
   public static final boolean IS_SPIKE =
-      SERIAL_NUMBER == null || !SERIAL_NUMBER.equalsIgnoreCase(TYKE_SERIAL_NUMBER);
+  SERIAL_NUMBER == null || !SERIAL_NUMBER.equalsIgnoreCase(TYKE_SERIAL_NUMBER);
   // TODO: Change this to false during events
   public static final boolean IS_DEVELOPMENT = true;
 
   public static final int DRIVE_CONTROLLER_PORT = 0;
   public static final int OPERATOR_CONTROLLER_PORT = 1;
+
+    public static final String CANIVORE_ID = "581CANivore";
 
   public static final int PDP_ID = IS_SPIKE ? 1 : 0;
   public static final ModuleType PDP_TYPE = IS_SPIKE ? ModuleType.kRev : ModuleType.kCTRE;
