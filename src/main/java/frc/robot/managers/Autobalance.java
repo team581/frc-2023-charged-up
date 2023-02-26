@@ -76,6 +76,8 @@ public class Autobalance extends LifecycleSubsystem {
   }
 
   public Command getCommand() {
-    return Commands.run(() -> setEnabled(true), swerve).until(() -> atGoal()).andThen(runOnce(() -> setEnabled(false)));
+    return Commands.run(() -> setEnabled(true), swerve)
+        .until(() -> atGoal())
+        .andThen(runOnce(() -> setEnabled(false)));
   }
 }
