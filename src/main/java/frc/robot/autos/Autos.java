@@ -109,7 +109,7 @@ public class Autos {
                     .setIntakeModeCommand(HeldGamePiece.CUBE)
                     .andThen(superstructure.getFloorIntakeIdleCommand())),
             Map.entry("stow", superstructure.getCommand(States.STOWED)));
-            Map.entry("autoBalance", autoBalance.getCommand());
+    Map.entry("autoBalance", autoBalance.getCommand());
 
     autoBuilder =
         new SwerveAutoBuilder(
@@ -176,7 +176,9 @@ public class Autos {
   }
 
   private Command getBlueLongSide1_5ConeBalance() {
-    return autoBuilder.fullAuto(Paths.BLUE_LONG_SIDE_1_5_CONE_BALANCE).andThen(autoBalance.getCommand());
+    return autoBuilder
+        .fullAuto(Paths.BLUE_LONG_SIDE_1_5_CONE_BALANCE)
+        .andThen(autoBalance.getCommand());
   }
 
   private Command getBlueMid1_5ConeBalance() {
@@ -188,15 +190,21 @@ public class Autos {
   }
 
   private Command getBlueShortSide2_5ConeBalance() {
-    return autoBuilder.fullAuto(Paths.BLUE_SHORT_SIDE_2_5_CONE_BALANCE).andThen(autoBalance.getCommand());
+    return autoBuilder
+        .fullAuto(Paths.BLUE_SHORT_SIDE_2_5_CONE_BALANCE)
+        .andThen(autoBalance.getCommand());
   }
 
   public Command getBlueShortSide2ConeBalance() {
-    return autoBuilder.fullAuto(Paths.BLUE_SHORT_SIDE_2_CONE_BALANCE).andThen(autoBalance.getCommand());
+    return autoBuilder
+        .fullAuto(Paths.BLUE_SHORT_SIDE_2_CONE_BALANCE)
+        .andThen(autoBalance.getCommand());
   }
 
   private Command getRedLongSide1_5ConeBalanceAuto() {
-    return autoBuilder.fullAuto(Paths.RED_LONG_SIDE_1_5_CONE_BALANCE).andThen(autoBalance.getCommand());
+    return autoBuilder
+        .fullAuto(Paths.RED_LONG_SIDE_1_5_CONE_BALANCE)
+        .andThen(autoBalance.getCommand());
   }
 
   private Command getRedLongSide1ConeAuto() {
@@ -216,11 +224,15 @@ public class Autos {
   }
 
   private Command getRedShortSide2_5ConeBalance() {
-    return autoBuilder.fullAuto(Paths.RED_SHORT_SIDE_2_CONE_BALANCE).andThen(autoBalance.getCommand());
+    return autoBuilder
+        .fullAuto(Paths.RED_SHORT_SIDE_2_CONE_BALANCE)
+        .andThen(autoBalance.getCommand());
   }
 
   private Command getRedShortSide2ConeBalance() {
-    return autoBuilder.fullAuto(Paths.RED_SHORT_SIDE_2_CONE_BALANCE).andThen(autoBalance.getCommand());
+    return autoBuilder
+        .fullAuto(Paths.RED_SHORT_SIDE_2_CONE_BALANCE)
+        .andThen(autoBalance.getCommand());
   }
 
   private CommandBase getDoNothingAuto() {
