@@ -171,4 +171,17 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
             resetGyro(
                 Rotation2d.fromDegrees(DriverStation.getAlliance() == Alliance.Red ? 180 : 0)));
   }
+
+  public boolean atPose(Pose2d goal) {
+    // 3 degree rotation and 0.1 meter distance
+    Pose2d pose = getPose();
+    double distanceRelative = goal.getTranslation().getDistance(pose.getTranslation());
+
+    Rotation2d rotationDifference = goal.getRotation().minus(pose.getRotation());
+    if (distanceRelative < 0.1 && Math.abs(rotationDifference.getDegrees()) < 3) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.autos.Autos;
-import frc.robot.autos.Autoscore;
+import frc.robot.autoscore.Autoscore;
 import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
 import frc.robot.elevator.ElevatorSubsystem;
@@ -161,9 +161,8 @@ public class Robot extends LoggedRobot {
         .onFalse(superstructureManager.getFloorIntakeIdleCommand());
     // Autoscore/finish manual score
     driveController
-        .rightTrigger(0.3)
-        .onTrue(autoscore.getAutoAlignCommand())
-        .onFalse(autoscore.setEnabledCommand(false));
+        .rightBumper()
+        .whileTrue(autoscore.getAutoAlignCommand());
     // Zero gyro
     driveController.back().onTrue(localization.getZeroCommand());
     // Set mode to cubes
