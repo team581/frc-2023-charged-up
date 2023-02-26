@@ -10,6 +10,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import frc.robot.States;
 import frc.robot.config.Config;
@@ -31,7 +32,7 @@ public class Autoscore extends LifecycleSubsystem {
   private final SwerveSubsystem swerve;
   private final IntakeSubsystem intake;
   private final DriveController controller;
-  private boolean autoScoreEnabled = false;
+  private boolean enabled = false;
   private AutoScoreLocation autoScoreLocation =
       new AutoScoreLocation(GridKind.CENTER, NodeKind.LEFT_HIGH_CONE, new Pose2d());
 
@@ -108,39 +109,54 @@ public class Autoscore extends LifecycleSubsystem {
     return multiplier * offset;
   }
 
-  public boolean isAutoScoreEnabled() {
-    return autoScoreEnabled;
+  public boolean isEnabled() {
+    return enabled;
   }
 
-  public void setAutoScoreEnabled(boolean enabled) {
-    autoScoreEnabled = enabled;
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
   }
 
   public Command getCommand() {
-    return new ProxyCommand(
-        () ->
-            setEnabledCommand(true)
-                .andThen(runOnce(() -> autoScoreLocation = getAutoScoreLocation()))
-                .andThen(swerve.goToPoseCommand(autoScoreLocation.pose, localization))
-                .andThen(superstructure.getScoreCommand(autoScoreLocation.nodeHeight))
-                .handleInterrupt(() -> superstructure.set(States.STOWED)));
+    return Commands.either(
+        superstructure
+            .finishManualScoreCommand()
+            .andThen(setEnabledCommand(false))
+            .andThen(superstructure.getCommand(States.STOWED))
+            .handleInterrupt(
+                () -> {
+                  superstructure.set(States.STOWED);
+                  setEnabled(false);
+                })
+            .raceWith(Commands.run(() -> {}, swerve)),
+        superstructure.finishManualScoreCommand(),
+        () -> enabled);
   }
 
   public Command getAutoAlignCommand() {
-    return setEnabledCommand(true)
-        .andThen(swerve.goToPoseContinuousCommand(() -> getAutoScoreLocation().pose, localization))
-        .andThen(runOnce(() -> autoScoreLocation = getAutoScoreLocation()));
+    return new ProxyCommand(
+            () ->
+                setEnabledCommand(true)
+                    .andThen(
+                        swerve
+                            .goToPoseContinuousCommand(
+                                () -> getAutoScoreLocation().pose, localization)
+                            .raceWith(
+                                Commands.run(() -> autoScoreLocation = getAutoScoreLocation())))
+                    .andThen(superstructure.getManualScoreCommand(autoScoreLocation.nodeHeight)))
+        .handleInterrupt(
+            () -> {
+              superstructure.set(States.STOWED);
+              setEnabled(false);
+            });
   }
 
   public Command setEnabledCommand(boolean enabled) {
-    return runOnce(() -> setAutoScoreEnabled(enabled));
+    return Commands.runOnce(() -> setEnabled(enabled));
   }
 
   @Override
   public void robotPeriodic() {
-    // Remove this, it's temporary and just for logging
-    autoScoreLocation = getAutoScoreLocation();
-
     Logger.getInstance().recordOutput("Autoscore/GoalLocation/Pose", autoScoreLocation.pose);
     Logger.getInstance()
         .recordOutput("Autoscore/GoalLocation/Node", autoScoreLocation.node.toString());
@@ -149,5 +165,12 @@ public class Autoscore extends LifecycleSubsystem {
     Logger.getInstance()
         .recordOutput("Autoscore/GoalLocation/Grid", autoScoreLocation.grid.toString());
     Logger.getInstance().recordOutput("Autoscore/LocationOffset", getScoreLocationForwardOffset());
+    Logger.getInstance().recordOutput("Autoscore/Enabled", enabled);
+
+    if (enabled) {
+      swerve.setSteeringEnabled(false);
+    } else {
+      swerve.setSteeringEnabled(true);
+    }
   }
 }

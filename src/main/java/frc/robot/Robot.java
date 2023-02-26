@@ -169,8 +169,10 @@ public class Robot extends LoggedRobot {
         .leftTrigger(0.3)
         .onTrue(superstructureManager.getFloorIntakeSpinningCommand())
         .onFalse(superstructureManager.getFloorIntakeIdleCommand());
-    // Autoscore/finish manual score
+    // Auto align
     driveController.rightBumper().whileTrue(autoscore.getAutoAlignCommand());
+    // Autoscore/finish manual score
+    driveController.rightTrigger().whileTrue(autoscore.getCommand());
     // Zero gyro
     driveController.back().onTrue(localization.getZeroCommand());
     // Set mode to cubes

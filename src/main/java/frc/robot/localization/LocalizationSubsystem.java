@@ -164,10 +164,17 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
     Pose2d pose = getPose();
     double distanceRelative = goal.getTranslation().getDistance(pose.getTranslation());
 
+    // Log goal as "Localization/AtPoseGoal"
+    // Log the result boolean as "Localization/AtPose"
+
+    Logger.getInstance().recordOutput("Localization/AtPoseGoal", goal);
+
     Rotation2d rotationDifference = goal.getRotation().minus(pose.getRotation());
-    if (distanceRelative < 0.1 && Math.abs(rotationDifference.getDegrees()) < 3) {
+    if (distanceRelative < 0.2 && Math.abs(rotationDifference.getDegrees()) < 5) {
+      Logger.getInstance().recordOutput("Localization/AtPose", true);
       return true;
     } else {
+      Logger.getInstance().recordOutput("Localization/AtPose", false);
       return false;
     }
   }

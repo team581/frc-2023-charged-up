@@ -83,6 +83,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
           Config.SWERVE_ROTATION_PID.kI,
           Config.SWERVE_ROTATION_PID.kD,
           new TrapezoidProfile.Constraints(Math.PI * 2.0, Math.PI * 0.75));
+  private boolean steeringEnabled;
 
   public SwerveSubsystem(
       ImuSubsystem imu,
@@ -183,6 +184,10 @@ public class SwerveSubsystem extends LifecycleSubsystem {
       fieldRelativeHeading = fieldRelativeHeading.plus(Rotation2d.fromDegrees(180));
     }
 
+    if (!steeringEnabled) {
+      thetaPercentage = 0;
+    }
+
     ChassisSpeeds chassisSpeeds =
         ChassisSpeeds.fromFieldRelativeSpeeds(
             robotTranslation.getX(),
@@ -241,7 +246,8 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
                   setChassisSpeeds(chassisSpeeds, false);
                 }))
-        .until(() -> localization.atPose(goal));
+        .until(() -> localization.atPose(goal))
+        .andThen(runOnce(() -> setChassisSpeeds(new ChassisSpeeds(), false)));
   }
 
   public Command goToPoseContinuousCommand(
@@ -254,7 +260,8 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
                   setChassisSpeeds(chassisSpeeds, false);
                 }))
-        .until(() -> localization.atPose(goal.get()));
+        .until(() -> localization.atPose(goal.get()))
+        .andThen(runOnce(() -> setChassisSpeeds(new ChassisSpeeds(), false)));
   }
 
   private Command resetPoseCommand(LocalizationSubsystem localization) {
@@ -286,5 +293,9 @@ public class SwerveSubsystem extends LifecycleSubsystem {
         ChassisSpeeds.fromFieldRelativeSpeeds(
             xVelocity, yVelocity, thetaVelocity, pose.getRotation());
     return chassisSpeeds;
+  }
+
+  public void setSteeringEnabled(boolean enabled) {
+    steeringEnabled = enabled;
   }
 }

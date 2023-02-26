@@ -187,7 +187,6 @@ public class SuperstructureManager extends LifecycleSubsystem {
     return Commands.runOnce(() -> setManualIntakeMode(manualIntakeMode));
   }
 
-  // TODO: Ignore this command when the superstructure is STOWED
   public Command finishManualScoreCommand() {
     return Commands.waitUntil(() -> atPosition(goal.position))
         .andThen(
@@ -201,6 +200,7 @@ public class SuperstructureManager extends LifecycleSubsystem {
             Commands.either(
                 Commands.runOnce(() -> setManualIntakeMode(IntakeMode.OUTTAKE_CUBE)),
                 Commands.runOnce(() -> setManualIntakeMode(IntakeMode.OUTTAKE_CONE)),
-                () -> intake.getGamePiece() == HeldGamePiece.CUBE));
+                () -> intake.getGamePiece() == HeldGamePiece.CUBE))
+        .unless(() -> goal == States.STOWED);
   }
 }
