@@ -11,7 +11,8 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import frc.robot.config.Config;
-import frc.robot.util.LifecycleSubsystem;
+import frc.robot.util.scheduling.LifecycleSubsystem;
+import frc.robot.util.scheduling.SubsystemPriority;
 import org.littletonrobotics.junction.Logger;
 
 public class ElevatorSubsystem extends LifecycleSubsystem {
@@ -24,6 +25,8 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
   private static final double TOLERANCE = 0.5;
 
   public ElevatorSubsystem(TalonFX motor) {
+    super(SubsystemPriority.ELEVATOR);
+
     this.motor = motor;
     this.motor.setInverted(Config.ELEVATOR_INVERTED);
 

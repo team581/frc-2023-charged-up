@@ -10,7 +10,8 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.config.Config;
-import frc.robot.util.LifecycleSubsystem;
+import frc.robot.util.scheduling.LifecycleSubsystem;
+import frc.robot.util.scheduling.SubsystemPriority;
 import org.littletonrobotics.junction.Logger;
 
 public class WristSubsystem extends LifecycleSubsystem {
@@ -21,7 +22,11 @@ public class WristSubsystem extends LifecycleSubsystem {
   private boolean goToGoal = false;
 
   public WristSubsystem(TalonFX motor) {
+    super(SubsystemPriority.WRIST);
+
     this.motor = motor;
+
+    motor.setInverted(false);
 
     motor.config_kF(0, Config.WRIST_KF);
     motor.config_kP(0, Config.WRIST_KP);

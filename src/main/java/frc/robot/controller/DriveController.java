@@ -43,15 +43,15 @@ public class DriveController extends CommandXboxController {
 
     ManualScoringLocation scoringHeight;
 
-    if (rightY > 0.7) {
+    if (rightY > 0.6) {
       scoringHeight = ManualScoringLocation.HIGH;
-    } else if (rightY < -0.7) {
+    } else if (rightY < -0.6) {
       scoringHeight = ManualScoringLocation.LOW;
     } else {
       scoringHeight = ManualScoringLocation.MID;
     }
 
-    if (rightX < -0.7) {
+    if (rightX < -0.6) {
       if (scoringHeight == ManualScoringLocation.LOW) {
         return NodeKind.LEFT_HYBRID;
       } else if (scoringHeight == ManualScoringLocation.MID) {
@@ -59,7 +59,7 @@ public class DriveController extends CommandXboxController {
       } else if (scoringHeight == ManualScoringLocation.HIGH) {
         return NodeKind.LEFT_HIGH_CONE;
       }
-    } else if (rightX > 0.7) {
+    } else if (rightX > 0.6) {
       if (scoringHeight == ManualScoringLocation.LOW) {
         return NodeKind.RIGHT_HYBRID;
       } else if (scoringHeight == ManualScoringLocation.MID) {

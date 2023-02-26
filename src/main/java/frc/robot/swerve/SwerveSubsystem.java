@@ -7,6 +7,7 @@ package frc.robot.swerve;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -14,14 +15,17 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
-import frc.robot.util.LifecycleSubsystem;
+import frc.robot.util.scheduling.LifecycleSubsystem;
+import frc.robot.util.scheduling.SubsystemPriority;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveSubsystem extends LifecycleSubsystem {
@@ -35,7 +39,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   public static final double MAX_VELOCITY_INCHES_PER_SECOND = 127;
   public static final double MAX_VELOCITY_METERS_PER_SECOND =
       MAX_VELOCITY_INCHES_PER_SECOND / 39.37;
-  public static final double MAX_ANGULAR_VELOCITY = 20;
+  public static final double MAX_ANGULAR_VELOCITY = 30;
 
   private final ImuSubsystem imu;
   private final SwerveModule frontRight;
@@ -46,14 +50,45 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
   private final PIDController xController = new PIDController(5, 0, 0);
   private final PIDController yController = new PIDController(5, 0, 0);
-  private final PIDController thetaController = new PIDController(1, 0, 0);
+          Config.SWERVE_TRANSLATION_PID.kI,
+          Config.SWERVE_TRANSLATION_PID.kD);
+  private final PIDController yController =
+      new PIDController(
+          Config.SWERVE_TRANSLATION_PID.kP,
+          Config.SWERVE_TRANSLATION_PID.kI,
+          Config.SWERVE_TRANSLATION_PID.kD);
+  private final PIDController thetaController =
+      new PIDController(
+          Config.SWERVE_ROTATION_PID.kP,
+          Config.SWERVE_ROTATION_PID.kI,
+          Config.SWERVE_ROTATION_PID.kD);
+
+  private final ProfiledPIDController xProfiledController =
+      new ProfiledPIDController(
+          Config.SWERVE_TRANSLATION_PID.kP,
+          Config.SWERVE_TRANSLATION_PID.kI,
+          Config.SWERVE_TRANSLATION_PID.kD,
+          new TrapezoidProfile.Constraints(0.25, 1.5));
+  private final ProfiledPIDController yProfiledController =
+      new ProfiledPIDController(
+          Config.SWERVE_TRANSLATION_PID.kP,
+          Config.SWERVE_TRANSLATION_PID.kI,
+          Config.SWERVE_TRANSLATION_PID.kD,
+          new TrapezoidProfile.Constraints(0.25, 1.5));
+  private final ProfiledPIDController thetaProfiledController =
+      new ProfiledPIDController(
+          Config.SWERVE_ROTATION_PID.kP,
+          Config.SWERVE_ROTATION_PID.kI,
+          Config.SWERVE_ROTATION_PID.kD,
+          new TrapezoidProfile.Constraints(Math.PI * 2.0, Math.PI * 0.75));
 
   public SwerveSubsystem(
-      ImuSubsystem imu,
       SwerveModule frontRight,
       SwerveModule frontLeft,
       SwerveModule backRight,
       SwerveModule backLeft) {
+    super(SubsystemPriority.SWERVE);
+
     this.imu = imu;
     this.frontRight = frontRight;
     this.frontLeft = frontLeft;
@@ -137,9 +172,9 @@ public class SwerveSubsystem extends LifecycleSubsystem {
             .times(MAX_VELOCITY_METERS_PER_SECOND);
     Rotation2d fieldRelativeHeading = imu.getRobotHeading();
 
-    // if (DriverStation.getAlliance() == Alliance.Red) {
-    //   fieldRelativeHeading = fieldRelativeHeading.plus(Rotation2d.fromDegrees(180));
-    // }
+    if (DriverStation.getAlliance() == Alliance.Red) {
+      fieldRelativeHeading = fieldRelativeHeading.plus(Rotation2d.fromDegrees(180));
+    }
 
     ChassisSpeeds chassisSpeeds =
         ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -164,21 +199,12 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
           boolean openLoop = false;
 
-          if (Config.IS_SPIKE) {
-            driveTeleop(
-                controller.getSidewaysPercentage(),
-                -controller.getForwardPercentage(),
-                -controller.getThetaPercentage(),
-                true,
-                openLoop);
-          } else {
-            driveTeleop(
-                -controller.getSidewaysPercentage(),
-                controller.getForwardPercentage(),
-                controller.getThetaPercentage(),
-                true,
-                openLoop);
-          }
+          driveTeleop(
+              -controller.getSidewaysPercentage(),
+              controller.getForwardPercentage(),
+              controller.getThetaPercentage(),
+              true,
+              openLoop);
         },
         this);
   }
@@ -203,29 +229,34 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   // Create a command that accepts a Pose2d and drives to it using a PPHolonomicDriveController
   // The command should exit once it's at the pose
   public Command goToPoseCommand(Pose2d goal, LocalizationSubsystem localization) {
-    return Commands.run(
-            () -> {
-              Pose2d pose = localization.getPose();
-              double xVelocity = xController.calculate(pose.getX(), goal.getX());
-              double yVelocity = yController.calculate(pose.getY(), goal.getY());
-              double thetaVelocity =
-                  thetaController.calculate(
-                      pose.getRotation().getRadians(), goal.getRotation().getRadians());
+    return run(() -> {
+          Logger.getInstance().recordOutput("Autoscore/TargetPose", goal);
+          Pose2d pose = localization.getPose();
+          double xVelocity = xProfiledController.calculate(pose.getX(), goal.getX());
+          double yVelocity = yProfiledController.calculate(pose.getY(), goal.getY());
+          double thetaVelocity =
+              thetaProfiledController.calculate(
+                  pose.getRotation().getRadians(), goal.getRotation().getRadians());
 
-              ChassisSpeeds chassisSpeeds =
-                  ChassisSpeeds.fromFieldRelativeSpeeds(
-                      xVelocity, yVelocity, thetaVelocity, pose.getRotation());
+          if (Config.IS_SPIKE) {
+            xVelocity = -xVelocity;
+            yVelocity = -yVelocity;
+          }
 
-              setChassisSpeeds(chassisSpeeds, false);
-            },
-            this)
+          ChassisSpeeds chassisSpeeds =
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  xVelocity, yVelocity, thetaVelocity, pose.getRotation());
+
+          setChassisSpeeds(chassisSpeeds, false);
+        })
         .until(
             () -> {
               // 3 degree rotation and 0.1 meter distance
               Pose2d pose = localization.getPose();
               double distanceRelative = goal.getTranslation().getDistance(pose.getTranslation());
+
               Rotation2d rotationDifference = goal.getRotation().minus(pose.getRotation());
-              if (distanceRelative < 0.1 && rotationDifference.getDegrees() < 3) {
+              if (distanceRelative < 0.1 && Math.abs(rotationDifference.getDegrees()) < 3) {
                 return true;
               } else {
                 return false;
