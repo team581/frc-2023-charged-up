@@ -4,10 +4,10 @@
 
 package frc.robot.managers;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -46,7 +46,8 @@ public class Autobalance extends LifecycleSubsystem {
     if (enabled) {
 
       double goalAngle = 0;
-      Rotation2d adjustedAngle = Rotation2d.fromRadians(MathUtil.angleModulus(imu.getRobotHeading().getRadians()));
+      Rotation2d adjustedAngle =
+          Rotation2d.fromRadians(MathUtil.angleModulus(imu.getRobotHeading().getRadians()));
 
       if (adjustedAngle.getDegrees() > 90 || adjustedAngle.getDegrees() < -90) {
         goalAngle = 180;
