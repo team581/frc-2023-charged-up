@@ -48,8 +48,9 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   private final SwerveModule backLeft;
   private boolean doneResetting = false;
 
-  private final PIDController xController = new PIDController(5, 0, 0);
-  private final PIDController yController = new PIDController(5, 0, 0);
+  private final PIDController xController =
+      new PIDController(
+          Config.SWERVE_TRANSLATION_PID.kP,
           Config.SWERVE_TRANSLATION_PID.kI,
           Config.SWERVE_TRANSLATION_PID.kD);
   private final PIDController yController =
@@ -83,6 +84,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
           new TrapezoidProfile.Constraints(Math.PI * 2.0, Math.PI * 0.75));
 
   public SwerveSubsystem(
+      ImuSubsystem imu,
       SwerveModule frontRight,
       SwerveModule frontLeft,
       SwerveModule backRight,
