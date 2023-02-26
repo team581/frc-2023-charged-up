@@ -22,16 +22,21 @@ public class ImuSubsystem extends LifecycleSubsystem {
   }
 
   public void robotPeriodic() {
-    Logger.getInstance().recordOutput("Gyro sensor", this.getRobotHeading().getDegrees());
+    Logger.getInstance().recordOutput("Imu/RobotHeading", this.getRobotHeading().getDegrees());
   }
 
   public Rotation2d getRobotHeading() {
     return Rotation2d.fromDegrees(imu.getYaw());
   }
 
+  public Rotation2d getRoll() {
+    return Rotation2d.fromDegrees(imu.getRoll());
+  }
+
   public void zero() {
     // TODO: This should use setAngle()
     this.imu.setYaw(0);
+    this.imu.configMountPoseRoll(this.imu.getRoll());
   }
 
   public void setAngle(Rotation2d zeroAngle) {

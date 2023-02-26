@@ -26,6 +26,8 @@ public class WristSubsystem extends LifecycleSubsystem {
 
     this.motor = motor;
 
+    motor.setInverted(false);
+
     motor.config_kF(0, Config.WRIST_KF);
     motor.config_kP(0, Config.WRIST_KP);
     motor.config_kI(0, Config.WRIST_KI);

@@ -150,10 +150,18 @@ public class SuperstructureManager extends LifecycleSubsystem {
                 () -> intake.getGamePiece() == HeldGamePiece.CUBE));
   }
 
-  public Command getFloorIntakeCommand() {
+  public Command getFloorIntakeIdleCommand() {
     return Commands.either(
-            getCommand(States.INTAKING_CUBE_FLOOR),
-            getCommand(States.INTAKING_CONE_FLOOR),
+        getFloorIntakeSpinningCommand(),
+        getCommand(States.INTAKING_CONE_FLOOR_IDLE)
+            .unless(() -> intake.getGamePiece() == HeldGamePiece.CONE),
+        () -> mode == HeldGamePiece.CUBE);
+  }
+
+  public Command getFloorIntakeSpinningCommand() {
+    return Commands.either(
+            getCommand(States.INTAKING_CUBE_FLOOR_SPINNING),
+            getCommand(States.INTAKING_CONE_FLOOR_SPINNING),
             () -> mode == HeldGamePiece.CUBE)
         .andThen(getCommand(States.STOWED));
   }
@@ -164,14 +172,6 @@ public class SuperstructureManager extends LifecycleSubsystem {
             getCommand(States.INTAKING_CONE_SHELF),
             () -> mode == HeldGamePiece.CUBE)
         .andThen(getCommand(States.STOWED));
-  }
-
-  public Command setIntakeModeCommand(HeldGamePiece gamePiece) {
-    return Commands.runOnce(() -> setIntakeMode(gamePiece));
-  }
-
-  public void setIntakeMode(HeldGamePiece gamePiece) {
-    mode = gamePiece;
   }
 
   public AutoScoreLocation getAutoScoreLocation(NodeKind node) {
@@ -196,8 +196,20 @@ public class SuperstructureManager extends LifecycleSubsystem {
     autoScoreEnabled = enabled;
   }
 
+  public Command setIntakeModeCommand(HeldGamePiece gamePiece) {
+    return Commands.runOnce(() -> setIntakeMode(gamePiece));
+  }
+
+  public void setIntakeMode(HeldGamePiece gamePiece) {
+    mode = gamePiece;
+  }
+
   public void setManualIntakeMode(IntakeMode manualIntakeMode) {
     this.manualIntakeMode = manualIntakeMode;
+  }
+
+  public Command setManualIntakeCommand(IntakeMode manualIntakeMode) {
+    return Commands.runOnce(() -> setManualIntakeMode(manualIntakeMode));
   }
 
   // TODO: Ignore this command when the superstructure is STOWED
