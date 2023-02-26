@@ -277,8 +277,10 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     double thetaVelocity =
         thetaController.calculate(pose.getRotation().getRadians(), goal.getRotation().getRadians());
 
-    xVelocity = -xVelocity;
-    yVelocity = -yVelocity;
+    if (Config.IS_SPIKE) {
+      xVelocity = -xVelocity;
+      yVelocity = -yVelocity;
+    }
 
     ChassisSpeeds chassisSpeeds =
         ChassisSpeeds.fromFieldRelativeSpeeds(
