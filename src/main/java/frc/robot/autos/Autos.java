@@ -26,6 +26,7 @@ import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.intake.commands.IntakeCommand;
 import frc.robot.localization.LocalizationSubsystem;
+import frc.robot.managers.Autobalance;
 import frc.robot.managers.SuperstructureManager;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.wrist.WristSubsystem;
@@ -45,6 +46,7 @@ public class Autos {
   private final WristSubsystem wrist;
   private final IntakeSubsystem intake;
   private final SwerveAutoBuilder autoBuilder;
+  private final Autobalance autoBalance;
 
   public Autos(
       LocalizationSubsystem localization,
@@ -53,7 +55,8 @@ public class Autos {
       SuperstructureManager superstructure,
       ElevatorSubsystem elevator,
       WristSubsystem wrist,
-      IntakeSubsystem intake) {
+      IntakeSubsystem intake,
+      Autobalance autoBalance) {
     this.localization = localization;
     this.swerve = swerve;
     this.imu = imu;
@@ -61,6 +64,7 @@ public class Autos {
     this.elevator = elevator;
     this.wrist = wrist;
     this.intake = intake;
+    this.autoBalance = autoBalance;
     Map<String, Command> eventMap =
         Map.ofEntries(
             Map.entry(
@@ -109,6 +113,7 @@ public class Autos {
                     .setIntakeModeCommand(HeldGamePiece.CUBE)
                     .andThen(superstructure.getFloorIntakeIdleCommand())),
             Map.entry("stow", superstructure.getCommand(States.STOWED)));
+            Map.entry("autoBalance", autoBalance.getCommand());
 
     autoBuilder =
         new SwerveAutoBuilder(
@@ -175,27 +180,27 @@ public class Autos {
   }
 
   private Command getBlueLongSide1_5ConeBalance() {
-    return autoBuilder.fullAuto(Paths.BLUE_LONG_SIDE_1_5_CONE_BALANCE);
+    return autoBuilder.fullAuto(Paths.BLUE_LONG_SIDE_1_5_CONE_BALANCE).andThen(autoBalance.getCommand());
   }
 
   private Command getBlueMid1_5ConeBalance() {
-    return autoBuilder.fullAuto(Paths.BLUE_MID_1_5_CONE_BALANCE);
+    return autoBuilder.fullAuto(Paths.BLUE_MID_1_5_CONE_BALANCE).andThen(autoBalance.getCommand());
   }
 
   private Command getBlueMid1ConeBalance() {
-    return autoBuilder.fullAuto(Paths.BLUE_MID_1_CONE_BALANCE);
+    return autoBuilder.fullAuto(Paths.BLUE_MID_1_CONE_BALANCE).andThen(autoBalance.getCommand());
   }
 
   private Command getBlueShortSide2_5ConeBalance() {
-    return autoBuilder.fullAuto(Paths.BLUE_SHORT_SIDE_2_5_CONE_BALANCE);
+    return autoBuilder.fullAuto(Paths.BLUE_SHORT_SIDE_2_5_CONE_BALANCE).andThen(autoBalance.getCommand());
   }
 
   public Command getBlueShortSide2ConeBalance() {
-    return autoBuilder.fullAuto(Paths.BLUE_SHORT_SIDE_2_CONE_BALANCE);
+    return autoBuilder.fullAuto(Paths.BLUE_SHORT_SIDE_2_CONE_BALANCE).andThen(autoBalance.getCommand());
   }
 
   private Command getRedLongSide1_5ConeBalanceAuto() {
-    return autoBuilder.fullAuto(Paths.RED_LONG_SIDE_1_5_CONE_BALANCE);
+    return autoBuilder.fullAuto(Paths.RED_LONG_SIDE_1_5_CONE_BALANCE).andThen(autoBalance.getCommand());
   }
 
   private Command getRedLongSide1ConeAuto() {
@@ -203,11 +208,11 @@ public class Autos {
   }
 
   private Command getRedMid1_5ConeBalanceAuto() {
-    return autoBuilder.fullAuto(Paths.RED_MID_1_5_CONE_BALANCE);
+    return autoBuilder.fullAuto(Paths.RED_MID_1_5_CONE_BALANCE).andThen(autoBalance.getCommand());
   }
 
   private Command getRedMid1ConeBalanceAuto() {
-    return autoBuilder.fullAuto(Paths.RED_MID_1_CONE_BALANCE);
+    return autoBuilder.fullAuto(Paths.RED_MID_1_CONE_BALANCE).andThen(autoBalance.getCommand());
   }
 
   private Command getRedShortSide1Cone() {
@@ -215,11 +220,11 @@ public class Autos {
   }
 
   private Command getRedShortSide2_5ConeBalance() {
-    return autoBuilder.fullAuto(Paths.RED_SHORT_SIDE_2_CONE_BALANCE);
+    return autoBuilder.fullAuto(Paths.RED_SHORT_SIDE_2_CONE_BALANCE).andThen(autoBalance.getCommand());
   }
 
   private Command getRedShortSide2ConeBalance() {
-    return autoBuilder.fullAuto(Paths.RED_SHORT_SIDE_2_CONE_BALANCE);
+    return autoBuilder.fullAuto(Paths.RED_SHORT_SIDE_2_CONE_BALANCE).andThen(autoBalance.getCommand());
   }
 
   private CommandBase getDoNothingAuto() {
