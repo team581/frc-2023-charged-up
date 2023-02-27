@@ -111,9 +111,20 @@ public class SuperstructureManager extends LifecycleSubsystem {
         .andThen(Commands.waitUntil(() -> atGoal(state)));
   }
 
-  public Command getScoreCommand() {
-    SuperstructureState cubeState = States.CUBE_NODE_LOW;
-    SuperstructureState coneState = States.CONE_NODE_LOW;
+  public Command getScoreCommand(ManualScoringLocation scoringLocation) {
+    SuperstructureState cubeState;
+    SuperstructureState coneState;
+
+    if (scoringLocation == ManualScoringLocation.LOW) {
+      cubeState = States.CUBE_NODE_LOW;
+      coneState = States.CONE_NODE_LOW;
+    } else if (scoringLocation == ManualScoringLocation.MID) {
+      cubeState = States.CUBE_NODE_MID;
+      coneState = States.CONE_NODE_MID;
+    } else {
+      cubeState = States.CUBE_NODE_HIGH;
+      coneState = States.CONE_NODE_HIGH;
+    }
 
     return Commands.either(
         finishManualScoreCommand(),

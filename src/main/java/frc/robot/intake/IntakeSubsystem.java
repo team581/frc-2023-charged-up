@@ -24,8 +24,10 @@ public class IntakeSubsystem extends LifecycleSubsystem {
 
   private final TalonFX motor;
 
-  private final LinearFilter coneFilterIntake = LinearFilter.movingAverage((Config.IS_SPIKE ? 14 : 30));
-  private final LinearFilter cubeFilterIntake = LinearFilter.movingAverage((Config.IS_SPIKE ? 10 : 10));
+  private final LinearFilter coneFilterIntake =
+      LinearFilter.movingAverage((Config.IS_SPIKE ? 14 : 30));
+  private final LinearFilter cubeFilterIntake =
+      LinearFilter.movingAverage((Config.IS_SPIKE ? 10 : 10));
 
   public IntakeSubsystem(TalonFX motor) {
     super(SubsystemPriority.INTAKE);

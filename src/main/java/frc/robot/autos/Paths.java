@@ -39,5 +39,5 @@ public class Paths {
   public static final PathPlannerTrajectory RED_SHORT_SIDE_2_5_CONE_BALANCE =
       PathPlanner.loadPath("RedShortSide2.5ConeBalance", new PathConstraints(4.0, 3.0));
   public static final PathPlannerTrajectory RED_SHORT_SIDE_2_CONE_BALANCE =
-      PathPlanner.loadPath("RedShortSide2ConeBalance", new PathConstraints(2.5, 2.0));
+      PathPlanner.loadPath("RedShortSide2ConeBalance", new PathConstraints(1.65, 1.5));
 }

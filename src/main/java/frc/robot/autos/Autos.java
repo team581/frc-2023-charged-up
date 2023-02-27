@@ -84,18 +84,10 @@ public class Autos {
             Map.entry(
                 "scoreLow",
                 superstructure
-                    .getManualScoreCommand(ManualScoringLocation.LOW)
-                    .andThen(superstructure.finishManualScoreCommand())),
-            Map.entry(
-                "scoreMid",
-                superstructure
-                    .getManualScoreCommand(ManualScoringLocation.MID)
-                    .andThen(superstructure.finishManualScoreCommand())),
-            Map.entry(
-                "scoreHigh",
-                superstructure
-                    .getManualScoreCommand(ManualScoringLocation.HIGH)
-                    .andThen(superstructure.finishManualScoreCommand())),
+                    // TODO: Change back to LOW
+                    .getScoreCommand(ManualScoringLocation.HIGH).withTimeout(3)),
+            Map.entry("scoreMid", superstructure.getScoreCommand(ManualScoringLocation.MID).withTimeout(3)),
+            Map.entry("scoreHigh", superstructure.getScoreCommand(ManualScoringLocation.HIGH).withTimeout(3)),
             Map.entry(
                 "home", new ElevatorHomingCommand(elevator).andThen(new WristHomingCommand(wrist))),
             Map.entry(
