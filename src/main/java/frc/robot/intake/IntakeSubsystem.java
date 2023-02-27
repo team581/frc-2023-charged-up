@@ -15,7 +15,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class IntakeSubsystem extends LifecycleSubsystem {
   private static final SupplyCurrentLimitConfiguration CURRENT_LIMIT =
-      new SupplyCurrentLimitConfiguration(true, 15, 30, 0.2);
+      new SupplyCurrentLimitConfiguration(true, 15, 25, 0.2);
 
   // numbers above are placeholders for current limits
   private HeldGamePiece gamePiece = HeldGamePiece.NOTHING;
@@ -24,14 +24,14 @@ public class IntakeSubsystem extends LifecycleSubsystem {
 
   private final TalonFX motor;
 
-  private final LinearFilter coneFilter = LinearFilter.movingAverage((Config.IS_SPIKE ? 20 : 30));
-  private final LinearFilter cubeFilter = LinearFilter.movingAverage((Config.IS_SPIKE ? 15 : 10));
+  private final LinearFilter coneFilterIntake = LinearFilter.movingAverage((Config.IS_SPIKE ? 14 : 30));
+  private final LinearFilter cubeFilterIntake = LinearFilter.movingAverage((Config.IS_SPIKE ? 10 : 10));
 
   public IntakeSubsystem(TalonFX motor) {
     super(SubsystemPriority.INTAKE);
 
     this.motor = motor;
-    motor.setInverted(true);
+    motor.setInverted(false);
     motor.configSupplyCurrentLimit(CURRENT_LIMIT);
   }
 
@@ -45,8 +45,8 @@ public class IntakeSubsystem extends LifecycleSubsystem {
 
   @Override
   public void enabledPeriodic() {
-    double coneCurrent = coneFilter.calculate(motor.getStatorCurrent());
-    double cubeCurrent = cubeFilter.calculate(motor.getStatorCurrent());
+    double coneCurrent = coneFilterIntake.calculate(motor.getStatorCurrent());
+    double cubeCurrent = cubeFilterIntake.calculate(motor.getStatorCurrent());
     Logger.getInstance().recordOutput("Intake/FilteredConeCurrent", coneCurrent);
     Logger.getInstance().recordOutput("Intake/FilteredCubeCurrent", cubeCurrent);
 
@@ -55,15 +55,15 @@ public class IntakeSubsystem extends LifecycleSubsystem {
         gamePiece = HeldGamePiece.CUBE;
       }
     } else if (mode == IntakeMode.INTAKE_CONE) {
-      if (coneCurrent > (Config.IS_SPIKE ? 80 : 70)) {
+      if (coneCurrent > (Config.IS_SPIKE ? 45 : 70)) { // TODO: Edit currents for tyke
         gamePiece = HeldGamePiece.CONE;
       }
     } else if (mode == IntakeMode.OUTTAKE_CUBE) {
-      if (cubeCurrent < (Config.IS_SPIKE ? 16 : 10) && cubeCurrent > (Config.IS_SPIKE ? 0 : 4)) {
+      if (cubeCurrent > (Config.IS_SPIKE ? 5 : 10)) {
         gamePiece = HeldGamePiece.NOTHING;
       }
     } else if (mode == IntakeMode.OUTTAKE_CONE) {
-      if (coneCurrent < 30) {
+      if (coneCurrent < 10) {
         gamePiece = HeldGamePiece.NOTHING;
       }
     }
@@ -73,9 +73,9 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     } else if (mode == IntakeMode.OUTTAKE_CONE) {
       motor.set(TalonFXControlMode.PercentOutput, 0.15);
     } else if (gamePiece == HeldGamePiece.CUBE) {
-      motor.set(TalonFXControlMode.PercentOutput, 0.1);
+      motor.set(TalonFXControlMode.PercentOutput, 0.05);
     } else if (gamePiece == HeldGamePiece.CONE) {
-      motor.set(TalonFXControlMode.PercentOutput, -0.2);
+      motor.set(TalonFXControlMode.PercentOutput, -0.1);
     } else if (mode == IntakeMode.INTAKE_CUBE) {
       motor.set(TalonFXControlMode.PercentOutput, 0.5);
     } else if (mode == IntakeMode.INTAKE_CONE) {
