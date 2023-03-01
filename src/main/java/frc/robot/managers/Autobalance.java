@@ -4,8 +4,6 @@
 
 package frc.robot.managers;
 
-import com.revrobotics.CANSparkMaxLowLevel.FollowConfig.Config;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
@@ -17,8 +15,6 @@ import frc.robot.imu.ImuSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
-import frc.robot.config.Config;
-
 
 public class Autobalance extends LifecycleSubsystem {
   private final SwerveSubsystem swerve;
@@ -34,6 +30,7 @@ public class Autobalance extends LifecycleSubsystem {
     super(SubsystemPriority.AUTOBALANCE);
     this.swerve = swerve;
     this.imu = imu;
+    yawController.enableContinuousInput(-180, 180);
   }
 
   public void setEnabled(boolean mode) {
@@ -52,10 +49,6 @@ public class Autobalance extends LifecycleSubsystem {
       double goalAngle = 0;
       Rotation2d adjustedAngle =
           Rotation2d.fromRadians(MathUtil.angleModulus(imu.getRobotHeading().getRadians()));
-
-      if (adjustedAngle.getDegrees() > Config.NEGATIVE_X || adjustedAngle.getDegrees() < Config.POSITIVE_X) {
-        goalAngle = 180;
-      }
 
       ChassisSpeeds chassisSpeeds =
           new ChassisSpeeds(
