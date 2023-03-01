@@ -6,6 +6,7 @@ package frc.robot.util.scheduling;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.util.Stopwatch;
@@ -32,6 +33,7 @@ public class LifecycleSubsystem extends SubsystemBase {
     loggerName = "Scheduler/LifecycleSubsystem/" + name + ".periodic()";
 
     robotInit();
+    SmartDashboard.putData(this);
   }
 
   /** {@link IterativeRobotBase#robotInit()} */
