@@ -19,7 +19,6 @@ import frc.robot.ManualScoringLocation;
 import frc.robot.States;
 import frc.robot.config.Config;
 import frc.robot.elevator.ElevatorSubsystem;
-import frc.robot.elevator.commands.ElevatorHomingCommand;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.intake.HeldGamePiece;
 import frc.robot.intake.IntakeSubsystem;
@@ -93,8 +92,7 @@ public class Autos {
             Map.entry(
                 "scoreHigh",
                 superstructure.getScoreCommand(ManualScoringLocation.HIGH).withTimeout(3)),
-            Map.entry(
-                "home", new ElevatorHomingCommand(elevator).andThen(new WristHomingCommand(wrist))),
+            Map.entry("home", elevator.getHomeCommand().andThen(new WristHomingCommand(wrist))),
             Map.entry(
                 "intakeCone",
                 superstructure
