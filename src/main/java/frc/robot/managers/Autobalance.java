@@ -4,8 +4,6 @@
 
 package frc.robot.managers;
 
-import com.revrobotics.CANSparkMaxLowLevel.FollowConfig.Config;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;

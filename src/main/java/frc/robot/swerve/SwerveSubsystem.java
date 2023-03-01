@@ -39,7 +39,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   public static final double MAX_VELOCITY_INCHES_PER_SECOND = 127;
   public static final double MAX_VELOCITY_METERS_PER_SECOND =
       MAX_VELOCITY_INCHES_PER_SECOND / 39.37;
-  public static final double MAX_ANGULAR_VELOCITY = 30;
+  public static final double MAX_ANGULAR_VELOCITY = 20;
 
   private final ImuSubsystem imu;
   private final SwerveModule frontRight;
@@ -199,7 +199,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
             return;
           }
 
-          boolean openLoop = false;
+          boolean openLoop = true;
 
           driveTeleop(
               -controller.getSidewaysPercentage(),
