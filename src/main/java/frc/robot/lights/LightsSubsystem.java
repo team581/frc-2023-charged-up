@@ -6,10 +6,10 @@ package frc.robot.lights;
 
 import com.ctre.phoenix.led.CANdle;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import frc.robot.fms.FmsSubsystem;
 import frc.robot.intake.HeldGamePiece;
 import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
@@ -58,11 +58,11 @@ public class LightsSubsystem extends LifecycleSubsystem {
     HeldGamePiece superstructureMode = superstructure.getMode();
 
     if (DriverStation.isDisabled()) {
-      if (DriverStation.getAlliance() == Alliance.Blue) {
-        color = Color.kBlue;
+      if (FmsSubsystem.isRedAlliance()) {
+        color = Color.kRed;
         blinkPattern = BlinkPattern.SOLID;
       } else {
-        color = Color.kRed;
+        color = Color.kBlue;
         blinkPattern = BlinkPattern.SOLID;
       }
     } else if (scoringState == ScoringState.ALIGNING || scoringState == ScoringState.SCORING) {

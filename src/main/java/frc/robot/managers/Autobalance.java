@@ -4,7 +4,6 @@
 
 package frc.robot.managers;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -47,14 +46,12 @@ public class Autobalance extends LifecycleSubsystem {
     if (enabled) {
 
       double goalAngle = 0;
-      Rotation2d adjustedAngle =
-          Rotation2d.fromRadians(MathUtil.angleModulus(imu.getRobotHeading().getRadians()));
 
       ChassisSpeeds chassisSpeeds =
           new ChassisSpeeds(
               getDriveVelocity(),
               0,
-              yawController.calculate(adjustedAngle.getDegrees(), goalAngle));
+              yawController.calculate(imu.getRobotHeading().getDegrees(), goalAngle));
       swerve.setChassisSpeeds(chassisSpeeds, false);
     }
   }

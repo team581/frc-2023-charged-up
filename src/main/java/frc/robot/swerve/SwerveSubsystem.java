@@ -17,11 +17,11 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
+import frc.robot.fms.FmsSubsystem;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
@@ -174,7 +174,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
             .times(MAX_VELOCITY_METERS_PER_SECOND);
     Rotation2d fieldRelativeHeading = imu.getRobotHeading();
 
-    if (DriverStation.getAlliance() == Alliance.Red) {
+    if (FmsSubsystem.isRedAlliance()) {
       fieldRelativeHeading = fieldRelativeHeading.plus(Rotation2d.fromDegrees(180));
     }
 

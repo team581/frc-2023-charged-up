@@ -18,7 +18,6 @@ import frc.robot.autoscore.AutoScoreLocation;
 import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
 import frc.robot.elevator.ElevatorSubsystem;
-import frc.robot.elevator.commands.ElevatorHomingCommand;
 import frc.robot.generated.BuildConstants;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.intake.HeldGamePiece;
@@ -214,7 +213,8 @@ public class Robot extends LoggedRobot {
     operatorController
         .back()
         .onTrue(
-            new ElevatorHomingCommand(elevator)
+            elevator
+                .getHomeCommand()
                 .andThen(new WristHomingCommand(wrist))
                 .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
 

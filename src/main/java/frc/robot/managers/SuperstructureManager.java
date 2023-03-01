@@ -6,8 +6,6 @@ package frc.robot.managers;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.ManualScoringLocation;
@@ -16,6 +14,7 @@ import frc.robot.States;
 import frc.robot.autoscore.AutoScoreLocation;
 import frc.robot.autoscore.GridKind;
 import frc.robot.autoscore.NodeKind;
+import frc.robot.fms.FmsSubsystem;
 import frc.robot.intake.HeldGamePiece;
 import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
@@ -192,8 +191,7 @@ public class SuperstructureManager extends LifecycleSubsystem {
   }
 
   public AutoScoreLocation getAutoScoreLocation(NodeKind node) {
-    List<Pose2d> grids =
-        DriverStation.getAlliance() == Alliance.Red ? Landmarks.RED_GRIDS : Landmarks.BLUE_GRIDS;
+    List<Pose2d> grids = FmsSubsystem.isRedAlliance() ? Landmarks.RED_GRIDS : Landmarks.BLUE_GRIDS;
     Pose2d nearestGrid = localization.getPose().nearest(grids);
     if (nearestGrid == Landmarks.RED_GRID_LEFT || nearestGrid == Landmarks.BLUE_GRID_LEFT) {
       return new AutoScoreLocation(GridKind.LEFT, node, nearestGrid);

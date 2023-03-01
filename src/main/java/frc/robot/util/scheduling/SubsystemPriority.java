@@ -22,7 +22,8 @@ public enum SubsystemPriority {
   LOCALIZATION(9),
 
   // Update the lights after everything else has been updated
-  LIGHTS(0);
+  LIGHTS(0),
+  FMS(0);
 
   final int value;
 
