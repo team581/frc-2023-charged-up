@@ -216,7 +216,8 @@ public class Autos {
   public Command getBlueShortSide2ConeBalance() {
     return autoBuilder
         .fullAuto(Paths.BLUE_SHORT_SIDE_2_CONE_BALANCE)
-        .andThen(autoBalance.getCommand()).withName("AutoBlueShortSide2ConeBalance");
+        .andThen(autoBalance.getCommand())
+        .withName("AutoBlueShortSide2ConeBalance");
   }
 
   private Command getRedLongSide1_5ConeBalanceAuto() {
@@ -250,7 +251,8 @@ public class Autos {
   private Command getRedShortSide2ConeBalance() {
     return autoBuilder
         .fullAuto(Paths.RED_SHORT_SIDE_2_CONE_BALANCE)
-        .andThen(autoBalance.getCommand()).withName("AutoRedShortSide2ConeBalance");
+        .andThen(autoBalance.getCommand())
+        .withName("AutoRedShortSide2ConeBalance");
   }
 
   private CommandBase getDoNothingAuto() {
