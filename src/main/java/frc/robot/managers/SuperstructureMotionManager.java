@@ -8,6 +8,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Positions;
 import frc.robot.config.Config;
+import frc.robot.controller.DriveController;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
@@ -18,19 +19,24 @@ import org.littletonrobotics.junction.Logger;
 public class SuperstructureMotionManager extends LifecycleSubsystem {
   public final ElevatorSubsystem elevator;
   public final WristSubsystem wrist;
+  private final DriveController controller;
   private final ArrayList<SuperstructurePosition> positionList =
       new ArrayList<SuperstructurePosition>();
   private SuperstructurePosition currentPoint = Positions.STOWED;
+  private SuperstructurePosition goalPosition = Positions.STOWED;
   private double previousHeight;
 
-  public SuperstructureMotionManager(ElevatorSubsystem elevator, WristSubsystem wrist) {
+  public SuperstructureMotionManager(
+      ElevatorSubsystem elevator, WristSubsystem wrist, DriveController controller) {
     super(SubsystemPriority.SUPERSTRUCTURE_MOTION_MANAGER);
 
     this.elevator = elevator;
     this.wrist = wrist;
+    this.controller = controller;
   }
 
   public void set(SuperstructurePosition goalPosition) {
+    this.goalPosition = goalPosition;
     double wristRange = Config.SUPERSTRUCTURE_WRIST_RANGE.getDegrees();
     double goalDegrees = goalPosition.angle.getDegrees();
     double wristAngle = wrist.getAngle().getDegrees();
@@ -91,5 +97,14 @@ public class SuperstructureMotionManager extends LifecycleSubsystem {
             "SuperstructureMotionManager/NextPointAngle", currentPoint.angle.getDegrees());
     Logger.getInstance()
         .recordOutput("SuperstructureMotionManager/NextPointHeight", currentPoint.height);
+  }
+
+  @Override
+  public void robotPeriodic() {
+    if (goalPosition.height > 1) {
+      controller.slowModeToggle(true);
+    } else if (elevator.getHeight() < 20) {
+      controller.slowModeToggle(false);
+    }
   }
 }
