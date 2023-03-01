@@ -194,38 +194,40 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
   public Command getDriveTeleopCommand(DriveController controller) {
     return Commands.run(
-        () -> {
-          if (!DriverStation.isTeleopEnabled()) {
-            return;
-          }
+            () -> {
+              if (!DriverStation.isTeleopEnabled()) {
+                return;
+              }
 
-          boolean openLoop = false;
+              boolean openLoop = false;
 
-          driveTeleop(
-              -controller.getSidewaysPercentage(),
-              controller.getForwardPercentage(),
-              controller.getThetaPercentage(),
-              true,
-              openLoop);
-        },
-        this);
+              driveTeleop(
+                  -controller.getSidewaysPercentage(),
+                  controller.getForwardPercentage(),
+                  controller.getThetaPercentage(),
+                  true,
+                  openLoop);
+            },
+            this)
+        .withName("SwerveDriveTeleop");
   }
 
   public Command getFollowTrajectoryCommand(
       PathPlannerTrajectory traj, LocalizationSubsystem localization) {
     return new PPSwerveControllerCommand(
-        traj,
-        localization::getPose,
-        SwerveSubsystem.KINEMATICS,
-        // x controller
-        xController,
-        // y controller
-        yController,
-        // theta controller
-        thetaController,
-        states -> setModuleStates(states, false),
-        false,
-        this);
+            traj,
+            localization::getPose,
+            SwerveSubsystem.KINEMATICS,
+            // x controller
+            xController,
+            // y controller
+            yController,
+            // theta controller
+            thetaController,
+            states -> setModuleStates(states, false),
+            false,
+            this)
+        .withName("SwerveFollowTrajectory");
   }
 
   // Create a command that accepts a Pose2d and drives to it using a PPHolonomicDriveController
@@ -257,6 +259,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
               } else {
                 return false;
               }
-            });
+            })
+        .withName("SwerveGoToPose");
   }
 }

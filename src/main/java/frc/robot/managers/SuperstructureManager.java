@@ -108,7 +108,8 @@ public class SuperstructureManager extends LifecycleSubsystem {
   public Command getCommand(SuperstructureState state) {
     return Commands.runOnce(
             () -> this.set(state), motionManager.wrist, motionManager.elevator, intake)
-        .andThen(Commands.waitUntil(() -> atGoal(state)));
+        .andThen(Commands.waitUntil(() -> atGoal(state)))
+        .withName("SuperstructureCommand");
   }
 
   public Command getScoreCommand(ManualScoringLocation scoringLocation) {
@@ -127,15 +128,16 @@ public class SuperstructureManager extends LifecycleSubsystem {
     }
 
     return Commands.either(
-        finishManualScoreCommand(),
-        Commands.either(
-                getCommand(cubeState),
-                getCommand(coneState),
-                () -> intake.getGamePiece() == HeldGamePiece.CUBE)
-            .andThen(getCommand(States.STOWED)),
-        () ->
-            goal.position.height >= Positions.CUBE_NODE_MID.height
-                || goal.position.height >= Positions.CONE_NODE_MID.height);
+            finishManualScoreCommand(),
+            Commands.either(
+                    getCommand(cubeState),
+                    getCommand(coneState),
+                    () -> intake.getGamePiece() == HeldGamePiece.CUBE)
+                .andThen(getCommand(States.STOWED)),
+            () ->
+                goal.position.height >= Positions.CUBE_NODE_MID.height
+                    || goal.position.height >= Positions.CONE_NODE_MID.height)
+        .withName("SuperstructureScore");
   }
 
   public Command getManualScoreCommand(ManualScoringLocation scoringLocation) {
@@ -158,15 +160,17 @@ public class SuperstructureManager extends LifecycleSubsystem {
             Commands.either(
                 getCommand(new SuperstructureState(cubeState.position, IntakeMode.STOPPED, true)),
                 getCommand(new SuperstructureState(coneState.position, IntakeMode.STOPPED, true)),
-                () -> intake.getGamePiece() == HeldGamePiece.CUBE));
+                () -> intake.getGamePiece() == HeldGamePiece.CUBE))
+        .withName("SuperstructureManualScore");
   }
 
   public Command getFloorIntakeIdleCommand() {
     return Commands.either(
-        getFloorIntakeSpinningCommand(),
-        getCommand(States.INTAKING_CONE_FLOOR_IDLE)
-            .unless(() -> intake.getGamePiece() == HeldGamePiece.CONE),
-        () -> mode == HeldGamePiece.CUBE);
+            getFloorIntakeSpinningCommand(),
+            getCommand(States.INTAKING_CONE_FLOOR_IDLE)
+                .unless(() -> intake.getGamePiece() == HeldGamePiece.CONE),
+            () -> mode == HeldGamePiece.CUBE)
+        .withName("SuperstructureFloorIntakeIdle");
   }
 
   public Command getFloorIntakeSpinningCommand() {
@@ -174,7 +178,8 @@ public class SuperstructureManager extends LifecycleSubsystem {
             getCommand(States.INTAKING_CUBE_FLOOR_SPINNING),
             getCommand(States.INTAKING_CONE_FLOOR_SPINNING),
             () -> mode == HeldGamePiece.CUBE)
-        .andThen(getCommand(States.STOWED));
+        .andThen(getCommand(States.STOWED))
+        .withName("SuperstructureFloorIntakeSpinning");
   }
 
   public Command getShelfIntakeCommand() {
@@ -182,7 +187,8 @@ public class SuperstructureManager extends LifecycleSubsystem {
             getCommand(States.INTAKING_CUBE_SHELF),
             getCommand(States.INTAKING_CONE_SHELF),
             () -> mode == HeldGamePiece.CUBE)
-        .andThen(getCommand(States.STOWED));
+        .andThen(getCommand(States.STOWED))
+        .withName("SuperstructureShelfIntake");
   }
 
   public AutoScoreLocation getAutoScoreLocation(NodeKind node) {
@@ -237,6 +243,7 @@ public class SuperstructureManager extends LifecycleSubsystem {
             Commands.either(
                 Commands.runOnce(() -> setManualIntakeMode(IntakeMode.OUTTAKE_CUBE)),
                 Commands.runOnce(() -> setManualIntakeMode(IntakeMode.OUTTAKE_CONE)),
-                () -> intake.getGamePiece() == HeldGamePiece.CUBE));
+                () -> intake.getGamePiece() == HeldGamePiece.CUBE))
+        .withName("SuperstructureFinishManualScore");
   }
 }
