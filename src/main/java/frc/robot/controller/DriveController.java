@@ -9,17 +9,29 @@ import frc.robot.ManualScoringLocation;
 import frc.robot.autoscore.NodeKind;
 
 public class DriveController extends CommandXboxController {
+  private boolean slowModeEnabled;
+
   public DriveController(int port) {
     super(port);
   }
 
   /** Scale a joystick value. */
-  private static double joystickScale(double x) {
+  private double joystickScale(double x) {
     if (Math.abs(x) < 0.075) {
       return 0;
     }
 
-    return Math.signum(x) * Math.pow(x, 2);
+    double value = Math.signum(x) * Math.pow(x, 2);
+
+    if (slowModeEnabled) {
+      return value / 2.0;
+    } else {
+      return value;
+    }
+  }
+
+  public void slowModeToggle(boolean enabled) {
+    slowModeEnabled = enabled;
   }
 
   /** The rotation across the robot's x-axis as a percentage (<code>-1 <= x <= 1</code>) */
