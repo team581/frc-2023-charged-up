@@ -4,8 +4,6 @@
 
 package frc.robot.managers;
 
-import com.revrobotics.CANSparkMaxLowLevel.FollowConfig.Config;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
@@ -13,12 +11,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.config.Config;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
-import frc.robot.config.Config;
-
 
 public class Autobalance extends LifecycleSubsystem {
   private final SwerveSubsystem swerve;
@@ -53,7 +50,8 @@ public class Autobalance extends LifecycleSubsystem {
       Rotation2d adjustedAngle =
           Rotation2d.fromRadians(MathUtil.angleModulus(imu.getRobotHeading().getRadians()));
 
-      if (adjustedAngle.getDegrees() > Config.NEGATIVE_X || adjustedAngle.getDegrees() < Config.POSITIVE_X) {
+      if (adjustedAngle.getDegrees() > Config.NEGATIVE_X
+          || adjustedAngle.getDegrees() < Config.POSITIVE_X) {
         goalAngle = 180;
       }
 

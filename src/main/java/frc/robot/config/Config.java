@@ -144,6 +144,7 @@ public class Config {
   public static final double ROBOT_CENTER_TO_FRONT = IS_SPIKE ? 0.0 : Units.inchesToMeters(17.5);
 
   public static final double NEGATIVE_X = IS_SPIKE ? -90.0 : 90.0;
-  public static final double POSITIVE_X = IS_SPIKE ? 90.0: -90.0;
+  public static final double POSITIVE_X = IS_SPIKE ? 90.0 : -90.0;
+
   private Config() {}
 }
