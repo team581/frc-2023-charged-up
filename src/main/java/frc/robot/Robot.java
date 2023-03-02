@@ -81,6 +81,10 @@ public class Robot extends LoggedRobot {
               Config.SWERVE_BR_STEER_MOTOR_ID, Config.CANIVORE_ID),
           new CANCoder(Config.SWERVE_BR_CANCODER_ID, Config.CANIVORE_ID));
 
+  private final DriveController driveController = new DriveController(Config.DRIVE_CONTROLLER_PORT);
+  private final CommandXboxController operatorController =
+      new CommandXboxController(Config.OPERATOR_CONTROLLER_PORT);
+
   private final ElevatorSubsystem elevator =
       new ElevatorSubsystem(new TalonFX(Config.ELEVATOR_MOTOR_ID, Config.CANIVORE_ID));
   private final WristSubsystem wrist =
@@ -88,7 +92,7 @@ public class Robot extends LoggedRobot {
   private final IntakeSubsystem intake =
       new IntakeSubsystem(new TalonFX(Config.INTAKE_MOTOR_ID, Config.CANIVORE_ID));
   private final SuperstructureMotionManager superstructureMotionManager =
-      new SuperstructureMotionManager(elevator, wrist);
+      new SuperstructureMotionManager(elevator, wrist, driveController);
   private final ImuSubsystem imu =
       new ImuSubsystem(new Pigeon2(Config.PIGEON_ID, Config.CANIVORE_ID));
   private final SwerveSubsystem swerve =
@@ -102,10 +106,6 @@ public class Robot extends LoggedRobot {
           intake,
           superstructureManager,
           localization);
-
-  private final DriveController driveController = new DriveController(Config.DRIVE_CONTROLLER_PORT);
-  private final CommandXboxController operatorController =
-      new CommandXboxController(Config.OPERATOR_CONTROLLER_PORT);
 
   private final Autobalance autobalance = new Autobalance(swerve, imu);
 
@@ -149,6 +149,8 @@ public class Robot extends LoggedRobot {
     LifecycleSubsystemManager.getInstance().ready();
 
     configureButtonBindings();
+
+    enableLiveWindowInTest(false);
   }
 
   /**
