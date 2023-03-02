@@ -18,6 +18,7 @@ import frc.robot.autoscore.AutoScoreLocation;
 import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
 import frc.robot.elevator.ElevatorSubsystem;
+import frc.robot.forks.ForksSubsystem;
 import frc.robot.generated.BuildConstants;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.intake.HeldGamePiece;
@@ -98,6 +99,7 @@ public class Robot extends LoggedRobot {
   private final SwerveSubsystem swerve =
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
   private final LocalizationSubsystem localization = new LocalizationSubsystem(swerve, imu);
+  private final ForksSubsystem forks = new ForksSubsystem(new TalonFX(18, "581CANivore"));
   private final SuperstructureManager superstructureManager =
       new SuperstructureManager(superstructureMotionManager, intake, localization);
   private final LightsSubsystem lights =
@@ -227,11 +229,22 @@ public class Robot extends LoggedRobot {
     //             Landmarks.RED_STAGING_MARK_FAR_RIGHT,
     //             localization));
 
-    // Autobalance
+    // // Autobalance
     // operatorController
     //     .rightTrigger()
     //     .onTrue(autobalance.getCommand())
     //     .onFalse(Commands.runOnce(() -> autobalance.setEnabled(false)));
+
+    // // Forks go up
+    // operatorController
+    //     .povUp()
+    //     .onTrue(forks.getCommand(ForksMode.UP))
+    //     .onFalse(forks.getCommand(ForksMode.STOPPED));
+    // // Forks go down
+    // operatorController
+    //     .povDown()
+    //     .onTrue(forks.getCommand(ForksMode.DOWN))
+    //     .onFalse(forks.getCommand(ForksMode.STOPPED));
   }
 
   @Override
