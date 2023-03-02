@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.config.Config;
 import frc.robot.util.HomingState;
 import frc.robot.util.scheduling.LifecycleSubsystem;
+import frc.robot.util.scheduling.SubsystemPriority;
+
 import org.littletonrobotics.junction.Logger;
 
 public class ForksSubsystem extends LifecycleSubsystem {
@@ -24,6 +26,8 @@ public class ForksSubsystem extends LifecycleSubsystem {
   private HomingState homingState = HomingState.NOT_HOMED;
 
   public ForksSubsystem(TalonFX motor) {
+    super(SubsystemPriority.FORKS);
+
     this.motor = motor;
     motor.configSupplyCurrentLimit(CURRENT_LIMIT);
     motor.configForwardSoftLimitThreshold(0);
