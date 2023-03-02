@@ -18,7 +18,6 @@ import frc.robot.autoscore.AutoScoreLocation;
 import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
 import frc.robot.elevator.ElevatorSubsystem;
-import frc.robot.forks.ForksMode;
 import frc.robot.forks.ForksSubsystem;
 import frc.robot.generated.BuildConstants;
 import frc.robot.imu.ImuSubsystem;
@@ -230,22 +229,22 @@ public class Robot extends LoggedRobot {
     //             Landmarks.RED_STAGING_MARK_FAR_RIGHT,
     //             localization));
 
-    // Autobalance
+    // // Autobalance
     // operatorController
     //     .rightTrigger()
     //     .onTrue(autobalance.getCommand())
     //     .onFalse(Commands.runOnce(() -> autobalance.setEnabled(false)));
 
-    // Forks go up
-    operatorController
-        .povUp()
-        .onTrue(forks.getCommand(ForksMode.UP))
-        .onFalse(forks.getCommand(ForksMode.STOPPED));
-    // Forks go down
-    operatorController
-        .povDown()
-        .onTrue(forks.getCommand(ForksMode.DOWN))
-        .onFalse(forks.getCommand(ForksMode.STOPPED));
+    // // Forks go up
+    // operatorController
+    //     .povUp()
+    //     .onTrue(forks.getCommand(ForksMode.UP))
+    //     .onFalse(forks.getCommand(ForksMode.STOPPED));
+    // // Forks go down
+    // operatorController
+    //     .povDown()
+    //     .onTrue(forks.getCommand(ForksMode.DOWN))
+    //     .onFalse(forks.getCommand(ForksMode.STOPPED));
   }
 
   @Override
