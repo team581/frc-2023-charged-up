@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.ManualScoringLocation;
 import frc.robot.States;
@@ -28,11 +29,37 @@ import frc.robot.managers.SuperstructureManager;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.wrist.WristSubsystem;
 import frc.robot.wrist.commands.WristHomingCommand;
+import java.util.HashMap;
 import java.util.Map;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class Autos {
+  private static Command wrapAutoEvent(String commandName, Command command) {
+    if (!Config.IS_DEVELOPMENT) {
+      return command;
+    }
+
+    return Commands.sequence(
+            Commands.print("[COMMANDS] Starting auto event " + commandName),
+            command,
+            Commands.print("[COMMANDS] Finished auto event " + commandName))
+        .handleInterrupt(() -> System.out.println("[COMMANDS] Cancelled auto event " + commandName))
+        .withName(commandName);
+  }
+
+  private static Map<String, Command> wrapAutoEventMap(Map<String, Command> eventMap) {
+    if (!Config.IS_DEVELOPMENT) {
+      return eventMap;
+    }
+
+    Map<String, Command> wrappedMap = new HashMap<>();
+    for (Map.Entry<String, Command> entry : eventMap.entrySet()) {
+      wrappedMap.put(entry.getKey(), wrapAutoEvent(entry.getKey(), entry.getValue()));
+    }
+    return wrappedMap;
+  }
+
   private final LocalizationSubsystem localization;
   private final SwerveSubsystem swerve;
   private final LoggedDashboardChooser<Command> autoChooser =
@@ -65,97 +92,52 @@ public class Autos {
     Map<String, Command> eventMap =
         Map.ofEntries(
             Map.entry(
-                "coneWait",
-                Commands.print("cone wait")
-                    .andThen(
-                        Commands.waitUntil(() -> intake.getGamePiece() == HeldGamePiece.CONE)
-                            .withName("AutoConeWait"))),
+                "coneWait", Commands.waitUntil(() -> intake.getGamePiece() == HeldGamePiece.CONE)),
             Map.entry(
-                "cubeWait",
-                Commands.print("cube wait")
-                    .andThen(
-                        Commands.waitUntil(() -> intake.getGamePiece() == HeldGamePiece.CUBE)
-                            .withName("AutoCubeWait"))),
+                "cubeWait", Commands.waitUntil(() -> intake.getGamePiece() == HeldGamePiece.CUBE)),
             Map.entry(
                 "preloadCube",
-                Commands.print("preload cube")
-                    .andThen(
-                        superstructure
-                            .setIntakeModeCommand(HeldGamePiece.CUBE)
-                            .andThen(
-                                Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.CUBE)))
-                            .withName("AutoPreloadCube"))),
+                superstructure
+                    .setIntakeModeCommand(HeldGamePiece.CUBE)
+                    .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.CUBE)))),
             Map.entry(
                 "preloadCone",
-                Commands.print("preload cone")
-                    .andThen(
-                        superstructure
-                            .setIntakeModeCommand(HeldGamePiece.CONE)
-                            .andThen(
-                                Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.CONE)))
-                            .withName("AutoPreloadCone"))),
+                superstructure
+                    .setIntakeModeCommand(HeldGamePiece.CONE)
+                    .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.CONE)))),
             Map.entry(
                 "scoreLow",
-                Commands.print("score low")
-                    .andThen(
-                        superstructure
-                            .getScoreCommand(ManualScoringLocation.LOW)
-                            .withTimeout(3)
-                            .andThen(
-                                Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))
-                            .withName("AutoScoreLow"))),
+                superstructure
+                    .getScoreCommand(ManualScoringLocation.LOW)
+                    .withTimeout(3)
+                    .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
             Map.entry(
                 "scoreMid",
-                Commands.print("score mid")
-                    .andThen(
-                        superstructure
-                            .getScoreCommand(ManualScoringLocation.MID)
-                            .withTimeout(3)
-                            .andThen(
-                                Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))
-                            .withName("AutoScoreMid"))),
+                superstructure
+                    .getScoreCommand(ManualScoringLocation.MID)
+                    .withTimeout(3)
+                    .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
             Map.entry(
                 "scoreHigh",
-                Commands.print("score high")
-                    .andThen(
-                        superstructure
-                            .getScoreCommand(ManualScoringLocation.HIGH)
-                            .withTimeout(3)
-                            .andThen(
-                                Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))
-                            .withName("AutoScoreHigh"))),
-            Map.entry(
-                "home",
-                Commands.print("home")
-                    .andThen(
-                        elevator
-                            .getHomeCommand()
-                            .andThen(new WristHomingCommand(wrist))
-                            .withName("AutoHome"))),
+                superstructure
+                    .getScoreCommand(ManualScoringLocation.HIGH)
+                    .withTimeout(3)
+                    .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
+            Map.entry("home", elevator.getHomeCommand().andThen(new WristHomingCommand(wrist))),
             Map.entry(
                 "intakeCone",
-                Commands.print("intake cone")
-                    .andThen(
-                        superstructure
-                            .setIntakeModeCommand(HeldGamePiece.CONE)
-                            .andThen(superstructure.getFloorIntakeSpinningCommand())
-                            .withName("AutoIntakeCone"))),
+                superstructure
+                    .setIntakeModeCommand(HeldGamePiece.CONE)
+                    .andThen(superstructure.getFloorIntakeSpinningCommand())),
             Map.entry(
                 "intakeCube",
-                Commands.print("intake cube")
-                    .andThen(
-                        superstructure
-                            .setIntakeModeCommand(HeldGamePiece.CUBE)
-                            .andThen(superstructure.getFloorIntakeSpinningCommand())
-                            .withName("AutoIntakeCube"))),
-            Map.entry(
-                "stow",
-                Commands.print("stow")
-                    .andThen(superstructure.getCommand(States.STOWED).withName("AutoStow"))));
-    Map.entry(
-        "autoBalance",
-        Commands.print("auto balance")
-            .andThen(autoBalance.getCommand().withName("AutoAutoBalance")));
+                superstructure
+                    .setIntakeModeCommand(HeldGamePiece.CUBE)
+                    .andThen(superstructure.getFloorIntakeSpinningCommand())),
+            Map.entry("stow", superstructure.getCommand(States.STOWED)),
+            Map.entry("autoBalance", autoBalance.getCommand().withName("AutoAutoBalance")));
+
+    eventMap = wrapAutoEventMap(eventMap);
 
     autoBuilder =
         new SwerveAutoBuilder(
@@ -168,6 +150,18 @@ public class Autos {
             eventMap,
             false,
             swerve);
+
+    if (Config.IS_DEVELOPMENT) {
+      CommandScheduler.getInstance()
+          .onCommandInitialize(
+              command -> System.out.println("[COMMANDS] Starting command " + command.getName()));
+      CommandScheduler.getInstance()
+          .onCommandInterrupt(
+              command -> System.out.println("[COMMANDS] Cancelled command " + command.getName()));
+      CommandScheduler.getInstance()
+          .onCommandFinish(
+              command -> System.out.println("[COMMANDS] Finished command " + command.getName()));
+    }
 
     autoChooser.addDefaultOption("Do nothing", getDoNothingAuto());
     autoChooser.addOption("Blue long side 1 cone", getBlueLongSideConeAuto());
@@ -286,7 +280,7 @@ public class Autos {
   }
 
   private Command getBug() {
-    return autoBuilder.fullAuto(Paths.BUG);
+    return autoBuilder.fullAuto(Paths.BUG).withName("AutoBug");
   }
 
   private CommandBase getDoNothingAuto() {
