@@ -186,6 +186,16 @@ public class Robot extends LoggedRobot {
     // Intake on shelf
     driveController.leftBumper().onTrue(superstructureManager.getShelfIntakeCommand());
 
+    // X swerve
+    driveController
+        .x()
+        .and(
+            () ->
+                driveController.getSidewaysPercentage() == 0
+                    && driveController.getForwardPercentage() == 0
+                    && driveController.getThetaPercentage() == 0)
+        .whileTrue(swerve.getXSwerveCommand());
+
     // Manual intake
     operatorController
         .leftTrigger(0.3)
@@ -211,6 +221,7 @@ public class Robot extends LoggedRobot {
         .y()
         .onTrue(superstructureManager.getManualScoreCommand(ManualScoringLocation.HIGH))
         .onFalse(superstructureManager.getCommand(States.STOWED));
+
     // Stow all
     operatorController.x().onTrue(superstructureManager.getCommand(States.STOWED));
     // Home superstructure

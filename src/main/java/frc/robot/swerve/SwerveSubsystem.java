@@ -159,6 +159,21 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     backRight.setDesiredState(moduleStates[3], openLoop);
   }
 
+  public void xSwerve() {
+    setModuleStates(
+        new SwerveModuleState[] {
+          new SwerveModuleState(0.0, new Rotation2d(45)),
+          new SwerveModuleState(0.0, new Rotation2d(90)),
+          new SwerveModuleState(0.0, new Rotation2d(135)),
+          new SwerveModuleState(0.0, new Rotation2d(180))
+        },
+        true);
+  }
+
+  public Command getXSwerveCommand() {
+    return Commands.run(() -> xSwerve(), this);
+  }
+
   public void driveTeleop(
       double sidewaysPercentage,
       double forwardPercentage,
