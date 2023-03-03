@@ -67,7 +67,8 @@ public class Autobalance extends LifecycleSubsystem {
   }
 
   private boolean atGoal() {
-    return averageRoll.getDegrees() < ANGLE_THRESHOLD && averageRoll.getDegrees() > -ANGLE_THRESHOLD;
+    return averageRoll.getDegrees() < ANGLE_THRESHOLD
+        && averageRoll.getDegrees() > -ANGLE_THRESHOLD;
   }
 
   public Command getCommand() {

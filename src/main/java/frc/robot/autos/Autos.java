@@ -89,24 +89,21 @@ public class Autos {
                 superstructure
                     .getScoreCommand(ManualScoringLocation.LOW)
                     .withTimeout(3)
-                    .andThen(
-                        Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))
+                    .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))
                     .withName("AutoScoreLow")),
             Map.entry(
                 "scoreMid",
                 superstructure
                     .getScoreCommand(ManualScoringLocation.MID)
                     .withTimeout(3)
-                    .andThen(
-                        Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))
+                    .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))
                     .withName("AutoScoreMid")),
             Map.entry(
                 "scoreHigh",
                 superstructure
                     .getScoreCommand(ManualScoringLocation.HIGH)
                     .withTimeout(3)
-                    .andThen(
-                        Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))
+                    .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))
                     .withName("AutoScoreHigh")),
             Map.entry(
                 "home",

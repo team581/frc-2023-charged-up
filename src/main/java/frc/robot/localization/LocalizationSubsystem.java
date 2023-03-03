@@ -75,14 +75,15 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
 
     LimelightResults results = LimelightHelpers.getLatestResults("");
     Pose2d currentVisionPose = results.targetingResults.getBotPose2d_wpiBlue();
-    if (previousPose.getX() != currentVisionPose.getX() && previousPose.getY() != currentVisionPose.getY()){
+    if (previousPose.getX() != currentVisionPose.getX()
+        && previousPose.getY() != currentVisionPose.getY()) {
       previousPose = currentVisionPose;
 
       Pose2d angleAdjustedVisionPose =
           new Pose2d(currentVisionPose.getTranslation(), imu.getRobotHeading());
 
-      Logger.getInstance().recordOutput("Localization/UnfilteredVisionPose", angleAdjustedVisionPose);
-
+      Logger.getInstance()
+          .recordOutput("Localization/UnfilteredVisionPose", angleAdjustedVisionPose);
 
       double visionTimestamp =
           Timer.getFPGATimestamp()
