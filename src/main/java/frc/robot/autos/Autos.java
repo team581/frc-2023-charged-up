@@ -42,7 +42,13 @@ public class Autos {
 
     return Commands.sequence(
             Commands.print("[COMMANDS] Starting auto event " + commandName),
-            command,
+            command.deadlineWith(
+                Commands.waitSeconds(5)
+                    .andThen(
+                        Commands.print(
+                            "[COMMANDS] Auto event "
+                                + commandName
+                                + " has been running for 5+ seconds!"))),
             Commands.print("[COMMANDS] Finished auto event " + commandName))
         .handleInterrupt(() -> System.out.println("[COMMANDS] Cancelled auto event " + commandName))
         .withName(commandName);
