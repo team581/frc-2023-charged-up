@@ -40,4 +40,7 @@ public class Paths {
       PathPlanner.loadPath("RedShortSide2.5ConeBalance", new PathConstraints(4.0, 3.0));
   public static final PathPlannerTrajectory RED_SHORT_SIDE_2_CONE_BALANCE =
       PathPlanner.loadPath("RedShortSide2ConeBalance", new PathConstraints(1, 1));
+
+  public static final PathPlannerTrajectory BUG =
+    PathPlanner.loadPath("bug", new PathConstraints(1, 1));
 }

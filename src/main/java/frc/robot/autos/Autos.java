@@ -158,6 +158,8 @@ public class Autos {
     autoChooser.addOption("Red short side 2.5 cone balance", getRedShortSide2_5ConeBalance());
     autoChooser.addOption("Red short side 2 cone balance", getRedShortSide2ConeBalance());
 
+    autoChooser.addOption("Bug", getBug());
+
     if (Config.IS_DEVELOPMENT) {
       PathPlannerServer.startServer(5811);
     }
@@ -253,6 +255,10 @@ public class Autos {
         .fullAuto(Paths.RED_SHORT_SIDE_2_CONE_BALANCE)
         .andThen(autoBalance.getCommand())
         .withName("AutoRedShortSide2ConeBalance");
+  }
+
+  private Command getBug() {
+    return autoBuilder.fullAuto(Paths.BUG);
   }
 
   private CommandBase getDoNothingAuto() {

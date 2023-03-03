@@ -11,8 +11,10 @@ import com.ctre.phoenixpro.configs.CurrentLimitsConfigs;
 import com.ctre.phoenixpro.configs.MotorOutputConfigs;
 import com.ctre.phoenixpro.configs.Slot0Configs;
 import com.ctre.phoenixpro.configs.TalonFXConfiguration;
+import com.ctre.phoenixpro.controls.DutyCycleOut;
 import com.ctre.phoenixpro.controls.PositionVoltage;
 import com.ctre.phoenixpro.controls.VelocityVoltage;
+import com.ctre.phoenixpro.controls.VoltageOut;
 import com.ctre.phoenixpro.hardware.TalonFX;
 import com.ctre.phoenixpro.signals.InvertedValue;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -38,6 +40,7 @@ public class SwerveModule {
   private final TalonFX driveMotor;
   private final TalonFX steerMotor;
   private final CANCoder encoder;
+  private final DutyCycleOut driveVoltageOpenLoopRequest = new DutyCycleOut(0, true, true);
   private final PositionVoltage steerMotorControl = new PositionVoltage(0, true, 0, 0, false);
   private final VelocityVoltage driveVoltageClosedLoopRequest =
       new VelocityVoltage(0, true, 0, 0, false);
@@ -127,7 +130,14 @@ public class SwerveModule {
         DRIVE_MOTOR_GEARING_CONVERTER.gearingToMotor(wheelRotationsPerSecond);
 
     this.commandedDriveVelocity = Units.metersToInches(state.speedMetersPerSecond);
-    driveMotor.setControl(driveVoltageClosedLoopRequest.withVelocity(motorRotationsPerSecond));
+
+    if (OpenLoop) {
+      driveMotor.setControl(
+          driveVoltageOpenLoopRequest.withOutput(
+              state.speedMetersPerSecond / SwerveSubsystem.MAX_VELOCITY_METERS_PER_SECOND));
+    } else {
+      driveMotor.setControl(driveVoltageClosedLoopRequest.withVelocity(motorRotationsPerSecond));
+    }
   }
 
   public SwerveModuleState getState() {

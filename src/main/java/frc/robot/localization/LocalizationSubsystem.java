@@ -31,6 +31,8 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
   private final SwerveDriveOdometry odometry;
   private boolean visionWorking = false;
 
+  private Pose2d previousPose = new Pose2d();
+
   private final InterpolatingTreeMap<Double, Double> visionStdLookup =
       new InterpolatingTreeMap<Double, Double>();
 
@@ -52,20 +54,9 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
         new SwerveDriveOdometry(
             SwerveSubsystem.KINEMATICS, imu.getRobotHeading(), swerve.getModulePositions());
 
-    // visionStdLookup.put(0.5, 0.1);
-    // visionStdLookup.put(1.0, 0.5);
-    // visionStdLookup.put(2.0, 1.0);
-    visionStdLookup.put(0.752358, 0.005);
-    visionStdLookup.put(1.016358, 0.0135);
-    visionStdLookup.put(1.296358, 0.016);
-    visionStdLookup.put(1.574358, 0.038);
-    visionStdLookup.put(1.913358, 0.0515);
-    visionStdLookup.put(2.184358, 0.0925);
-    visionStdLookup.put(2.493358, 0.0695);
-    visionStdLookup.put(2.758358, 0.046);
-    visionStdLookup.put(3.223358, 0.1245);
-    visionStdLookup.put(4.093358, 0.0815);
-    visionStdLookup.put(4.726358, 0.193);
+    visionStdLookup.put(0.5, 0.2);
+    visionStdLookup.put(1.0, 1.0);
+    visionStdLookup.put(2.0, 1.5);
   }
 
   @Override
@@ -84,47 +75,52 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
 
     LimelightResults results = LimelightHelpers.getLatestResults("");
     Pose2d currentVisionPose = results.targetingResults.getBotPose2d_wpiBlue();
-    Pose2d angleAdjustedVisionPose =
-        new Pose2d(currentVisionPose.getTranslation(), imu.getRobotHeading());
+    if (previousPose.getX() != currentVisionPose.getX() && previousPose.getY() != currentVisionPose.getY()){
+      previousPose = currentVisionPose;
 
-    double visionTimestamp =
-        Timer.getFPGATimestamp()
-            - ((results.targetingResults.latency_capture
-                    + results.targetingResults.latency_jsonParse
-                    + results.targetingResults.latency_pipeline)
-                / 1000);
+      Pose2d angleAdjustedVisionPose =
+          new Pose2d(currentVisionPose.getTranslation(), imu.getRobotHeading());
 
-    double averageDistanceToIndividualFiducialTags = 0;
-    double fiducialTagCount = 0;
+      Logger.getInstance().recordOutput("Localization/UnfilteredVisionPose", angleAdjustedVisionPose);
 
-    // Calculate average distance of each tag seen.
-    if (results.targetingResults.valid
-        && currentVisionPose.getX() != 0.0
-        && currentVisionPose.getY() != 0.0) {
-      for (int i = 0; i < results.targetingResults.targets_Fiducials.length; ++i) {
-        Pose2d fiducialPose =
-            results.targetingResults.targets_Fiducials[i].getTargetPose_RobotSpace2D();
-        double fiducialDistanceAway =
-            Math.sqrt(Math.pow(fiducialPose.getX(), 2) + Math.pow(fiducialPose.getY(), 2));
-        averageDistanceToIndividualFiducialTags += fiducialDistanceAway;
-        fiducialTagCount++;
+
+      double visionTimestamp =
+          Timer.getFPGATimestamp()
+              - ((results.targetingResults.latency_capture
+                      + results.targetingResults.latency_jsonParse
+                      + results.targetingResults.latency_pipeline)
+                  / 1000);
+
+      double averageDistanceToIndividualFiducialTags = 0;
+      double fiducialTagCount = 0;
+
+      // Calculate average distance of each tag seen.
+      if (results.targetingResults.valid
+          && currentVisionPose.getX() != 0.0
+          && currentVisionPose.getY() != 0.0) {
+        for (int i = 0; i < results.targetingResults.targets_Fiducials.length; ++i) {
+          Pose2d fiducialPose =
+              results.targetingResults.targets_Fiducials[i].getTargetPose_RobotSpace2D();
+          double fiducialDistanceAway =
+              Math.sqrt(Math.pow(fiducialPose.getX(), 2) + Math.pow(fiducialPose.getY(), 2));
+          averageDistanceToIndividualFiducialTags += fiducialDistanceAway;
+          fiducialTagCount++;
+        }
+        visionIsValid = true;
       }
-      averageDistanceToIndividualFiducialTags =
-          averageDistanceToIndividualFiducialTags / fiducialTagCount;
-      visionIsValid = true;
-    }
 
-    // Update pose estimator if vision is valid.
-    if (visionIsValid) {
-      // Adjust vision measurement standard deviation by average distance from tags.
-      double stdForVision =
-          visionStdLookup.get(averageDistanceToIndividualFiducialTags) / fiducialTagCount;
-      poseEstimator.addVisionMeasurement(
-          angleAdjustedVisionPose,
-          visionTimestamp,
-          VecBuilder.fill(stdForVision, stdForVision, Units.degreesToRadians(5)));
-      Logger.getInstance().recordOutput("Localization/VisionPose", angleAdjustedVisionPose);
-      visionWorking = true;
+      // Update pose estimator if vision is valid.
+      if (visionIsValid) {
+        // Adjust vision measurement standard deviation by average distance from tags.
+        double stdForVision =
+            visionStdLookup.get(averageDistanceToIndividualFiducialTags) / fiducialTagCount;
+        poseEstimator.addVisionMeasurement(
+            angleAdjustedVisionPose,
+            visionTimestamp,
+            VecBuilder.fill(stdForVision, stdForVision, Units.degreesToRadians(5)));
+        Logger.getInstance().recordOutput("Localization/VisionPose", angleAdjustedVisionPose);
+        visionWorking = true;
+      }
     }
   }
 
