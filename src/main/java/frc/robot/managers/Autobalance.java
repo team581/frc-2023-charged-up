@@ -19,8 +19,8 @@ public class Autobalance extends LifecycleSubsystem {
   private final SwerveSubsystem swerve;
   private final ImuSubsystem imu;
   private boolean enabled = false;
-  private double driveVelocity = 0.35;
-  private double angleThreshold = 10;
+  private static final double DRIVE_VELOCITY = -0.35;
+  private static final double ANGLE_THRESHOLD = 10;
   private final LinearFilter autoBalanceFilter = LinearFilter.movingAverage(13);
   private Rotation2d averageRoll = new Rotation2d();
   private PIDController yawController = new PIDController(0.05, 0, 0);
@@ -38,7 +38,7 @@ public class Autobalance extends LifecycleSubsystem {
 
   @Override
   public void robotPeriodic() {
-    averageRoll = Rotation2d.fromDegrees(autoBalanceFilter.calculate(angleThreshold));
+    averageRoll = Rotation2d.fromDegrees(autoBalanceFilter.calculate(ANGLE_THRESHOLD));
   }
 
   @Override
@@ -57,17 +57,17 @@ public class Autobalance extends LifecycleSubsystem {
   }
 
   private double getDriveVelocity() {
-    if (imu.getRoll().getDegrees() > angleThreshold) {
-      return driveVelocity * -1;
-    } else if (imu.getRoll().getDegrees() < -angleThreshold) {
-      return driveVelocity;
+    if (imu.getRoll().getDegrees() > ANGLE_THRESHOLD) {
+      return DRIVE_VELOCITY * -1;
+    } else if (imu.getRoll().getDegrees() < -ANGLE_THRESHOLD) {
+      return DRIVE_VELOCITY;
     } else {
-      return driveVelocity * 0;
+      return DRIVE_VELOCITY * 0;
     }
   }
 
   private boolean atGoal() {
-    return averageRoll.getDegrees() < angleThreshold && averageRoll.getDegrees() > -angleThreshold;
+    return averageRoll.getDegrees() < ANGLE_THRESHOLD && averageRoll.getDegrees() > -ANGLE_THRESHOLD;
   }
 
   public Command getCommand() {
