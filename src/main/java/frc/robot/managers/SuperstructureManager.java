@@ -215,8 +215,12 @@ public class SuperstructureManager extends LifecycleSubsystem {
     return Commands.runOnce(() -> setIntakeMode(gamePiece));
   }
 
-  public void setIntakeMode(HeldGamePiece gamePiece) {
-    mode = gamePiece;
+  public void setIntakeMode(HeldGamePiece newMode) {
+    if (mode != newMode) {
+      intake.setGamePiece(HeldGamePiece.NOTHING);
+    }
+
+    mode = newMode;
   }
 
   public void setManualIntakeMode(IntakeMode manualIntakeMode) {
