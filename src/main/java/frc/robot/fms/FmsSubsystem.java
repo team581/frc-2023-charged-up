@@ -11,7 +11,6 @@ import frc.robot.util.scheduling.SubsystemPriority;
 import org.littletonrobotics.junction.Logger;
 
 public class FmsSubsystem extends LifecycleSubsystem {
-
   public FmsSubsystem() {
     super(SubsystemPriority.FMS);
   }

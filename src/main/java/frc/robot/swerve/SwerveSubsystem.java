@@ -39,7 +39,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   public static final double MAX_VELOCITY_INCHES_PER_SECOND = 127;
   public static final double MAX_VELOCITY_METERS_PER_SECOND =
       MAX_VELOCITY_INCHES_PER_SECOND / 39.37;
-  public static final double MAX_ANGULAR_VELOCITY = 30;
+  public static final double MAX_ANGULAR_VELOCITY = 20;
 
   private final ImuSubsystem imu;
   private final SwerveModule frontRight;
@@ -157,6 +157,21 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     frontRight.setDesiredState(moduleStates[1], openLoop);
     backLeft.setDesiredState(moduleStates[2], openLoop);
     backRight.setDesiredState(moduleStates[3], openLoop);
+  }
+
+  public void xSwerve() {
+    setModuleStates(
+        new SwerveModuleState[] {
+          new SwerveModuleState(0.0, new Rotation2d(45)),
+          new SwerveModuleState(0.0, new Rotation2d(90)),
+          new SwerveModuleState(0.0, new Rotation2d(135)),
+          new SwerveModuleState(0.0, new Rotation2d(180))
+        },
+        true);
+  }
+
+  public Command getXSwerveCommand() {
+    return Commands.run(() -> xSwerve(), this);
   }
 
   public void driveTeleop(

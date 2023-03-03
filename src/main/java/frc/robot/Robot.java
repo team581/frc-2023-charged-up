@@ -18,6 +18,7 @@ import frc.robot.autoscore.AutoScoreLocation;
 import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
 import frc.robot.elevator.ElevatorSubsystem;
+import frc.robot.fms.FmsSubsystem;
 import frc.robot.forks.ForksSubsystem;
 import frc.robot.generated.BuildConstants;
 import frc.robot.imu.ImuSubsystem;
@@ -100,6 +101,7 @@ public class Robot extends LoggedRobot {
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
   private final LocalizationSubsystem localization = new LocalizationSubsystem(swerve, imu);
   private final ForksSubsystem forks = new ForksSubsystem(new TalonFX(18, "581CANivore"));
+  private final FmsSubsystem fmsSubsystem = new FmsSubsystem();
   private final SuperstructureManager superstructureManager =
       new SuperstructureManager(superstructureMotionManager, intake, localization);
   private final LightsSubsystem lights =
@@ -108,6 +110,7 @@ public class Robot extends LoggedRobot {
           intake,
           superstructureManager,
           localization);
+
 
   private final Autobalance autobalance = new Autobalance(swerve, imu);
 
@@ -186,6 +189,16 @@ public class Robot extends LoggedRobot {
     // Intake on shelf
     driveController.leftBumper().onTrue(superstructureManager.getShelfIntakeCommand());
 
+    // X swerve
+    driveController
+        .x()
+        .and(
+            () ->
+                driveController.getSidewaysPercentage() == 0
+                    && driveController.getForwardPercentage() == 0
+                    && driveController.getThetaPercentage() == 0)
+        .whileTrue(swerve.getXSwerveCommand());
+
     // Manual intake
     operatorController
         .leftTrigger(0.3)
@@ -211,6 +224,7 @@ public class Robot extends LoggedRobot {
         .y()
         .onTrue(superstructureManager.getManualScoreCommand(ManualScoringLocation.HIGH))
         .onFalse(superstructureManager.getCommand(States.STOWED));
+
     // Stow all
     operatorController.x().onTrue(superstructureManager.getCommand(States.STOWED));
     // Home superstructure
