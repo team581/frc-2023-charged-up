@@ -6,6 +6,7 @@ package frc.robot.util.scheduling;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.util.Stopwatch;
@@ -32,6 +33,7 @@ public class LifecycleSubsystem extends SubsystemBase {
     loggerName = "Scheduler/LifecycleSubsystem/" + name + ".periodic()";
 
     robotInit();
+    SmartDashboard.putData(this);
   }
 
   /** {@link IterativeRobotBase#robotInit()} */
@@ -71,8 +73,10 @@ public class LifecycleSubsystem extends SubsystemBase {
       stage = LifecycleStage.TELEOP;
     } else if (DriverStation.isAutonomousEnabled()) {
       stage = LifecycleStage.AUTONOMOUS;
-    } else {
+    } else if (DriverStation.isDisabled()) {
       stage = LifecycleStage.DISABLED;
+    } else {
+      stage = LifecycleStage.TEST;
     }
 
     boolean isInit = previousStage != stage;
@@ -109,8 +113,21 @@ public class LifecycleSubsystem extends SubsystemBase {
       autonomousPeriodic();
     }
 
+    if (stage == LifecycleStage.TEST) {
+      if (isInit) {
+        testInit();
+      }
+
+      testPeriodic();
+    }
+
     stopwatch.stop(loggerName);
 
     previousStage = stage;
   }
+  /** {@link IterativeRobotBase#testInit()} */
+  public void testInit() {}
+
+  /** {@link IterativeRobotBase#testPeriodic()} */
+  public void testPeriodic() {}
 }

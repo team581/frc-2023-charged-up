@@ -17,11 +17,11 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
+import frc.robot.fms.FmsSubsystem;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
@@ -174,7 +174,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
             .times(MAX_VELOCITY_METERS_PER_SECOND);
     Rotation2d fieldRelativeHeading = imu.getRobotHeading();
 
-    if (DriverStation.getAlliance() == Alliance.Red) {
+    if (FmsSubsystem.isRedAlliance()) {
       fieldRelativeHeading = fieldRelativeHeading.plus(Rotation2d.fromDegrees(180));
     }
 
@@ -194,38 +194,40 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
   public Command getDriveTeleopCommand(DriveController controller) {
     return Commands.run(
-        () -> {
-          if (!DriverStation.isTeleopEnabled()) {
-            return;
-          }
+            () -> {
+              if (!DriverStation.isTeleopEnabled()) {
+                return;
+              }
 
-          boolean openLoop = true;
+              boolean openLoop = true;
 
-          driveTeleop(
-              -controller.getSidewaysPercentage(),
-              controller.getForwardPercentage(),
-              controller.getThetaPercentage(),
-              true,
-              openLoop);
-        },
-        this);
+              driveTeleop(
+                  -controller.getSidewaysPercentage(),
+                  controller.getForwardPercentage(),
+                  controller.getThetaPercentage(),
+                  true,
+                  openLoop);
+            },
+            this)
+        .withName("SwerveDriveTeleop");
   }
 
   public Command getFollowTrajectoryCommand(
       PathPlannerTrajectory traj, LocalizationSubsystem localization) {
     return new PPSwerveControllerCommand(
-        traj,
-        localization::getPose,
-        SwerveSubsystem.KINEMATICS,
-        // x controller
-        xController,
-        // y controller
-        yController,
-        // theta controller
-        thetaController,
-        states -> setModuleStates(states, false),
-        false,
-        this);
+            traj,
+            localization::getPose,
+            SwerveSubsystem.KINEMATICS,
+            // x controller
+            xController,
+            // y controller
+            yController,
+            // theta controller
+            thetaController,
+            states -> setModuleStates(states, false),
+            false,
+            this)
+        .withName("SwerveFollowTrajectory");
   }
 
   // Create a command that accepts a Pose2d and drives to it using a PPHolonomicDriveController
@@ -257,6 +259,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
               } else {
                 return false;
               }
-            });
+            })
+        .withName("SwerveGoToPose");
   }
 }

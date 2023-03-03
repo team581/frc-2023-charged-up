@@ -17,12 +17,14 @@ public enum SubsystemPriority {
   INTAKE(10),
   SWERVE(10),
   IMU(10),
+  FORKS(10),
 
   // Run localization after swerve & IMU
   LOCALIZATION(9),
 
   // Update the lights after everything else has been updated
-  LIGHTS(0);
+  LIGHTS(0),
+  FMS(0);
 
   final int value;
 

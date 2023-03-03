@@ -11,11 +11,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.InterpolatingTreeMap;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.fms.FmsSubsystem;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.localization.LimelightHelpers.LimelightResults;
 import frc.robot.swerve.SwerveSubsystem;
@@ -150,8 +149,6 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
 
   public Command getZeroCommand() {
     return Commands.runOnce(
-        () ->
-            resetGyro(
-                Rotation2d.fromDegrees(DriverStation.getAlliance() == Alliance.Red ? 180 : 0)));
+        () -> resetGyro(Rotation2d.fromDegrees(FmsSubsystem.isRedAlliance() ? 180 : 0)));
   }
 }

@@ -67,7 +67,7 @@
       },
       "holonomicAngle": 179.5848204588552,
       "isReversal": false,
-      "velOverride": null,
+      "velOverride": 0.2,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
@@ -79,16 +79,16 @@
     },
     {
       "anchorPoint": {
-        "x": 9.494623913259986,
-        "y": 4.586809112827952
+        "x": 9.5007152932239,
+        "y": 4.513712553260973
       },
       "prevControl": {
-        "x": 10.51188436723378,
-        "y": 4.574626352900122
+        "x": 10.518048695240381,
+        "y": 4.513712553260973
       },
       "nextControl": {
-        "x": 10.51188436723378,
-        "y": 4.574626352900122
+        "x": 10.518048695240381,
+        "y": 4.513712553260973
       },
       "holonomicAngle": 180.0,
       "isReversal": true,
@@ -115,7 +115,7 @@
         "x": 11.462139641604512,
         "y": 4.934017770771105
       },
-      "holonomicAngle": -89.20427644726072,
+      "holonomicAngle": -90.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -183,12 +183,12 @@
         "y": 3.843660757230329
       },
       "prevControl": {
-        "x": 14.542635646828973,
-        "y": 4.1539149015581565
+        "x": 14.56265204323722,
+        "y": 4.154559921265494
       },
       "nextControl": {
-        "x": 14.57483480316505,
-        "y": 3.654827978348965
+        "x": 14.56265204323722,
+        "y": 3.6544353941853154
       },
       "holonomicAngle": 0,
       "isReversal": false,
@@ -197,6 +197,7 @@
       "isStopPoint": true,
       "stopEvent": {
         "names": [
+          "preloadCone",
           "scoreLow",
           "stow"
         ],
@@ -253,18 +254,18 @@
       }
     }
   ],
-  "maxVelocity": 1.75,
-  "maxAcceleration": 1.5,
+  "maxVelocity": 1.0,
+  "maxAcceleration": 1.0,
   "isReversed": null,
   "markers": [
     {
-      "position": 1.9490909090908897,
+      "position": 1.7018181818182052,
       "names": [
         "intakeCone"
       ]
     },
     {
-      "position": 4.101818181818196,
+      "position": 3.6981818181818307,
       "names": [
         "stow"
       ]

@@ -19,7 +19,6 @@ import frc.robot.ManualScoringLocation;
 import frc.robot.States;
 import frc.robot.config.Config;
 import frc.robot.elevator.ElevatorSubsystem;
-import frc.robot.elevator.commands.ElevatorHomingCommand;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.intake.HeldGamePiece;
 import frc.robot.intake.IntakeSubsystem;
@@ -66,42 +65,69 @@ public class Autos {
     Map<String, Command> eventMap =
         Map.ofEntries(
             Map.entry(
-                "coneWait", Commands.waitUntil(() -> intake.getGamePiece() == HeldGamePiece.CONE)),
+                "coneWait",
+                Commands.waitUntil(() -> intake.getGamePiece() == HeldGamePiece.CONE)
+                    .withName("AutoConeWait")),
             Map.entry(
-                "cubeWait", Commands.waitUntil(() -> intake.getGamePiece() == HeldGamePiece.CUBE)),
+                "cubeWait",
+                Commands.waitUntil(() -> intake.getGamePiece() == HeldGamePiece.CUBE)
+                    .withName("AutoCubeWait")),
             Map.entry(
                 "preloadCube",
                 superstructure
                     .setIntakeModeCommand(HeldGamePiece.CUBE)
-                    .andThen(
-                        Commands.runOnce(() -> intake.setPreloadForAutos(HeldGamePiece.CUBE)))),
+                    .andThen(Commands.runOnce(() -> intake.setPreloadForAutos(HeldGamePiece.CUBE)))
+                    .withName("AutoPreloadCube")),
             Map.entry(
                 "preloadCone",
                 superstructure
                     .setIntakeModeCommand(HeldGamePiece.CONE)
-                    .andThen(
-                        Commands.runOnce(() -> intake.setPreloadForAutos(HeldGamePiece.CONE)))),
+                    .andThen(Commands.runOnce(() -> intake.setPreloadForAutos(HeldGamePiece.CONE)))
+                    .withName("AutoPreloadCone")),
             Map.entry(
                 "scoreLow",
                 superstructure
-                    // TODO: Change back to LOW
-                    .getScoreCommand(ManualScoringLocation.HIGH).withTimeout(3)),
-            Map.entry("scoreMid", superstructure.getScoreCommand(ManualScoringLocation.MID).withTimeout(3)),
-            Map.entry("scoreHigh", superstructure.getScoreCommand(ManualScoringLocation.HIGH).withTimeout(3)),
+                    .getScoreCommand(ManualScoringLocation.LOW)
+                    .withTimeout(3)
+                    .andThen(
+                        Commands.runOnce(() -> intake.setPreloadForAutos(HeldGamePiece.NOTHING)))
+                    .withName("AutoScoreLow")),
             Map.entry(
-                "home", new ElevatorHomingCommand(elevator).andThen(new WristHomingCommand(wrist))),
+                "scoreMid",
+                superstructure
+                    .getScoreCommand(ManualScoringLocation.MID)
+                    .withTimeout(3)
+                    .andThen(
+                        Commands.runOnce(() -> intake.setPreloadForAutos(HeldGamePiece.NOTHING)))
+                    .withName("AutoScoreMid")),
+            Map.entry(
+                "scoreHigh",
+                superstructure
+                    .getScoreCommand(ManualScoringLocation.HIGH)
+                    .withTimeout(3)
+                    .andThen(
+                        Commands.runOnce(() -> intake.setPreloadForAutos(HeldGamePiece.NOTHING)))
+                    .withName("AutoScoreHigh")),
+            Map.entry(
+                "home",
+                elevator
+                    .getHomeCommand()
+                    .andThen(new WristHomingCommand(wrist))
+                    .withName("AutoHome")),
             Map.entry(
                 "intakeCone",
                 superstructure
                     .setIntakeModeCommand(HeldGamePiece.CONE)
-                    .andThen(superstructure.getFloorIntakeSpinningCommand())),
+                    .andThen(superstructure.getFloorIntakeSpinningCommand())
+                    .withName("AutoIntakeCone")),
             Map.entry(
                 "intakeCube",
                 superstructure
                     .setIntakeModeCommand(HeldGamePiece.CUBE)
-                    .andThen(superstructure.getFloorIntakeSpinningCommand())),
-            Map.entry("stow", superstructure.getCommand(States.STOWED)));
-    Map.entry("autoBalance", autoBalance.getCommand());
+                    .andThen(superstructure.getFloorIntakeSpinningCommand())
+                    .withName("AutoIntakeCube")),
+            Map.entry("stow", superstructure.getCommand(States.STOWED).withName("AutoStow")));
+    Map.entry("autoBalance", autoBalance.getCommand().withName("AutoAutoBalance"));
 
     autoBuilder =
         new SwerveAutoBuilder(
@@ -190,7 +216,8 @@ public class Autos {
   public Command getBlueShortSide2ConeBalance() {
     return autoBuilder
         .fullAuto(Paths.BLUE_SHORT_SIDE_2_CONE_BALANCE)
-        .andThen(autoBalance.getCommand());
+        .andThen(autoBalance.getCommand())
+        .withName("AutoBlueShortSide2ConeBalance");
   }
 
   private Command getRedLongSide1_5ConeBalanceAuto() {
@@ -217,18 +244,19 @@ public class Autos {
 
   private Command getRedShortSide2_5ConeBalance() {
     return autoBuilder
-        .fullAuto(Paths.RED_SHORT_SIDE_2_CONE_BALANCE)
+        .fullAuto(Paths.RED_SHORT_SIDE_2_5_CONE_BALANCE)
         .andThen(autoBalance.getCommand());
   }
 
   private Command getRedShortSide2ConeBalance() {
     return autoBuilder
         .fullAuto(Paths.RED_SHORT_SIDE_2_CONE_BALANCE)
-        .andThen(autoBalance.getCommand());
+        .andThen(autoBalance.getCommand())
+        .withName("AutoRedShortSide2ConeBalance");
   }
 
   private CommandBase getDoNothingAuto() {
-    return Commands.none().withName("DoNothingAutoCommand");
+    return Commands.none().withName("DoNothingAuto");
   }
 
   public Command getAutoCommand() {

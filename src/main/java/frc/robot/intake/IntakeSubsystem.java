@@ -33,7 +33,7 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     super(SubsystemPriority.INTAKE);
 
     this.motor = motor;
-    motor.setInverted(false);
+    motor.setInverted(Config.INVERTED_INTAKE);
     motor.configSupplyCurrentLimit(CURRENT_LIMIT);
   }
 
