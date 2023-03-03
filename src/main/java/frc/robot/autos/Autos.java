@@ -76,13 +76,13 @@ public class Autos {
                 "preloadCube",
                 superstructure
                     .setIntakeModeCommand(HeldGamePiece.CUBE)
-                    .andThen(Commands.runOnce(() -> intake.setPreloadForAutos(HeldGamePiece.CUBE)))
+                    .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.CUBE)))
                     .withName("AutoPreloadCube")),
             Map.entry(
                 "preloadCone",
                 superstructure
                     .setIntakeModeCommand(HeldGamePiece.CONE)
-                    .andThen(Commands.runOnce(() -> intake.setPreloadForAutos(HeldGamePiece.CONE)))
+                    .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.CONE)))
                     .withName("AutoPreloadCone")),
             Map.entry(
                 "scoreLow",
@@ -90,7 +90,7 @@ public class Autos {
                     .getScoreCommand(ManualScoringLocation.LOW)
                     .withTimeout(3)
                     .andThen(
-                        Commands.runOnce(() -> intake.setPreloadForAutos(HeldGamePiece.NOTHING)))
+                        Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))
                     .withName("AutoScoreLow")),
             Map.entry(
                 "scoreMid",
@@ -98,7 +98,7 @@ public class Autos {
                     .getScoreCommand(ManualScoringLocation.MID)
                     .withTimeout(3)
                     .andThen(
-                        Commands.runOnce(() -> intake.setPreloadForAutos(HeldGamePiece.NOTHING)))
+                        Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))
                     .withName("AutoScoreMid")),
             Map.entry(
                 "scoreHigh",
@@ -106,7 +106,7 @@ public class Autos {
                     .getScoreCommand(ManualScoringLocation.HIGH)
                     .withTimeout(3)
                     .andThen(
-                        Commands.runOnce(() -> intake.setPreloadForAutos(HeldGamePiece.NOTHING)))
+                        Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))
                     .withName("AutoScoreHigh")),
             Map.entry(
                 "home",

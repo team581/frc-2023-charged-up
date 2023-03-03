@@ -129,7 +129,7 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     return gamePiece;
   }
 
-  public void setPreloadForAutos(HeldGamePiece gamePiece) {
+  public void setGamePiece(HeldGamePiece gamePiece) {
     this.gamePiece = gamePiece;
   }
 }
