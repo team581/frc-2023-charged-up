@@ -199,7 +199,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
                 return;
               }
 
-              boolean openLoop = false;
+              boolean openLoop = true;
 
               driveTeleop(
                   -controller.getSidewaysPercentage(),
