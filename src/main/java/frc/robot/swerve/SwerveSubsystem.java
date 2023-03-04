@@ -48,6 +48,8 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   private final SwerveModule backLeft;
   private boolean doneResetting = false;
 
+  private boolean snapToAngle = false;
+
   private final PIDController xController =
       new PIDController(
           Config.SWERVE_TRANSLATION_PID.kP,
@@ -82,6 +84,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
           Config.SWERVE_ROTATION_PID.kI,
           Config.SWERVE_ROTATION_PID.kD,
           new TrapezoidProfile.Constraints(Math.PI * 2.0, Math.PI * 0.75));
+  private Rotation2d goalAngle;
 
   public SwerveSubsystem(
       ImuSubsystem imu,
@@ -96,6 +99,9 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     this.frontLeft = frontLeft;
     this.backRight = backRight;
     this.backLeft = backLeft;
+
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    thetaProfiledController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   @Override
@@ -146,7 +152,21 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     };
   }
 
+  public void setSnapToAngle(Rotation2d angle) {
+    goalAngle = angle;
+    snapToAngle = true;
+  }
+
+  public void disableSnapToAngle() {
+    snapToAngle = false;
+  }
+
   public void setChassisSpeeds(ChassisSpeeds speeds, boolean openLoop) {
+    if (snapToAngle) {
+      speeds.omegaRadiansPerSecond =
+          thetaController.calculate(imu.getRobotHeading().getRadians(), goalAngle.getRadians());
+    }
+
     final var moduleStates = KINEMATICS.toSwerveModuleStates(speeds);
     setModuleStates(moduleStates, openLoop);
   }

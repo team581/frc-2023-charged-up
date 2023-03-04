@@ -43,6 +43,10 @@ public class ImuSubsystem extends LifecycleSubsystem {
     this.imu.setYaw(zeroAngle.getDegrees());
   }
 
+  public boolean atAngle(Rotation2d angle) {
+    return Math.abs(getRobotHeading().minus(angle).getDegrees()) < 3;
+  }
+
   public Command getZeroCommand() {
     return Commands.runOnce(() -> zero());
   }
