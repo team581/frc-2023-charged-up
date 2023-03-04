@@ -18,7 +18,6 @@ import frc.robot.fms.FmsSubsystem;
 import frc.robot.intake.HeldGamePiece;
 import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
-import frc.robot.intake.commands.IntakeCommand;
 import frc.robot.localization.Landmarks;
 import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
@@ -252,7 +251,7 @@ public class SuperstructureManager extends LifecycleSubsystem {
   }
 
   public Command getHomeCommand() {
-    return new IntakeCommand(intake, IntakeMode.STOPPED)
+    return intake.getIntakeCommand()
         .andThen(motionManager.elevator.getHomeCommand())
         .andThen(motionManager.wrist.getHomeCommand());
   }
