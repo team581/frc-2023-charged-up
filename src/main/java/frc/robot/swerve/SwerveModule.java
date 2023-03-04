@@ -100,7 +100,6 @@ public class SwerveModule {
       steerMotorConfigs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     }
 
-
     StatusCode steerStatus = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
       steerStatus = steerMotor.getConfigurator().apply(steerMotorConfigs);
@@ -110,7 +109,6 @@ public class SwerveModule {
       System.out.println("Could not apply configs, error code: " + steerStatus.toString());
     }
   }
-
 
   public void setDesiredState(SwerveModuleState state, boolean OpenLoop) {
     final var steerMotorPosition = getSteerMotorPosition();
