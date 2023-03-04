@@ -8,12 +8,12 @@ import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.autos.Autos;
 import frc.robot.autoscore.AutoScoreLocation;
 import frc.robot.config.Config;
@@ -112,7 +112,7 @@ public class Robot extends LoggedRobot {
           localization);
 
   private final Autobalance autobalance = new Autobalance(swerve, imu);
-  private final AutoRotate autoRotate = new AutoRotate(swerve, imu);
+  private final AutoRotate autoRotate = new AutoRotate(swerve);
 
   private final Autos autos =
       new Autos(
@@ -200,19 +200,12 @@ public class Robot extends LoggedRobot {
         .whileTrue(swerve.getXSwerveCommand());
 
     // Face towards grids
-    driveController
-        .b()
-        .and(() -> driveController.getThetaPercentage() == 0)
-        .whileTrue(
-            autoRotate.getCommand(
-                () -> Rotation2d.fromDegrees(FmsSubsystem.isRedAlliance() ? 180 : 0)));
+    driveController.b().onTrue(autoRotate.getCommand(() -> AutoRotate.getGridAngle()));
     // Face towards shelf
-    driveController
-        .a()
-        .and(() -> driveController.getThetaPercentage() == 0)
-        .whileTrue(
-            autoRotate.getCommand(
-                () -> Rotation2d.fromDegrees(FmsSubsystem.isRedAlliance() ? 0 : 180)));
+    driveController.a().onTrue(autoRotate.getCommand(() -> AutoRotate.getShelfAngle()));
+
+    new Trigger(() -> driveController.getThetaPercentage() == 0)
+        .onFalse(autoRotate.getDisableCommand());
 
     // Manual intake
     operatorController

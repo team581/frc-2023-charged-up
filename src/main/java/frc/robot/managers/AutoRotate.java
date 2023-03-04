@@ -7,30 +7,27 @@ package frc.robot.managers;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.fms.FmsSubsystem;
-import frc.robot.imu.ImuSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
 import java.util.function.Supplier;
 
 public class AutoRotate extends LifecycleSubsystem {
-  public static Rotation2d getGridAngle() {
+  public static Rotation2d getShelfAngle() {
     return FmsSubsystem.isRedAlliance() ? Rotation2d.fromDegrees(0) : Rotation2d.fromDegrees(0);
   }
 
-  public static Rotation2d getShelfAngle() {
+  public static Rotation2d getGridAngle() {
     return FmsSubsystem.isRedAlliance() ? Rotation2d.fromDegrees(180) : Rotation2d.fromDegrees(0);
   }
 
   private final SwerveSubsystem swerve;
   private Rotation2d angle;
   private boolean enabled;
-  private final ImuSubsystem imu;
 
-  public AutoRotate(SwerveSubsystem swerve, ImuSubsystem imu) {
+  public AutoRotate(SwerveSubsystem swerve) {
     super(SubsystemPriority.AUTOROTATE);
     this.swerve = swerve;
-    this.imu = imu;
   }
 
   public void setAngle(Rotation2d angle) {
@@ -44,6 +41,9 @@ public class AutoRotate extends LifecycleSubsystem {
   }
 
   @Override
+  public void robotPeriodic() {}
+
+  @Override
   public void enabledPeriodic() {
     if (enabled) {
       swerve.setSnapToAngle(angle);
@@ -51,9 +51,7 @@ public class AutoRotate extends LifecycleSubsystem {
   }
 
   public Command getCommand(Supplier<Rotation2d> angle) {
-    return run(() -> setAngle(angle.get()))
-        .until(() -> imu.atAngle(angle.get()))
-        .handleInterrupt(() -> disable());
+    return run(() -> setAngle(angle.get()));
   }
 
   public Command getDisableCommand() {
