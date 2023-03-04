@@ -6,6 +6,7 @@ package frc.robot.imu;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.util.scheduling.LifecycleSubsystem;
@@ -34,13 +35,15 @@ public class ImuSubsystem extends LifecycleSubsystem {
   }
 
   public void zero() {
-    // TODO: This should use setAngle()
-    this.imu.setYaw(0);
-    this.imu.configMountPoseRoll(this.imu.getRoll());
+    setAngle(new Rotation2d());
+    imu.configMountPoseRoll(this.imu.getRoll());
   }
 
   public void setAngle(Rotation2d zeroAngle) {
     this.imu.setYaw(zeroAngle.getDegrees());
+    if (RobotBase.isSimulation()) {
+      imu.getSimCollection().setRawHeading(zeroAngle.getDegrees());
+    }
   }
 
   public Command getZeroCommand() {

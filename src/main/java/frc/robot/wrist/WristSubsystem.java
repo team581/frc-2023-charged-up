@@ -9,7 +9,9 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.config.Config;
+import frc.robot.util.SimulationUtil;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
 import org.littletonrobotics.junction.Logger;
@@ -88,5 +90,30 @@ public class WristSubsystem extends LifecycleSubsystem {
     Logger.getInstance().recordOutput("Wrist/Current", motor.getStatorCurrent());
     Logger.getInstance().recordOutput("Wrist/GoToGoal", goToGoal);
     Logger.getInstance().recordOutput("Wrist/Voltage", motor.getMotorOutputVoltage());
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    if (isHoming) {
+      if (SimulationUtil.simulateDelay(0.2)) {
+        motor.getSimCollection().setIntegratedSensorRawPosition(0);
+        isHoming = false;
+        goToGoal = true;
+      }
+    } else if (goToGoal) {
+      var motionProfile =
+          new TrapezoidProfile(
+              new TrapezoidProfile.Constraints(
+                  Config.WRIST_MOTION_CRUISE_VELOCITY, Config.WRIST_MOTION_ACCELERATION),
+              new TrapezoidProfile.State(
+                  goalAngle.getRotations() * 2048.0 * Config.WRIST_GEARING, 0),
+              new TrapezoidProfile.State(
+                  motor.getSelectedSensorPosition(), motor.getSelectedSensorVelocity()));
+
+      var state = motionProfile.calculate(0.02 * 10.0);
+
+      motor.getSimCollection().setIntegratedSensorRawPosition((int) Math.round(state.position));
+      motor.getSimCollection().setIntegratedSensorVelocity((int) Math.round(state.velocity));
+    }
   }
 }

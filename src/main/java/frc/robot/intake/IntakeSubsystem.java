@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.filter.LinearFilter;
 import frc.robot.config.Config;
+import frc.robot.util.SimulationUtil;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
 import org.littletonrobotics.junction.Logger;
@@ -131,5 +132,21 @@ public class IntakeSubsystem extends LifecycleSubsystem {
 
   public void setGamePiece(HeldGamePiece gamePiece) {
     this.gamePiece = gamePiece;
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    if (SimulationUtil.simulateDelay(1.5)) {
+      if (mode == IntakeMode.INTAKE_CONE) {
+        gamePiece = HeldGamePiece.CONE;
+      } else if (mode == IntakeMode.INTAKE_CUBE) {
+        gamePiece = HeldGamePiece.CUBE;
+      }
+    }
+
+    if (SimulationUtil.simulateDelay(0.25)
+        && (mode == IntakeMode.OUTTAKE_CONE || mode == IntakeMode.OUTTAKE_CUBE)) {
+      gamePiece = HeldGamePiece.NOTHING;
+    }
   }
 }
