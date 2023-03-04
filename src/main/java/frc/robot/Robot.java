@@ -239,19 +239,6 @@ public class Robot extends LoggedRobot {
     // Home superstructure
     operatorController.back().onTrue(superstructureManager.getHomeCommand());
 
-    // operatorController
-    //     .rightTrigger()
-    //     .whileTrue(
-    //         swerve.goToPoseCommand(
-    //             Landmarks.RED_STAGING_MARK_FAR_RIGHT,
-    //             localization));
-
-    // // Autobalance
-    // operatorController
-    //     .rightTrigger()
-    //     .onTrue(autobalance.getCommand())
-    //     .onFalse(Commands.runOnce(() -> autobalance.setEnabled(false)));
-
     // Forks go up
     operatorController
         .povUp()
