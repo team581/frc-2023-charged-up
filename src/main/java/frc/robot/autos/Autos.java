@@ -128,7 +128,7 @@ public class Autos {
                     .getScoreCommand(ManualScoringLocation.HIGH)
                     .withTimeout(3)
                     .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
-            Map.entry("home", elevator.getHomeCommand().andThen(wrist.getHomeCommand())),
+            Map.entry("home", superstructure.getHomeCommand()),
             Map.entry(
                 "intakeCone",
                 superstructure

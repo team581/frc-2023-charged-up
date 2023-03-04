@@ -25,7 +25,6 @@ import frc.robot.imu.ImuSubsystem;
 import frc.robot.intake.HeldGamePiece;
 import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
-import frc.robot.intake.commands.IntakeCommand;
 import frc.robot.lights.LightsSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.managers.Autobalance;
@@ -226,13 +225,7 @@ public class Robot extends LoggedRobot {
     // Stow all
     operatorController.x().onTrue(superstructureManager.getCommand(States.STOWED));
     // Home superstructure
-    operatorController
-        .back()
-        .onTrue(
-            elevator
-                .getHomeCommand()
-                .andThen(wrist.getHomeCommand())
-                .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
+    operatorController.back().onTrue(superstructureManager.getHomeCommand());
 
     // operatorController
     //     .rightTrigger()
