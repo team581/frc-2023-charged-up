@@ -9,8 +9,9 @@ public enum SubsystemPriority {
 
   SUPERSTRUCTURE_MOTION_MANAGER(20),
 
-  // Run autobalance before swerve
+  // Run autobalance and autorotate before swerve
   AUTOBALANCE(11),
+  AUTOROTATE(11),
 
   WRIST(10),
   ELEVATOR(10),
