@@ -8,7 +8,6 @@ import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -201,9 +200,19 @@ public class Robot extends LoggedRobot {
         .whileTrue(swerve.getXSwerveCommand());
 
     // Face towards grids
-    driveController.b().and(() -> driveController.getThetaPercentage() == 0).whileTrue(autoRotate.getCommand(() -> Rotation2d.fromDegrees(FmsSubsystem.isRedAlliance() ? 180 : 0)));
+    driveController
+        .b()
+        .and(() -> driveController.getThetaPercentage() == 0)
+        .whileTrue(
+            autoRotate.getCommand(
+                () -> Rotation2d.fromDegrees(FmsSubsystem.isRedAlliance() ? 180 : 0)));
     // Face towards shelf
-    driveController.a().and(() -> driveController.getThetaPercentage() == 0).whileTrue(autoRotate.getCommand(() -> Rotation2d.fromDegrees(FmsSubsystem.isRedAlliance() ? 0 : 180)));
+    driveController
+        .a()
+        .and(() -> driveController.getThetaPercentage() == 0)
+        .whileTrue(
+            autoRotate.getCommand(
+                () -> Rotation2d.fromDegrees(FmsSubsystem.isRedAlliance() ? 0 : 180)));
 
     // Manual intake
     operatorController
