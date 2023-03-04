@@ -4,12 +4,12 @@
 
 package frc.robot.managers;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.fms.FmsSubsystem;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
@@ -23,17 +23,18 @@ public class Autobalance extends LifecycleSubsystem {
   private static final double ANGLE_THRESHOLD = 10;
   private final LinearFilter autoBalanceFilter = LinearFilter.movingAverage(13);
   private Rotation2d averageRoll = new Rotation2d();
-  private PIDController yawController = new PIDController(0.05, 0, 0);
 
   public Autobalance(SwerveSubsystem swerve, ImuSubsystem imu) {
     super(SubsystemPriority.AUTOBALANCE);
     this.swerve = swerve;
     this.imu = imu;
-    yawController.enableContinuousInput(-180, 180);
   }
 
   public void setEnabled(boolean mode) {
     enabled = mode;
+    if (!mode) {
+      swerve.disableSnapToAngle();
+    }
   }
 
   @Override
@@ -44,14 +45,10 @@ public class Autobalance extends LifecycleSubsystem {
   @Override
   public void enabledPeriodic() {
     if (enabled) {
+      Rotation2d goalAngle = Rotation2d.fromDegrees(FmsSubsystem.isRedAlliance() ? 0 : 180);
 
-      double goalAngle = 0;
-
-      ChassisSpeeds chassisSpeeds =
-          new ChassisSpeeds(
-              getDriveVelocity(),
-              0,
-              yawController.calculate(imu.getRobotHeading().getDegrees(), goalAngle));
+      ChassisSpeeds chassisSpeeds = new ChassisSpeeds(getDriveVelocity(), 0, 0);
+      swerve.setSnapToAngle(goalAngle);
       swerve.setChassisSpeeds(chassisSpeeds, false);
     }
   }

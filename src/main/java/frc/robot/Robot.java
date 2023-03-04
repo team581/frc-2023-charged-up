@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.autos.Autos;
 import frc.robot.autoscore.AutoScoreLocation;
 import frc.robot.config.Config;
@@ -27,6 +28,7 @@ import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.lights.LightsSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
+import frc.robot.managers.AutoRotate;
 import frc.robot.managers.Autobalance;
 import frc.robot.managers.SuperstructureManager;
 import frc.robot.managers.SuperstructureMotionManager;
@@ -110,6 +112,7 @@ public class Robot extends LoggedRobot {
           localization);
 
   private final Autobalance autobalance = new Autobalance(swerve, imu);
+  private final AutoRotate autoRotate = new AutoRotate(swerve);
 
   private final Autos autos =
       new Autos(
@@ -195,6 +198,14 @@ public class Robot extends LoggedRobot {
                     && driveController.getForwardPercentage() == 0
                     && driveController.getThetaPercentage() == 0)
         .whileTrue(swerve.getXSwerveCommand());
+
+    // Face towards grids
+    driveController.b().onTrue(autoRotate.getCommand(() -> AutoRotate.getGridAngle()));
+    // Face towards shelf
+    driveController.a().onTrue(autoRotate.getCommand(() -> AutoRotate.getShelfAngle()));
+
+    new Trigger(() -> driveController.getThetaPercentage() == 0)
+        .onFalse(autoRotate.getDisableCommand());
 
     // Manual intake
     operatorController
