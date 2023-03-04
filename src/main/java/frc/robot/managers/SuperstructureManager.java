@@ -251,7 +251,8 @@ public class SuperstructureManager extends LifecycleSubsystem {
   }
 
   public Command getHomeCommand() {
-    return intake.getIntakeCommand()
+    return intake
+        .getIntakeCommand()
         .andThen(motionManager.elevator.getHomeCommand())
         .andThen(motionManager.wrist.getHomeCommand());
   }
