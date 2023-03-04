@@ -35,7 +35,6 @@ import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystemManager;
 import frc.robot.wrist.WristSubsystem;
-import frc.robot.wrist.commands.WristHomingCommand;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -232,7 +231,7 @@ public class Robot extends LoggedRobot {
         .onTrue(
             elevator
                 .getHomeCommand()
-                .andThen(new WristHomingCommand(wrist))
+                .andThen(wrist.getHomeCommand())
                 .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
 
     // operatorController

@@ -9,6 +9,8 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.config.Config;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
@@ -88,5 +90,9 @@ public class WristSubsystem extends LifecycleSubsystem {
     Logger.getInstance().recordOutput("Wrist/Current", motor.getStatorCurrent());
     Logger.getInstance().recordOutput("Wrist/GoToGoal", goToGoal);
     Logger.getInstance().recordOutput("Wrist/Voltage", motor.getMotorOutputVoltage());
+  }
+
+  public Command getHomeCommand() {
+    return runOnce(() -> startHoming()).andThen(Commands.waitUntil(() -> isHoming() == false));
   }
 }
