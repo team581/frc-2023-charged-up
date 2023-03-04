@@ -23,6 +23,7 @@ import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
 import java.util.List;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class SuperstructureManager extends LifecycleSubsystem {
@@ -52,7 +53,6 @@ public class SuperstructureManager extends LifecycleSubsystem {
 
   public void set(SuperstructureState state) {
     goal = state;
-    motionManager.set(goal.position);
     manualIntakeMode = null;
     if (state == States.STOWED) {
       scoringState = ScoringState.IDLE;
@@ -77,6 +77,8 @@ public class SuperstructureManager extends LifecycleSubsystem {
 
   @Override
   public void enabledPeriodic() {
+    motionManager.set(goal.position);
+
     if (manualIntakeMode != null) {
       intake.setMode(manualIntakeMode);
     } else {
@@ -104,11 +106,15 @@ public class SuperstructureManager extends LifecycleSubsystem {
     return mode;
   }
 
-  public Command getCommand(SuperstructureState state) {
-    return Commands.runOnce(
-            () -> this.set(state), motionManager.wrist, motionManager.elevator, intake)
-        .andThen(Commands.waitUntil(() -> atGoal(state)))
+  public Command getCommand(Supplier<SuperstructureState> state) {
+    return Commands.run(
+            () -> this.set(state.get()), motionManager.wrist, motionManager.elevator, intake)
+        .until(() -> atGoal(state.get()))
         .withName("SuperstructureCommand");
+  }
+
+  public Command getCommand(SuperstructureState state) {
+    return getCommand(() -> state);
   }
 
   public Command getScoreCommand(ManualScoringLocation scoringLocation) {
@@ -128,10 +134,7 @@ public class SuperstructureManager extends LifecycleSubsystem {
 
     return Commands.either(
             finishManualScoreCommand(),
-            Commands.either(
-                    getCommand(cubeState),
-                    getCommand(coneState),
-                    () -> intake.getGamePiece() == HeldGamePiece.CUBE)
+            getCommand(() -> mode == HeldGamePiece.CUBE ? cubeState : coneState)
                 .andThen(getCommand(States.STOWED)),
             () ->
                 goal.position.height >= Positions.CUBE_NODE_MID.height
@@ -156,10 +159,17 @@ public class SuperstructureManager extends LifecycleSubsystem {
 
     return Commands.runOnce(() -> scoringState = ScoringState.ALIGNING)
         .andThen(
-            Commands.either(
-                getCommand(new SuperstructureState(cubeState.position, IntakeMode.STOPPED, true)),
-                getCommand(new SuperstructureState(coneState.position, IntakeMode.STOPPED, true)),
-                () -> intake.getGamePiece() == HeldGamePiece.CUBE))
+            getCommand(
+                () ->
+                    mode == HeldGamePiece.CUBE
+                        ? new SuperstructureState(cubeState.position, IntakeMode.STOPPED, true)
+                        : new SuperstructureState(coneState.position, IntakeMode.STOPPED, true)))
+        .andThen(
+            getCommand(
+                () ->
+                    mode == HeldGamePiece.CUBE
+                        ? new SuperstructureState(cubeState.position, IntakeMode.STOPPED, true)
+                        : new SuperstructureState(coneState.position, IntakeMode.STOPPED, true)))
         .withName("SuperstructureManualScore");
   }
 
@@ -173,19 +183,21 @@ public class SuperstructureManager extends LifecycleSubsystem {
   }
 
   public Command getFloorIntakeSpinningCommand() {
-    return Commands.either(
-            getCommand(States.INTAKING_CUBE_FLOOR_SPINNING),
-            getCommand(States.INTAKING_CONE_FLOOR_SPINNING),
-            () -> mode == HeldGamePiece.CUBE)
+    return getCommand(
+            () ->
+                mode == HeldGamePiece.CUBE
+                    ? States.INTAKING_CUBE_FLOOR_SPINNING
+                    : States.INTAKING_CONE_FLOOR_SPINNING)
         .andThen(getCommand(States.STOWED))
         .withName("SuperstructureFloorIntakeSpinning");
   }
 
   public Command getShelfIntakeCommand() {
-    return Commands.either(
-            getCommand(States.INTAKING_CUBE_SHELF),
-            getCommand(States.INTAKING_CONE_SHELF),
-            () -> mode == HeldGamePiece.CUBE)
+    return getCommand(
+            () ->
+                mode == HeldGamePiece.CUBE
+                    ? States.INTAKING_CUBE_SHELF
+                    : States.INTAKING_CONE_SHELF)
         .andThen(getCommand(States.STOWED))
         .withName("SuperstructureShelfIntake");
   }
@@ -246,7 +258,7 @@ public class SuperstructureManager extends LifecycleSubsystem {
             Commands.either(
                 Commands.runOnce(() -> setManualIntakeMode(IntakeMode.OUTTAKE_CUBE)),
                 Commands.runOnce(() -> setManualIntakeMode(IntakeMode.OUTTAKE_CONE)),
-                () -> intake.getGamePiece() == HeldGamePiece.CUBE))
+                () -> mode == HeldGamePiece.CUBE))
         .withName("SuperstructureFinishManualScore");
   }
 
