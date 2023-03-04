@@ -10,9 +10,11 @@ import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.config.Config;
+import frc.robot.util.SimulationUtil;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
 import org.littletonrobotics.junction.Logger;
@@ -115,5 +117,30 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
 
   public Command getHomeCommand() {
     return runOnce(() -> startHoming()).andThen(Commands.waitUntil(() -> isHoming() == false));
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    if (isHoming) {
+      if (SimulationUtil.simulateDelay(0.1)) {
+        motor.getSimCollection().setIntegratedSensorRawPosition(0);
+        isHoming = false;
+        goalPositionInInches = 0;
+        goToGoal = true;
+      }
+    } else if (goToGoal) {
+      var motionProfile =
+          new TrapezoidProfile(
+              new TrapezoidProfile.Constraints(
+                  Config.ELEVATOR_CRUISE_VELOCITY, Config.ELEVATOR_ACCELERATION),
+              new TrapezoidProfile.State(goalPositionInInches * sensorUnitsPerElevatorInch, 0),
+              new TrapezoidProfile.State(
+                  motor.getSelectedSensorPosition(), motor.getSelectedSensorVelocity()));
+
+      var state = motionProfile.calculate(0.02 * 10.0);
+
+      motor.getSimCollection().setIntegratedSensorRawPosition((int) Math.round(state.position));
+      motor.getSimCollection().setIntegratedSensorVelocity((int) Math.round(state.velocity));
+    }
   }
 }
