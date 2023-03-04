@@ -29,7 +29,9 @@ public class ForksSubsystem extends LifecycleSubsystem {
 
     this.motor = motor;
     motor.configSupplyCurrentLimit(CURRENT_LIMIT);
-    motor.configForwardSoftLimitThreshold(0);
+    // TODO: This is too safe of a number
+    motor.configForwardSoftLimitThreshold(
+        Rotation2d.fromDegrees(-5000).getRotations() * Config.FORKS_GEARING * 2048.0);
   }
 
   public void setMode(ForksMode mode) {
@@ -62,19 +64,19 @@ public class ForksSubsystem extends LifecycleSubsystem {
     }
   }
 
-  public Rotation2d getAngle() {
+  private Rotation2d getSpoolRotation() {
     return Rotation2d.fromRotations(
         motor.getSelectedSensorPosition() / 2048.0 / Config.FORKS_GEARING);
   }
 
   public boolean atGoal(ForksMode mode) {
-    return Math.abs(getAngle().minus(mode.angle).getDegrees()) < TOLERANCE.getDegrees();
+    return Math.abs(getSpoolRotation().minus(mode.angle).getDegrees()) < TOLERANCE.getDegrees();
   }
 
   @Override
   public void robotPeriodic() {
     Logger.getInstance().recordOutput("Forks/Current", motor.getSupplyCurrent());
-    Logger.getInstance().recordOutput("Forks/Angle", getAngle().getDegrees());
+    Logger.getInstance().recordOutput("Forks/SpoolRotation", getSpoolRotation().getDegrees());
     Logger.getInstance().recordOutput("Forks/Mode", mode.toString());
     Logger.getInstance().recordOutput("Forks/HomingState", homingState.toString());
   }
