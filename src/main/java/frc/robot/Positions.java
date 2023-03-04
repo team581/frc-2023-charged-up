@@ -26,15 +26,15 @@ public class Positions {
           : new SuperstructurePosition(0.5, Rotation2d.fromDegrees(145), -1);
   public static final SuperstructurePosition CUBE_NODE_LOW =
       Config.IS_SPIKE
-          ? new SuperstructurePosition(0, Rotation2d.fromDegrees(127), -1)
+          ? new SuperstructurePosition(0, Rotation2d.fromDegrees(125), -1)
           : new SuperstructurePosition(0.5, Rotation2d.fromDegrees(125), -1);
   public static final SuperstructurePosition CUBE_NODE_MID =
       Config.IS_SPIKE
-          ? new SuperstructurePosition(12, Rotation2d.fromDegrees(110), -1)
+          ? new SuperstructurePosition(12, Rotation2d.fromDegrees(125), -1)
           : new SuperstructurePosition(17, Rotation2d.fromDegrees(146), -1);
   public static final SuperstructurePosition CUBE_NODE_HIGH =
       Config.IS_SPIKE
-          ? new SuperstructurePosition(23, Rotation2d.fromDegrees(125), -1)
+          ? new SuperstructurePosition(24, Rotation2d.fromDegrees(125), -1)
           : new SuperstructurePosition(28, Rotation2d.fromDegrees(157), -1);
 
   public static final SuperstructurePosition INTAKING_CONE_FLOOR =

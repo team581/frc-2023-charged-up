@@ -215,8 +215,12 @@ public class SuperstructureManager extends LifecycleSubsystem {
     return Commands.runOnce(() -> setIntakeMode(gamePiece));
   }
 
-  public void setIntakeMode(HeldGamePiece gamePiece) {
-    mode = gamePiece;
+  public void setIntakeMode(HeldGamePiece newMode) {
+    if (mode != newMode) {
+      intake.setGamePiece(HeldGamePiece.NOTHING);
+    }
+
+    mode = newMode;
   }
 
   public void setManualIntakeMode(IntakeMode manualIntakeMode) {
@@ -237,6 +241,7 @@ public class SuperstructureManager extends LifecycleSubsystem {
                         goal.position.height + 0.5,
                         Rotation2d.fromDegrees(goal.position.angle.getDegrees() + 15),
                         -1)))
+        .unless(() -> mode != HeldGamePiece.CONE)
         .andThen(
             Commands.either(
                 Commands.runOnce(() -> setManualIntakeMode(IntakeMode.OUTTAKE_CUBE)),

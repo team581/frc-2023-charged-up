@@ -111,7 +111,6 @@ public class Robot extends LoggedRobot {
           superstructureManager,
           localization);
 
-
   private final Autobalance autobalance = new Autobalance(swerve, imu);
 
   private final Autos autos =
