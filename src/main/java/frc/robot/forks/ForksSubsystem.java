@@ -32,6 +32,9 @@ public class ForksSubsystem extends LifecycleSubsystem {
     // TODO: This is too safe of a number
     motor.configForwardSoftLimitThreshold(
         Rotation2d.fromDegrees(-5000).getRotations() * Config.FORKS_GEARING * 2048.0);
+
+    // We assume the forks are stowed when the robot is turned on
+    motor.setSelectedSensorPosition(0);
   }
 
   public void setMode(ForksMode mode) {
