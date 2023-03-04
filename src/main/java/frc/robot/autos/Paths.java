@@ -41,7 +41,4 @@ public class Paths {
       PathPlanner.loadPathGroup("RedShortSide2.5ConeBalance", new PathConstraints(4.0, 3.0));
   public static final List<PathPlannerTrajectory> RED_SHORT_SIDE_2_CONE_BALANCE =
       PathPlanner.loadPathGroup("RedShortSide2ConeBalance", new PathConstraints(1, 1));
-
-  public static final List<PathPlannerTrajectory> BUG =
-      PathPlanner.loadPathGroup("bug", new PathConstraints(1, 1));
 }
