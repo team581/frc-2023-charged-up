@@ -157,7 +157,7 @@ public class Autos {
             SwerveSubsystem.KINEMATICS,
             Config.SWERVE_TRANSLATION_PID,
             Config.SWERVE_ROTATION_PID,
-            (states) -> swerve.setModuleStates(states, false),
+            (states) -> swerve.setModuleStates(states, false, false),
             eventMap,
             false,
             swerve);

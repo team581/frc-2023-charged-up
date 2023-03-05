@@ -148,6 +148,5 @@ public class Config {
 
   public static final double ROBOT_CENTER_TO_FRONT = IS_SPIKE ? 0.0 : Units.inchesToMeters(18);
 
-
   private Config() {}
 }
