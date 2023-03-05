@@ -30,6 +30,7 @@ public class LifecycleSubsystem extends SubsystemBase {
 
     String name = this.getClass().getSimpleName();
     name = name.substring(name.lastIndexOf('.') + 1);
+    // First string concat causes lag spike. This shifts lag spike to code init.
     loggerName = "Scheduler/LifecycleSubsystem/" + name + ".periodic()";
 
     robotInit();

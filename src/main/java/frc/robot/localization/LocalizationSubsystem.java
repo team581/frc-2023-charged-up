@@ -54,9 +54,9 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
         new SwerveDriveOdometry(
             SwerveSubsystem.KINEMATICS, imu.getRobotHeading(), swerve.getModulePositions());
 
-    visionStdLookup.put(0.5, 0.2);
-    visionStdLookup.put(1.0, 1.0);
-    visionStdLookup.put(2.0, 1.5);
+    visionStdLookup.put(0.5, 0.5);
+    visionStdLookup.put(1.0, 2.0);
+    visionStdLookup.put(2.0, 2.5);
   }
 
   @Override
@@ -73,54 +73,51 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
 
     boolean visionIsValid = false; // Indicates if vision is valid in this loop.
 
-    LimelightResults results = LimelightHelpers.getLatestResults("");
-    Pose2d currentVisionPose = results.targetingResults.getBotPose2d_wpiBlue();
-    if (false && previousPose.getX() != currentVisionPose.getX()
-        && previousPose.getY() != currentVisionPose.getY()) {
-      previousPose = currentVisionPose;
+    if (LimelightHelpers.getTV("")){
+      Pose2d ntCurrentVisionPose = LimelightHelpers.getBotPose2d_wpiBlue("");
+      if (previousPose.getX() != ntCurrentVisionPose.getX() && previousPose.getY() != ntCurrentVisionPose.getY()){
+        previousPose = ntCurrentVisionPose;
 
-      Pose2d angleAdjustedVisionPose =
-          new Pose2d(currentVisionPose.getTranslation(), imu.getRobotHeading());
+        LimelightResults results = LimelightHelpers.getLatestResults("");
+        Pose2d angleAdjustedVisionPose = new Pose2d(ntCurrentVisionPose.getTranslation(), imu.getRobotHeading());
 
-      Logger.getInstance()
-          .recordOutput("Localization/UnfilteredVisionPose", angleAdjustedVisionPose);
-
-      double visionTimestamp =
+        double visionTimestamp =
           Timer.getFPGATimestamp()
               - ((results.targetingResults.latency_capture
                       + results.targetingResults.latency_jsonParse
                       + results.targetingResults.latency_pipeline)
                   / 1000);
 
-      double averageDistanceToIndividualFiducialTags = 0;
-      double fiducialTagCount = 0;
+        double averageDistanceToIndividualFiducialTags = 0;
+        double fiducialTagCount = 0;
 
-      // Calculate average distance of each tag seen.
-      if (results.targetingResults.valid
-          && currentVisionPose.getX() != 0.0
-          && currentVisionPose.getY() != 0.0) {
-        for (int i = 0; i < results.targetingResults.targets_Fiducials.length; ++i) {
-          Pose2d fiducialPose =
-              results.targetingResults.targets_Fiducials[i].getTargetPose_RobotSpace2D();
-          double fiducialDistanceAway =
-              Math.sqrt(Math.pow(fiducialPose.getX(), 2) + Math.pow(fiducialPose.getY(), 2));
-          averageDistanceToIndividualFiducialTags += fiducialDistanceAway;
-          fiducialTagCount++;
+        // Calculate average distance of each tag seen.
+        if (results.targetingResults.valid
+            && ntCurrentVisionPose.getX() != 0.0
+            && ntCurrentVisionPose.getY() != 0.0) {
+          for (int i = 0; i < results.targetingResults.targets_Fiducials.length; ++i) {
+            Pose2d fiducialPose =
+                results.targetingResults.targets_Fiducials[i].getTargetPose_RobotSpace2D();
+            double fiducialDistanceAway =
+                Math.sqrt(Math.pow(fiducialPose.getX(), 2) + Math.pow(fiducialPose.getY(), 2));
+            averageDistanceToIndividualFiducialTags += fiducialDistanceAway;
+            fiducialTagCount++;
+          }
+          visionIsValid = true;
         }
-        visionIsValid = true;
-      }
 
-      // Update pose estimator if vision is valid.
-      if (visionIsValid) {
-        // Adjust vision measurement standard deviation by average distance from tags.
-        double stdForVision =
-            visionStdLookup.get(averageDistanceToIndividualFiducialTags) / fiducialTagCount;
-        poseEstimator.addVisionMeasurement(
-            angleAdjustedVisionPose,
-            visionTimestamp,
-            VecBuilder.fill(stdForVision, stdForVision, Units.degreesToRadians(5)));
-        Logger.getInstance().recordOutput("Localization/VisionPose", angleAdjustedVisionPose);
-        visionWorking = true;
+        // Update pose estimator if vision is valid.
+        if (visionIsValid) {
+          // Adjust vision measurement standard deviation by average distance from tags.
+          double stdForVision =
+              visionStdLookup.get(averageDistanceToIndividualFiducialTags) / fiducialTagCount;
+          poseEstimator.addVisionMeasurement(
+              angleAdjustedVisionPose,
+              visionTimestamp,
+              VecBuilder.fill(stdForVision, stdForVision, Units.degreesToRadians(5)));
+          Logger.getInstance().recordOutput("Localization/VisionPose", angleAdjustedVisionPose);
+          visionWorking = true;
+        }
       }
     }
   }
