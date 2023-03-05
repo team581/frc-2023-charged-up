@@ -135,9 +135,9 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     this.gamePiece = gamePiece;
   }
 
-  public Command getIntakeCommand() {
-    return runOnce(() -> setMode(mode))
-        .andThen(Commands.waitUntil(() -> atGoal(mode)))
+  public Command getCommand(IntakeMode newGoal) {
+    return runOnce(() -> setMode(newGoal))
+        .andThen(Commands.waitUntil(() -> atGoal(newGoal)))
         .andThen(Commands.runOnce(() -> setMode(IntakeMode.STOPPED)));
   }
 }
