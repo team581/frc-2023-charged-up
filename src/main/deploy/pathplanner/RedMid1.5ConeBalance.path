@@ -175,21 +175,19 @@
       }
     }
   ],
-  "maxVelocity": 2.75,
-  "maxAcceleration": 2.0,
+  "maxVelocity": 1.0,
+  "maxAcceleration": 1.0,
   "isReversed": null,
   "markers": [
     {
-      "position": 3.2072727272726462,
+      "position": 3.4472727272727295,
       "names": [
-        "event",
         "intakeCone"
       ]
     },
     {
       "position": 4.821818181818048,
       "names": [
-        "event",
         "stow"
       ]
     }

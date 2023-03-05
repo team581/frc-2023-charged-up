@@ -33,7 +33,7 @@ public class SwerveModule {
   private static final GearingConverter DRIVE_MOTOR_GEARING_CONVERTER =
       GearingConverter.fromReduction(Config.SWERVE_DRIVE_GEARING_REDUCTION);
   private static final CircleConverter DRIVE_MOTOR_WHEEL_CONVERTER =
-      CircleConverter.fromDiameter(Units.inchesToMeters(4));
+      CircleConverter.fromDiameter(Units.inchesToMeters(3.9));
 
   private final SwerveModuleConstants constants;
   private final TalonFX driveMotor;

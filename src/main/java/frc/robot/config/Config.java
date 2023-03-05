@@ -146,7 +146,8 @@ public class Config {
   public static final Rotation2d SUPERSTRUCTURE_WRIST_RANGE =
       IS_SPIKE ? Rotation2d.fromDegrees(50) : Rotation2d.fromDegrees(13);
 
-  public static final double ROBOT_CENTER_TO_FRONT = IS_SPIKE ? 0.0 : Units.inchesToMeters(17.5);
+  public static final double ROBOT_CENTER_TO_FRONT = IS_SPIKE ? 0.0 : Units.inchesToMeters(18);
+
 
   private Config() {}
 }
