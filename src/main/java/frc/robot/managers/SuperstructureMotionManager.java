@@ -35,17 +35,23 @@ public class SuperstructureMotionManager extends LifecycleSubsystem {
     this.controller = controller;
   }
 
-  public void set(SuperstructurePosition goalPosition) {
-    this.goalPosition = goalPosition;
+  public void set(SuperstructurePosition newGoal) {
+    if (newGoal.height == goalPosition.height
+        && newGoal.angle.equals(goalPosition.angle)
+        && newGoal.earlyTransitionHeight == goalPosition.earlyTransitionHeight) {
+      return;
+    }
+
+    goalPosition = newGoal;
     double wristRange = Config.SUPERSTRUCTURE_WRIST_RANGE.getDegrees();
-    double goalDegrees = goalPosition.angle.getDegrees();
+    double goalDegrees = newGoal.angle.getDegrees();
     double wristAngle = wrist.getAngle().getDegrees();
     double intermediatePointDegrees = 50;
 
     boolean wristGoalInCollisionArea = goalDegrees < wristRange;
     boolean currentWristAngleInCollisionArea = wristAngle < wristRange;
     double goalHeight =
-        MathUtil.clamp(goalPosition.height, Config.ELEVATOR_MIN_HEIGHT, Config.ELEVATOR_MAX_HEIGHT);
+        MathUtil.clamp(newGoal.height, Config.ELEVATOR_MIN_HEIGHT, Config.ELEVATOR_MAX_HEIGHT);
     boolean leavingBumperArea =
         goalHeight > Config.SUPERSTRUCTURE_COLLISION_HEIGHT
             && elevator.getHeight() < Config.SUPERSTRUCTURE_COLLISION_HEIGHT;
@@ -63,7 +69,7 @@ public class SuperstructureMotionManager extends LifecycleSubsystem {
           new SuperstructurePosition(goalHeight, Rotation2d.fromDegrees(50), goalHeight / 3));
     }
 
-    positionList.add(new SuperstructurePosition(goalHeight, goalPosition.angle, -1));
+    positionList.add(new SuperstructurePosition(goalHeight, newGoal.angle, -1));
   }
 
   public boolean atGoal(SuperstructurePosition position) {

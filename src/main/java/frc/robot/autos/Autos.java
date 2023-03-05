@@ -28,7 +28,6 @@ import frc.robot.managers.Autobalance;
 import frc.robot.managers.SuperstructureManager;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.wrist.WristSubsystem;
-import frc.robot.wrist.commands.WristHomingCommand;
 import java.util.HashMap;
 import java.util.Map;
 import org.littletonrobotics.junction.Logger;
@@ -129,7 +128,7 @@ public class Autos {
                     .getScoreCommand(ManualScoringLocation.HIGH)
                     .withTimeout(3)
                     .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
-            Map.entry("home", elevator.getHomeCommand().andThen(new WristHomingCommand(wrist))),
+            Map.entry("home", superstructure.getHomeCommand()),
             Map.entry(
                 "intakeCone",
                 superstructure

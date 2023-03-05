@@ -13,21 +13,23 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.autos.Autos;
 import frc.robot.autoscore.AutoScoreLocation;
 import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.fms.FmsSubsystem;
+import frc.robot.forks.ForksMode;
 import frc.robot.forks.ForksSubsystem;
 import frc.robot.generated.BuildConstants;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.intake.HeldGamePiece;
 import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
-import frc.robot.intake.commands.IntakeCommand;
 import frc.robot.lights.LightsSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
+import frc.robot.managers.AutoRotate;
 import frc.robot.managers.Autobalance;
 import frc.robot.managers.SuperstructureManager;
 import frc.robot.managers.SuperstructureMotionManager;
@@ -35,7 +37,6 @@ import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystemManager;
 import frc.robot.wrist.WristSubsystem;
-import frc.robot.wrist.commands.WristHomingCommand;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -112,6 +113,7 @@ public class Robot extends LoggedRobot {
           localization);
 
   private final Autobalance autobalance = new Autobalance(swerve, imu);
+  private final AutoRotate autoRotate = new AutoRotate(swerve);
 
   private final Autos autos =
       new Autos(
@@ -198,6 +200,14 @@ public class Robot extends LoggedRobot {
                     && driveController.getThetaPercentage() == 0)
         .whileTrue(swerve.getXSwerveCommand());
 
+    // Face towards grids
+    driveController.b().onTrue(autoRotate.getCommand(() -> AutoRotate.getGridAngle()));
+    // Face towards shelf
+    driveController.a().onTrue(autoRotate.getCommand(() -> AutoRotate.getShelfAngle()));
+
+    new Trigger(() -> driveController.getThetaPercentage() == 0)
+        .onFalse(autoRotate.getDisableCommand());
+
     // Manual intake
     operatorController
         .leftTrigger(0.3)
@@ -227,37 +237,18 @@ public class Robot extends LoggedRobot {
     // Stow all
     operatorController.x().onTrue(superstructureManager.getCommand(States.STOWED));
     // Home superstructure
+    operatorController.back().onTrue(superstructureManager.getHomeCommand());
+
+    // Forks go up
     operatorController
-        .back()
-        .onTrue(
-            elevator
-                .getHomeCommand()
-                .andThen(new WristHomingCommand(wrist))
-                .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
-
-    // operatorController
-    //     .rightTrigger()
-    //     .whileTrue(
-    //         swerve.goToPoseCommand(
-    //             Landmarks.RED_STAGING_MARK_FAR_RIGHT,
-    //             localization));
-
-    // // Autobalance
-    // operatorController
-    //     .rightTrigger()
-    //     .onTrue(autobalance.getCommand())
-    //     .onFalse(Commands.runOnce(() -> autobalance.setEnabled(false)));
-
-    // // Forks go up
-    // operatorController
-    //     .povUp()
-    //     .onTrue(forks.getCommand(ForksMode.UP))
-    //     .onFalse(forks.getCommand(ForksMode.STOPPED));
-    // // Forks go down
-    // operatorController
-    //     .povDown()
-    //     .onTrue(forks.getCommand(ForksMode.DOWN))
-    //     .onFalse(forks.getCommand(ForksMode.STOPPED));
+        .povUp()
+        .onTrue(forks.getCommand(ForksMode.UP))
+        .onFalse(forks.getCommand(ForksMode.STOPPED));
+    // Forks go down
+    operatorController
+        .povDown()
+        .onTrue(forks.getCommand(ForksMode.DOWN))
+        .onFalse(forks.getCommand(ForksMode.STOPPED));
   }
 
   @Override

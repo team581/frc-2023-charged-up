@@ -8,6 +8,8 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.config.Config;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
@@ -83,7 +85,7 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     } else if (mode == IntakeMode.OUTTAKE_CONE) {
       motor.set(TalonFXControlMode.PercentOutput, 0.15);
     } else if (gamePiece == HeldGamePiece.CUBE) {
-      motor.set(TalonFXControlMode.PercentOutput, 0.05);
+      motor.set(TalonFXControlMode.PercentOutput, 0.075);
     } else if (gamePiece == HeldGamePiece.CONE) {
       motor.set(TalonFXControlMode.PercentOutput, -0.1);
     } else if (mode == IntakeMode.INTAKE_CUBE) {
@@ -131,5 +133,11 @@ public class IntakeSubsystem extends LifecycleSubsystem {
 
   public void setGamePiece(HeldGamePiece gamePiece) {
     this.gamePiece = gamePiece;
+  }
+
+  public Command getIntakeCommand() {
+    return runOnce(() -> setMode(mode))
+        .andThen(Commands.waitUntil(() -> atGoal(mode)))
+        .andThen(Commands.runOnce(() -> setMode(IntakeMode.STOPPED)));
   }
 }
