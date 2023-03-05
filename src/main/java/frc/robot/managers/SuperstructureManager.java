@@ -257,7 +257,7 @@ public class SuperstructureManager extends LifecycleSubsystem {
                                     goal.position.height + 0.5,
                                     Rotation2d.fromDegrees(goal.position.angle.getDegrees() + 15),
                                     -1),
-                                manualIntakeMode)))
+                                IntakeMode.OUTTAKE_CONE)))
                 .unless(() -> mode == HeldGamePiece.CUBE))
         .andThen(
             Commands.either(
