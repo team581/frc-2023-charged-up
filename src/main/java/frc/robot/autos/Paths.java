@@ -34,7 +34,7 @@ public class Paths {
   public static final List<PathPlannerTrajectory> RED_LONG_SIDE_1_5_CONE_BALANCE =
       PathPlanner.loadPathGroup("RedLongSide1.5ConeBalance", new PathConstraints(1.5, 0.75));
   public static final List<PathPlannerTrajectory> RED_MID_1_5_CONE_BALANCE =
-      PathPlanner.loadPathGroup("RedMid1.5ConeBalance", new PathConstraints(1.0, 1.0));
+      PathPlanner.loadPathGroup("RedMid1.5ConeBalance", new PathConstraints(2.5, 2.0));
   public static final List<PathPlannerTrajectory> RED_MID_1_CONE_BALANCE =
       PathPlanner.loadPathGroup("RedMid1ConeBalance", new PathConstraints(1.5, 2.5));
   public static final List<PathPlannerTrajectory> RED_SHORT_SIDE_2_5_CONE_BALANCE =
