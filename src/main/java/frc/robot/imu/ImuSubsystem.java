@@ -23,6 +23,7 @@ public class ImuSubsystem extends LifecycleSubsystem {
 
   public void robotPeriodic() {
     Logger.getInstance().recordOutput("Imu/RobotHeading", this.getRobotHeading().getDegrees());
+    Logger.getInstance().recordOutput("Imu/RobotHeadingRadians", this.getRobotHeading().getRadians());
   }
 
   public Rotation2d getRobotHeading() {
