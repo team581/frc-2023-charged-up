@@ -119,13 +119,15 @@ public class Autos {
             Map.entry(
                 "scoreMid",
                 superstructure
-                    .getScoreCommand(ManualScoringLocation.MID)
+                    .getScoreCommand(
+                        Config.IS_SPIKE ? ManualScoringLocation.MID : ManualScoringLocation.LOW)
                     .withTimeout(3)
                     .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
             Map.entry(
                 "scoreHigh",
                 superstructure
-                    .getScoreCommand(ManualScoringLocation.HIGH)
+                    .getScoreCommand(
+                        Config.IS_SPIKE ? ManualScoringLocation.HIGH : ManualScoringLocation.LOW)
                     .withTimeout(3)
                     .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
             Map.entry("home", superstructure.getHomeCommand()),
