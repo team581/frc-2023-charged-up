@@ -191,14 +191,7 @@ public class Robot extends LoggedRobot {
     driveController.leftBumper().onTrue(superstructureManager.getShelfIntakeCommand());
 
     // X swerve
-    driveController
-        .x()
-        .and(
-            () ->
-                driveController.getSidewaysPercentage() == 0
-                    && driveController.getForwardPercentage() == 0
-                    && driveController.getThetaPercentage() == 0)
-        .whileTrue(swerve.getXSwerveCommand());
+    driveController.x().onTrue(swerve.getXSwerveCommand());
 
     // Face towards grids
     driveController.b().onTrue(autoRotate.getCommand(() -> AutoRotate.getGridAngle()));
@@ -207,6 +200,13 @@ public class Robot extends LoggedRobot {
 
     new Trigger(() -> driveController.getThetaPercentage() == 0)
         .onFalse(autoRotate.getDisableCommand());
+
+    new Trigger(
+            () ->
+                driveController.getSidewaysPercentage() == 0
+                    && driveController.getForwardPercentage() == 0
+                    && driveController.getThetaPercentage() == 0)
+        .onFalse(swerve.disableXSwerveCommand());
 
     // Manual intake
     operatorController

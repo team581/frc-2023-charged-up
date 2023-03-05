@@ -49,6 +49,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   private boolean doneResetting = false;
 
   private boolean snapToAngle = false;
+  private boolean xSwerveEnabled = false;
 
   private final PIDController xController =
       new PIDController(
@@ -127,6 +128,13 @@ public class SwerveSubsystem extends LifecycleSubsystem {
         .recordOutput("Swerve/ChassisSpeeds/Omega", chassisSpeeds.omegaRadiansPerSecond);
   }
 
+  @Override
+  public void enabledPeriodic() {
+    if (xSwerveEnabled) {
+      xSwerve();
+    }
+  }
+
   public ChassisSpeeds getChassisSpeeds() {
     final var frontLeftState = frontLeft.getState();
     final var frontRightState = frontRight.getState();
@@ -161,6 +169,10 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     snapToAngle = false;
   }
 
+  public void setXSwerve(boolean xSwerve) {
+    this.xSwerveEnabled = xSwerve;
+  }
+
   public void setChassisSpeeds(ChassisSpeeds speeds, boolean openLoop) {
     if (snapToAngle) {
       speeds.omegaRadiansPerSecond =
@@ -168,15 +180,16 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     }
 
     final var moduleStates = KINEMATICS.toSwerveModuleStates(speeds);
-    setModuleStates(moduleStates, openLoop);
+    setModuleStates(moduleStates, openLoop, false);
   }
 
-  public void setModuleStates(SwerveModuleState[] moduleStates, boolean openLoop) {
+  public void setModuleStates(
+      SwerveModuleState[] moduleStates, boolean openLoop, boolean skipJitterOptimization) {
     Logger.getInstance().recordOutput("Swerve/GoalModuleStates", moduleStates);
-    frontLeft.setDesiredState(moduleStates[0], openLoop);
-    frontRight.setDesiredState(moduleStates[1], openLoop);
-    backLeft.setDesiredState(moduleStates[2], openLoop);
-    backRight.setDesiredState(moduleStates[3], openLoop);
+    frontLeft.setDesiredState(moduleStates[0], openLoop, skipJitterOptimization);
+    frontRight.setDesiredState(moduleStates[1], openLoop, skipJitterOptimization);
+    backLeft.setDesiredState(moduleStates[2], openLoop, skipJitterOptimization);
+    backRight.setDesiredState(moduleStates[3], openLoop, skipJitterOptimization);
   }
 
   public void xSwerve() {
@@ -187,11 +200,16 @@ public class SwerveSubsystem extends LifecycleSubsystem {
           new SwerveModuleState(0.0, Rotation2d.fromDegrees(135)),
           new SwerveModuleState(0.0, Rotation2d.fromDegrees(45))
         },
+        true,
         true);
   }
 
   public Command getXSwerveCommand() {
-    return Commands.run(() -> xSwerve(), this);
+    return run(() -> setXSwerve(true));
+  }
+
+  public Command disableXSwerveCommand() {
+    return runOnce(() -> setXSwerve(false));
   }
 
   public void driveTeleop(
@@ -259,7 +277,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
             yController,
             // theta controller
             thetaController,
-            states -> setModuleStates(states, false),
+            states -> setModuleStates(states, false, false),
             false,
             this)
         .withName("SwerveFollowTrajectory");
