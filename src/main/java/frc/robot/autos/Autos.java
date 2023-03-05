@@ -22,6 +22,7 @@ import frc.robot.config.Config;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.intake.HeldGamePiece;
+import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.managers.Autobalance;
@@ -109,7 +110,10 @@ public class Autos {
                 "preloadCone",
                 superstructure
                     .setIntakeModeCommand(HeldGamePiece.CONE)
-                    .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.CONE)))),
+                    .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.CONE)))
+                    .andThen(superstructure.setManualIntakeCommand(IntakeMode.INTAKE_CONE))
+                    .andThen(Commands.waitSeconds(0.5))
+                    .andThen(superstructure.setManualIntakeCommand(null))),
             Map.entry(
                 "scoreLow",
                 superstructure
