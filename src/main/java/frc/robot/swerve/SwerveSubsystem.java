@@ -182,10 +182,10 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   public void xSwerve() {
     setModuleStates(
         new SwerveModuleState[] {
-          new SwerveModuleState(0.0, new Rotation2d(45)),
-          new SwerveModuleState(0.0, new Rotation2d(90)),
-          new SwerveModuleState(0.0, new Rotation2d(135)),
-          new SwerveModuleState(0.0, new Rotation2d(180))
+          new SwerveModuleState(0.0, Rotation2d.fromDegrees(45)),
+          new SwerveModuleState(0.0, Rotation2d.fromDegrees(135)),
+          new SwerveModuleState(0.0, Rotation2d.fromDegrees(135)),
+          new SwerveModuleState(0.0, Rotation2d.fromDegrees(45))
         },
         true);
   }
