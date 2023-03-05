@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import frc.robot.ManualScoringLocation;
 import frc.robot.Positions;
 import frc.robot.States;
@@ -246,14 +247,18 @@ public class SuperstructureManager extends LifecycleSubsystem {
   // TODO: Ignore this command when the superstructure is STOWED
   public Command finishManualScoreCommand() {
     return Commands.waitUntil(() -> atPosition(goal.position))
+        // Dunk motion when we are scoring a cone
         .andThen(
-            () ->
-                motionManager.set(
-                    new SuperstructurePosition(
-                        goal.position.height + 0.5,
-                        Rotation2d.fromDegrees(goal.position.angle.getDegrees() + 15),
-                        -1)))
-        .unless(() -> mode != HeldGamePiece.CONE)
+            new ProxyCommand(
+                    () ->
+                        getCommand(
+                            new SuperstructureState(
+                                new SuperstructurePosition(
+                                    goal.position.height + 0.5,
+                                    Rotation2d.fromDegrees(goal.position.angle.getDegrees() + 15),
+                                    -1),
+                                IntakeMode.OUTTAKE_CONE)))
+                .unless(() -> mode == HeldGamePiece.CUBE))
         .andThen(
             Commands.either(
                 Commands.runOnce(() -> setManualIntakeMode(IntakeMode.OUTTAKE_CUBE)),
@@ -264,7 +269,7 @@ public class SuperstructureManager extends LifecycleSubsystem {
 
   public Command getHomeCommand() {
     return intake
-        .getIntakeCommand()
+        .getCommand(IntakeMode.STOPPED)
         .andThen(motionManager.elevator.getHomeCommand())
         .andThen(motionManager.wrist.getHomeCommand());
   }

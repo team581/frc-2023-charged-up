@@ -36,8 +36,10 @@ public class SwerveModule {
   private final TalonFX driveMotor;
   private final TalonFX steerMotor;
   private final CANCoder encoder;
-  private final DutyCycleOut driveVoltageOpenLoopRequest = new DutyCycleOut(0, Config.SWERVE_USE_FOC, true);
-  private final PositionVoltage steerMotorControl = new PositionVoltage(0, Config.SWERVE_USE_FOC, 0, 0, false);
+  private final DutyCycleOut driveVoltageOpenLoopRequest =
+      new DutyCycleOut(0, Config.SWERVE_USE_FOC, true);
+  private final PositionVoltage steerMotorControl =
+      new PositionVoltage(0, Config.SWERVE_USE_FOC, 0, 0, false);
   private final VelocityVoltage driveVoltageClosedLoopRequest =
       new VelocityVoltage(0, Config.SWERVE_USE_FOC, 0, 0, false);
   private Rotation2d previousAngle = new Rotation2d();
@@ -110,7 +112,8 @@ public class SwerveModule {
     }
   }
 
-  public void setDesiredState(SwerveModuleState state, boolean OpenLoop) {
+  public void setDesiredState(
+      SwerveModuleState state, boolean openLoop, boolean skipJitterOptimization) {
     final var steerMotorPosition = getSteerMotorPosition();
     state = CtreModuleState.optimize(state, steerMotorPosition);
 
@@ -121,7 +124,7 @@ public class SwerveModule {
     boolean isStopped =
         Math.abs(state.speedMetersPerSecond)
             <= SwerveSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.01;
-    Rotation2d angle = isStopped ? this.previousAngle : state.angle;
+    Rotation2d angle = isStopped && !skipJitterOptimization ? this.previousAngle : state.angle;
     this.previousAngle = angle;
 
     var wheelRotationsPerSecond =
@@ -131,7 +134,7 @@ public class SwerveModule {
 
     this.commandedDriveVelocity = Units.metersToInches(state.speedMetersPerSecond);
 
-    if (OpenLoop) {
+    if (openLoop) {
       driveMotor.setControl(
           driveVoltageOpenLoopRequest.withOutput(
               state.speedMetersPerSecond / SwerveSubsystem.MAX_VELOCITY_METERS_PER_SECOND));
@@ -175,10 +178,6 @@ public class SwerveModule {
         .recordOutput(
             "Swerve/" + this.constants.corner.toString() + "/Steer motor commanded angle (deg)",
             this.previousAngle.getDegrees());
-    Logger.getInstance()
-        .recordOutput(
-            "Swerve/" + this.constants.corner.toString() + "/Steer Motor Position",
-            getSteerMotorPosition().getDegrees());
     Logger.getInstance()
         .recordOutput(
             "Swerve/" + this.constants.corner.toString() + "/Drive Motor FF",
