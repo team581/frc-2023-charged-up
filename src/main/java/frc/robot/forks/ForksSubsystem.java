@@ -30,8 +30,7 @@ public class ForksSubsystem extends LifecycleSubsystem {
     this.motor = motor;
     motor.configSupplyCurrentLimit(CURRENT_LIMIT);
     // TODO: This is too safe of a number
-    motor.configForwardSoftLimitThreshold(
-        Rotation2d.fromDegrees(-5000).getRotations() * Config.FORKS_GEARING * 2048.0);
+    motor.configForwardSoftLimitThreshold(-2048.0);
 
     // We assume the forks are stowed when the robot is turned on
     motor.setSelectedSensorPosition(0);
@@ -44,6 +43,12 @@ public class ForksSubsystem extends LifecycleSubsystem {
   @Override
   public void testInit() {
     motor.configForwardSoftLimitEnable(false);
+  }
+
+  @Override
+  public void testPeriodic() {
+    // This allows us to re-zero the forks in test mode without rebooting the robotAz
+    motor.setSelectedSensorPosition(0);
   }
 
   @Override
@@ -80,6 +85,7 @@ public class ForksSubsystem extends LifecycleSubsystem {
   public void robotPeriodic() {
     Logger.getInstance().recordOutput("Forks/Current", motor.getSupplyCurrent());
     Logger.getInstance().recordOutput("Forks/SpoolRotation", getSpoolRotation().getDegrees());
+    Logger.getInstance().recordOutput("Forks/RawSpoolRotation", motor.getSelectedSensorPosition());
     Logger.getInstance().recordOutput("Forks/Mode", mode.toString());
     Logger.getInstance().recordOutput("Forks/HomingState", homingState.toString());
   }
