@@ -269,7 +269,7 @@ public class SuperstructureManager extends LifecycleSubsystem {
 
   public Command getHomeCommand() {
     return intake
-        .getIntakeCommand()
+        .getCommand(IntakeMode.STOPPED)
         .andThen(motionManager.elevator.getHomeCommand())
         .andThen(motionManager.wrist.getHomeCommand());
   }
