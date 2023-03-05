@@ -36,8 +36,10 @@ public class SwerveModule {
   private final TalonFX driveMotor;
   private final TalonFX steerMotor;
   private final CANCoder encoder;
-  private final DutyCycleOut driveVoltageOpenLoopRequest = new DutyCycleOut(0, Config.SWERVE_USE_FOC, true);
-  private final PositionVoltage steerMotorControl = new PositionVoltage(0, Config.SWERVE_USE_FOC, 0, 0, false);
+  private final DutyCycleOut driveVoltageOpenLoopRequest =
+      new DutyCycleOut(0, Config.SWERVE_USE_FOC, true);
+  private final PositionVoltage steerMotorControl =
+      new PositionVoltage(0, Config.SWERVE_USE_FOC, 0, 0, false);
   private final VelocityVoltage driveVoltageClosedLoopRequest =
       new VelocityVoltage(0, Config.SWERVE_USE_FOC, 0, 0, false);
   private Rotation2d previousAngle = new Rotation2d();

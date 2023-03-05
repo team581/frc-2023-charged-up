@@ -75,7 +75,8 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
 
     LimelightResults results = LimelightHelpers.getLatestResults("");
     Pose2d currentVisionPose = results.targetingResults.getBotPose2d_wpiBlue();
-    if (false && previousPose.getX() != currentVisionPose.getX()
+    if (false
+        && previousPose.getX() != currentVisionPose.getX()
         && previousPose.getY() != currentVisionPose.getY()) {
       previousPose = currentVisionPose;
 
