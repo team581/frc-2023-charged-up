@@ -76,20 +76,22 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
 
     boolean visionIsValid = false; // Indicates if vision is valid in this loop.
 
-    if (LimelightHelpers.getTV("")){
+    if (LimelightHelpers.getTV("")) {
       Pose2d ntCurrentVisionPose = LimelightHelpers.getBotPose2d_wpiBlue("");
-      if (previousPose.getX() != ntCurrentVisionPose.getX() && previousPose.getY() != ntCurrentVisionPose.getY()){
+      if (previousPose.getX() != ntCurrentVisionPose.getX()
+          && previousPose.getY() != ntCurrentVisionPose.getY()) {
         previousPose = ntCurrentVisionPose;
 
         LimelightResults results = LimelightHelpers.getLatestResults("");
-        Pose2d angleAdjustedVisionPose = new Pose2d(ntCurrentVisionPose.getTranslation(), imu.getRobotHeading());
+        Pose2d angleAdjustedVisionPose =
+            new Pose2d(ntCurrentVisionPose.getTranslation(), imu.getRobotHeading());
 
         double visionTimestamp =
-          Timer.getFPGATimestamp()
-              - ((results.targetingResults.latency_capture
-                      + results.targetingResults.latency_jsonParse
-                      + results.targetingResults.latency_pipeline)
-                  / 1000);
+            Timer.getFPGATimestamp()
+                - ((results.targetingResults.latency_capture
+                        + results.targetingResults.latency_jsonParse
+                        + results.targetingResults.latency_pipeline)
+                    / 1000);
 
         double averageDistanceToIndividualFiducialTags = 0;
         double fiducialTagCount = 0;
