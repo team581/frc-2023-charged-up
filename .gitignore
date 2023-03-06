@@ -158,3 +158,6 @@ src/main/java/frc/robot/generated
 *Talon FX*.dat
 simgui*.json
 networktables.json
+
+# Robot logs
+*.wpilog

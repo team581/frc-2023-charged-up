@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -36,10 +37,7 @@ import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystemManager;
 import frc.robot.wrist.WristSubsystem;
-import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.NT4Publisher;
-import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -47,7 +45,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends LoggedRobot {
+public class Robot extends TimedRobot {
   private final PowerDistribution pdpLogging;
 
   private final SwerveModule frontLeft =
@@ -122,11 +120,6 @@ public class Robot extends LoggedRobot {
   private Command autoCommand = autos.getAutoCommand();
 
   public Robot() {
-    // Log to a USB stick
-    Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/"));
-    // Publish data to NetworkTables
-    Logger.getInstance().addDataReceiver(new NT4Publisher());
-    // Enables power distribution logging
     pdpLogging = new PowerDistribution(Config.PDP_ID, Config.PDP_TYPE);
 
     // Record metadata
@@ -149,7 +142,7 @@ public class Robot extends LoggedRobot {
         break;
     }
 
-    Logger.getInstance().start();
+    Logger.getInstance("/media/sda1/").start(Config.IS_DEVELOPMENT);
 
     // This must be run before any commands are scheduled
     LifecycleSubsystemManager.getInstance().ready();

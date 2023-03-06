@@ -12,6 +12,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -33,7 +35,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class Autos {
   private static Command wrapAutoEvent(String commandName, Command command) {
@@ -78,8 +79,7 @@ public class Autos {
   private final IntakeSubsystem intake;
 
   private final SwerveAutoBuilder autoBuilder;
-  private final LoggedDashboardChooser<AutoKind> autoChooser =
-      new LoggedDashboardChooser<>("Auto Choices");
+  private final SendableChooser<AutoKind> autoChooser = new SendableChooser<>();
   private final Map<AutoKind, WeakReference<Command>> autosCache = new EnumMap<>(AutoKind.class);
 
   public Autos(
@@ -178,7 +178,7 @@ public class Autos {
               command -> System.out.println("[COMMANDS] Finished command " + command.getName()));
     }
 
-    autoChooser.addDefaultOption("Do nothing", AutoKind.DO_NOTHING);
+    autoChooser.setDefaultOption("Do nothing", AutoKind.DO_NOTHING);
     autoChooser.addOption("Blue long side 1", AutoKind.BLUE_LONG_SIDE_1);
     autoChooser.addOption("Blue short side 1", AutoKind.BLUE_SHORT_SIDE_1);
     autoChooser.addOption("Blue long side 1.5 balance", AutoKind.BLUE_LONG_SIDE_1_5_BALANCE);
@@ -195,6 +195,8 @@ public class Autos {
     autoChooser.addOption("Red long side 2.5 balance", AutoKind.RED_LONG_SIDE_2_5_BALANCE);
     autoChooser.addOption("Red short side 2 balance", AutoKind.RED_SHORT_SIDE_2_BALANCE);
     autoChooser.addOption("Red short side 2.5 balance", AutoKind.RED_SHORT_SIDE_2_5_BALANCE);
+
+    SmartDashboard.putData("Auto Choices", autoChooser);
 
     if (Config.IS_DEVELOPMENT) {
       PathPlannerServer.startServer(5811);
@@ -224,7 +226,7 @@ public class Autos {
   }
 
   public Command getAutoCommand() {
-    AutoKind auto = autoChooser.get();
+    AutoKind auto = autoChooser.getSelected();
 
     if (auto == null) {
       return buildAutoCommand(AutoKind.DO_NOTHING);

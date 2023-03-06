@@ -23,7 +23,6 @@ import frc.robot.util.scheduling.SubsystemPriority;
 import org.littletonrobotics.junction.Logger;
 
 public class LocalizationSubsystem extends LifecycleSubsystem {
-
   private final SwerveSubsystem swerve;
   private final ImuSubsystem imu;
 
