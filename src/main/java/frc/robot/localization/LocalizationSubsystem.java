@@ -57,6 +57,9 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
     visionStdLookup.put(0.5, 0.5);
     visionStdLookup.put(1.0, 2.0);
     visionStdLookup.put(2.0, 2.5);
+
+    // Parse LL json in init to remove initial lag in json deserialization.
+    LimelightHelpers.getLatestResults("");
   }
 
   @Override
