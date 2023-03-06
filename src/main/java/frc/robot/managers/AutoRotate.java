@@ -11,7 +11,6 @@ import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
 import java.util.function.Supplier;
-import org.littletonrobotics.junction.Logger;
 
 public class AutoRotate extends LifecycleSubsystem {
   public static Rotation2d getShelfAngle() {
@@ -42,9 +41,7 @@ public class AutoRotate extends LifecycleSubsystem {
   }
 
   @Override
-  public void robotPeriodic() {
-    Logger.getInstance().recordOutput("AutoRotate/GoalAngle", angle.getDegrees());
-  }
+  public void robotPeriodic() {}
 
   @Override
   public void enabledPeriodic() {

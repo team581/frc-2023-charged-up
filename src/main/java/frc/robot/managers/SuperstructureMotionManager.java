@@ -14,7 +14,6 @@ import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
 import frc.robot.wrist.WristSubsystem;
 import java.util.ArrayList;
-import org.littletonrobotics.junction.Logger;
 
 public class SuperstructureMotionManager extends LifecycleSubsystem {
   public final ElevatorSubsystem elevator;
@@ -97,12 +96,6 @@ public class SuperstructureMotionManager extends LifecycleSubsystem {
     wrist.setAngle(currentPoint.angle);
     elevator.setGoalPosition(currentPoint.height);
     previousHeight = elevator.getHeight();
-
-    Logger.getInstance()
-        .recordOutput(
-            "SuperstructureMotionManager/NextPointAngle", currentPoint.angle.getDegrees());
-    Logger.getInstance()
-        .recordOutput("SuperstructureMotionManager/NextPointHeight", currentPoint.height);
   }
 
   @Override

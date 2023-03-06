@@ -4,9 +4,9 @@
 
 package frc.robot.util;
 
+import edu.wpi.first.wpilibj.Timer;
 import java.util.HashMap;
 import java.util.Map;
-import org.littletonrobotics.junction.Logger;
 
 public class Stopwatch {
   private static Stopwatch instance;
@@ -20,7 +20,7 @@ public class Stopwatch {
   }
 
   private static double getTimestamp() {
-    return Logger.getInstance().getRealTimestamp() / 1e3;
+    return Timer.getFPGATimestamp();
   }
 
   private final Map<String, Double> lastTimestamps = new HashMap<>();
@@ -34,10 +34,7 @@ public class Stopwatch {
   public void stop(String name) {
     double timestamp = getTimestamp();
     double lastTimestamp = lastTimestamps.get(name);
-    Logger.getInstance().recordOutput(name, timestamp - lastTimestamp);
   }
 
-  public void skip(String name) {
-    Logger.getInstance().recordOutput(name, -1);
-  }
+  public void skip(String name) {}
 }

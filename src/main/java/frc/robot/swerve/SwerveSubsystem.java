@@ -26,7 +26,6 @@ import frc.robot.imu.ImuSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
-import org.littletonrobotics.junction.Logger;
 
 public class SwerveSubsystem extends LifecycleSubsystem {
   private static final Translation2d FRONT_LEFT_LOCATION = Config.SWERVE_FRONT_LEFT_LOCATION;
@@ -119,17 +118,6 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     this.frontRight.logValues();
     this.backLeft.logValues();
     this.backRight.logValues();
-
-    Logger.getInstance().recordOutput("Swerve/ModuleStates", getModuleStates());
-
-    ChassisSpeeds chassisSpeeds = getChassisSpeeds();
-    Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/X", chassisSpeeds.vxMetersPerSecond);
-    Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/Y", chassisSpeeds.vyMetersPerSecond);
-    Logger.getInstance()
-        .recordOutput("Swerve/ChassisSpeeds/Omega", chassisSpeeds.omegaRadiansPerSecond);
-
-    Logger.getInstance().recordOutput("Swerve/SnapToAngle/Goal", goalAngle.getDegrees());
-    Logger.getInstance().recordOutput("Swerve/SnapToAngle/Enabled", snapToAngle);
   }
 
   @Override
@@ -189,7 +177,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
   public void setModuleStates(
       SwerveModuleState[] moduleStates, boolean openLoop, boolean skipJitterOptimization) {
-    Logger.getInstance().recordOutput("Swerve/GoalModuleStates", moduleStates);
+
     frontLeft.setDesiredState(moduleStates[0], openLoop, skipJitterOptimization);
     frontRight.setDesiredState(moduleStates[1], openLoop, skipJitterOptimization);
     backLeft.setDesiredState(moduleStates[2], openLoop, skipJitterOptimization);
@@ -222,9 +210,6 @@ public class SwerveSubsystem extends LifecycleSubsystem {
       double thetaPercentage,
       boolean fieldRelative,
       boolean openLoop) {
-    Logger.getInstance().recordOutput("Swerve/SidewaysPercentage", sidewaysPercentage);
-    Logger.getInstance().recordOutput("Swerve/ForwardPercentage", forwardPercentage);
-    Logger.getInstance().recordOutput("Swerve/ThetaPercentage", thetaPercentage);
 
     Translation2d robotTranslation =
         new Translation2d(forwardPercentage, sidewaysPercentage)
@@ -244,9 +229,6 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     SwerveModuleState[] moduleStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_VELOCITY_METERS_PER_SECOND);
     setChassisSpeeds(KINEMATICS.toChassisSpeeds(moduleStates), openLoop);
-
-    Logger.getInstance().recordOutput("Swerve/getX", robotTranslation.getX());
-    Logger.getInstance().recordOutput("Swerve/getY", robotTranslation.getY());
   }
 
   public Command getDriveTeleopCommand(DriveController controller) {
@@ -291,7 +273,6 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   // The command should exit once it's at the pose
   public Command goToPoseCommand(Pose2d goal, LocalizationSubsystem localization) {
     return run(() -> {
-          Logger.getInstance().recordOutput("AutoAlign/TargetPose", goal);
           Pose2d pose = localization.getPose();
           double xVelocity = xProfiledController.calculate(pose.getX(), goal.getX());
           double yVelocity = yProfiledController.calculate(pose.getY(), goal.getY());

@@ -8,7 +8,7 @@ import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
-import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -36,10 +36,6 @@ import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystemManager;
 import frc.robot.wrist.WristSubsystem;
-import org.littletonrobotics.junction.LoggedRobot;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.NT4Publisher;
-import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -47,8 +43,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends LoggedRobot {
-  private final PowerDistribution pdpLogging;
+public class Robot extends TimedRobot {
 
   private final SwerveModule frontLeft =
       new SwerveModule(
@@ -122,34 +117,15 @@ public class Robot extends LoggedRobot {
   private Command autoCommand = autos.getAutoCommand();
 
   public Robot() {
-    // Log to a USB stick
-    Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/"));
-    // Publish data to NetworkTables
-    Logger.getInstance().addDataReceiver(new NT4Publisher());
-    // Enables power distribution logging
-    pdpLogging = new PowerDistribution(Config.PDP_ID, Config.PDP_TYPE);
 
-    // Record metadata
-    Logger.getInstance().recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
-    Logger.getInstance().recordMetadata("RoborioSerialNumber", Config.SERIAL_NUMBER);
-    Logger.getInstance().recordMetadata("RobotConfig", Config.IS_SPIKE ? "Spike" : "Tyke");
-    Logger.getInstance().recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
-    Logger.getInstance().recordMetadata("GitSHA", BuildConstants.GIT_SHA);
-    Logger.getInstance().recordMetadata("GitDate", BuildConstants.GIT_DATE);
-    Logger.getInstance().recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
     switch (BuildConstants.DIRTY) {
       case 0:
-        Logger.getInstance().recordMetadata("GitDirty", "All changes committed");
         break;
       case 1:
-        Logger.getInstance().recordMetadata("GitDirty", "Uncomitted changes");
         break;
       default:
-        Logger.getInstance().recordMetadata("GitDirty", "Unknown");
         break;
     }
-
-    Logger.getInstance().start();
 
     // This must be run before any commands are scheduled
     LifecycleSubsystemManager.getInstance().ready();
@@ -257,12 +233,6 @@ public class Robot extends LoggedRobot {
 
     AutoScoreLocation autoScoreLocation =
         superstructureManager.getAutoScoreLocation(driveController.getAutoScoreNodeKind());
-    Logger.getInstance().recordOutput("AutoScore/GoalLocation/Pose", autoScoreLocation.pose);
-    Logger.getInstance()
-        .recordOutput("AutoScore/GoalLocation/Node", autoScoreLocation.node.toString());
-
-    Logger.getInstance()
-        .recordOutput("Scheduler/Stage", LifecycleSubsystemManager.getStage().toString());
   }
 
   @Override

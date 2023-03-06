@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
-import org.littletonrobotics.junction.Logger;
 
 public class ImuSubsystem extends LifecycleSubsystem {
   private final Pigeon2 imu;
@@ -21,11 +20,7 @@ public class ImuSubsystem extends LifecycleSubsystem {
     this.imu = imu;
   }
 
-  public void robotPeriodic() {
-    Logger.getInstance().recordOutput("Imu/RobotHeading", this.getRobotHeading().getDegrees());
-    Logger.getInstance()
-        .recordOutput("Imu/RobotHeadingRadians", this.getRobotHeading().getRadians());
-  }
+  public void robotPeriodic() {}
 
   public Rotation2d getRobotHeading() {
     return Rotation2d.fromDegrees(imu.getYaw());

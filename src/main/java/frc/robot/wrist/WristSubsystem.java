@@ -16,7 +16,6 @@ import frc.robot.Positions;
 import frc.robot.config.Config;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
-import org.littletonrobotics.junction.Logger;
 
 public class WristSubsystem extends LifecycleSubsystem {
   private static final Rotation2d TOLERANCE = Rotation2d.fromDegrees(2);
@@ -72,9 +71,6 @@ public class WristSubsystem extends LifecycleSubsystem {
     double rawCurrent = motor.getSupplyCurrent();
     double filteredCurrent = currentFilter.calculate(rawCurrent);
 
-    Logger.getInstance().recordOutput("Wrist/FilteredCurrent", filteredCurrent);
-    Logger.getInstance().recordOutput("Wrist/RawCurrent", rawCurrent);
-
     if (isHoming) {
       motor.set(TalonFXControlMode.PercentOutput, Config.WRIST_HOMING_VOLTAGE);
 
@@ -94,18 +90,7 @@ public class WristSubsystem extends LifecycleSubsystem {
   }
 
   @Override
-  public void robotPeriodic() {
-    Logger.getInstance().recordOutput("Wrist/Angle", getAngle().getDegrees());
-    Logger.getInstance().recordOutput("Wrist/GoalAngle", goalAngle.getDegrees());
-    Logger.getInstance().recordOutput("Wrist/Homing", isHoming);
-    Logger.getInstance().recordOutput("Wrist/GoToGoal", goToGoal);
-    Logger.getInstance().recordOutput("Wrist/Voltage", motor.getMotorOutputVoltage());
-
-    if (Config.IS_DEVELOPMENT) {
-      Logger.getInstance().recordOutput("Wrist/RawAngle", motor.getSelectedSensorPosition());
-      Logger.getInstance().recordOutput("Wrist/ControlMode", motor.getControlMode().toString());
-    }
-  }
+  public void robotPeriodic() {}
 
   public Command getHomeCommand() {
     return runOnce(() -> startHoming()).andThen(Commands.waitUntil(() -> isHoming() == false));

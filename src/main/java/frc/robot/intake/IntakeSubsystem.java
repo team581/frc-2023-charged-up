@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.config.Config;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
-import org.littletonrobotics.junction.Logger;
 
 public class IntakeSubsystem extends LifecycleSubsystem {
   private static final SupplyCurrentLimitConfiguration CURRENT_LIMIT =
@@ -44,12 +43,7 @@ public class IntakeSubsystem extends LifecycleSubsystem {
   }
 
   @Override
-  public void robotPeriodic() {
-    Logger.getInstance().recordOutput("Intake/Mode", mode.toString());
-    Logger.getInstance().recordOutput("Intake/HeldGamePiece", gamePiece.toString());
-    Logger.getInstance().recordOutput("Intake/Current", motor.getStatorCurrent());
-    Logger.getInstance().recordOutput("Intake/Voltage", motor.getMotorOutputVoltage());
-  }
+  public void robotPeriodic() {}
 
   @Override
   public void enabledPeriodic() {
@@ -57,10 +51,6 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     double cubeIntakeCurrent = cubeFilterIntake.calculate(motor.getStatorCurrent());
     double coneOuttakeCurrent = coneFilterOuttake.calculate(motor.getStatorCurrent());
     double cubeOuttakeCurrent = cubeFilterOuttake.calculate(motor.getStatorCurrent());
-    Logger.getInstance().recordOutput("Intake/FilteredConeIntakeCurrent", coneIntakeCurrent);
-    Logger.getInstance().recordOutput("Intake/FilteredCubeIntakeCurrent", cubeIntakeCurrent);
-    Logger.getInstance().recordOutput("Intake/FilteredConeOuttakeCurrent", coneOuttakeCurrent);
-    Logger.getInstance().recordOutput("Intake/FilteredCubeOuttakeCurrent", cubeOuttakeCurrent);
 
     if (mode == IntakeMode.INTAKE_CUBE) {
       if (cubeIntakeCurrent > 35) {

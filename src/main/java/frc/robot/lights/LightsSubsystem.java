@@ -18,7 +18,6 @@ import frc.robot.managers.ScoringState;
 import frc.robot.managers.SuperstructureManager;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
-import org.littletonrobotics.junction.Logger;
 
 public class LightsSubsystem extends LifecycleSubsystem {
   /** The duration (in seconds) that lights should be on or off when in fast blink mode. */
@@ -130,8 +129,5 @@ public class LightsSubsystem extends LifecycleSubsystem {
         candle.setLEDs(color8Bit.red, color8Bit.green, color8Bit.blue);
       }
     }
-
-    Logger.getInstance().recordOutput("Lights/Color", color.toString());
-    Logger.getInstance().recordOutput("Lights/BlinkPattern", blinkPattern.toString());
   }
 }

@@ -16,7 +16,6 @@ import frc.robot.Positions;
 import frc.robot.config.Config;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
-import org.littletonrobotics.junction.Logger;
 
 public class ElevatorSubsystem extends LifecycleSubsystem {
   private final TalonFX motor;
@@ -78,12 +77,7 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
   }
 
   @Override
-  public void robotPeriodic() {
-    Logger.getInstance().recordOutput("Elevator/Position", getHeight());
-    Logger.getInstance().recordOutput("Elevator/Current", motor.getSupplyCurrent());
-    Logger.getInstance().recordOutput("Elevator/GoalPosition", goalPositionInInches);
-    Logger.getInstance().recordOutput("Elevator/Homing", isHoming);
-  }
+  public void robotPeriodic() {}
 
   @Override
   public void enabledInit() {

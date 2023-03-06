@@ -20,7 +20,6 @@ import frc.robot.localization.LimelightHelpers.LimelightResults;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
-import org.littletonrobotics.junction.Logger;
 
 public class LocalizationSubsystem extends LifecycleSubsystem {
 
@@ -65,9 +64,6 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
   @Override
   public void robotPeriodic() {
     update();
-
-    Logger.getInstance().recordOutput("Localization/CombinedPose", getPose());
-    Logger.getInstance().recordOutput("Localization/OdometryPose", odometry.getPoseMeters());
   }
 
   private void update() {
@@ -120,7 +116,7 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
               angleAdjustedVisionPose,
               visionTimestamp,
               VecBuilder.fill(stdForVision, stdForVision, Units.degreesToRadians(5)));
-          Logger.getInstance().recordOutput("Localization/VisionPose", angleAdjustedVisionPose);
+
           visionWorking = true;
         }
       }

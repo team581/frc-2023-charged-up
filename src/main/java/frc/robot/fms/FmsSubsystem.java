@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
-import org.littletonrobotics.junction.Logger;
 
 public class FmsSubsystem extends LifecycleSubsystem {
   public FmsSubsystem() {
@@ -25,7 +24,5 @@ public class FmsSubsystem extends LifecycleSubsystem {
   }
 
   @Override
-  public void robotPeriodic() {
-    Logger.getInstance().recordOutput("Fms/Alliance", isRedAlliance() ? "Red" : "Blue");
-  }
+  public void robotPeriodic() {}
 }

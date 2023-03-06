@@ -14,7 +14,6 @@ import frc.robot.config.Config;
 import frc.robot.util.HomingState;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
-import org.littletonrobotics.junction.Logger;
 
 public class ForksSubsystem extends LifecycleSubsystem {
   private static final Rotation2d TOLERANCE = Rotation2d.fromDegrees(2); // placeholder
@@ -82,13 +81,7 @@ public class ForksSubsystem extends LifecycleSubsystem {
   }
 
   @Override
-  public void robotPeriodic() {
-    Logger.getInstance().recordOutput("Forks/Current", motor.getSupplyCurrent());
-    Logger.getInstance().recordOutput("Forks/SpoolRotation", getSpoolRotation().getDegrees());
-    Logger.getInstance().recordOutput("Forks/RawSpoolRotation", motor.getSelectedSensorPosition());
-    Logger.getInstance().recordOutput("Forks/Mode", mode.toString());
-    Logger.getInstance().recordOutput("Forks/HomingState", homingState.toString());
-  }
+  public void robotPeriodic() {}
 
   public Command getCommand(ForksMode newGoal) {
     return Commands.runOnce(() -> setMode(newGoal), this);

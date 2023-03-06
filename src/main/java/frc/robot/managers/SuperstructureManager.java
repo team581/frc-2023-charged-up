@@ -25,7 +25,6 @@ import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
 import java.util.List;
 import java.util.function.Supplier;
-import org.littletonrobotics.junction.Logger;
 
 public class SuperstructureManager extends LifecycleSubsystem {
   private final SuperstructureMotionManager motionManager;
@@ -93,15 +92,7 @@ public class SuperstructureManager extends LifecycleSubsystem {
   }
 
   @Override
-  public void robotPeriodic() {
-    Logger.getInstance()
-        .recordOutput("SuperstructureManager/Goal/IntakeMode", goal.intakeMode.toString());
-    Logger.getInstance()
-        .recordOutput("SuperstructureManager/Goal/ElevatorHeight", goal.position.height);
-    Logger.getInstance()
-        .recordOutput("SuperstructureManager/Goal/WristAngle", goal.position.angle.getDegrees());
-    Logger.getInstance().recordOutput("SuperstructureManager/Goal/IntakeNow", goal.intakeNow);
-  }
+  public void robotPeriodic() {}
 
   public HeldGamePiece getMode() {
     return mode;
