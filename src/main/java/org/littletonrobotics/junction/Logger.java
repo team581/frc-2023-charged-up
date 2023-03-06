@@ -43,6 +43,9 @@ import java.util.Map;
  * DataLog to log the data to a file, and streams the data using NetworkTables 4.
  */
 public class Logger {
+  private static final String OUTPUT_LOG_ENTRY_PREFIX = "/RealOutputs/";
+  private static final String METADATA_LOG_ENTRY_PREFIX = "/RealMetadata/";
+
   private static Logger instance;
 
   public static synchronized Logger getInstance() {
@@ -62,6 +65,7 @@ public class Logger {
   }
 
   private final Map<String, Integer> keyToId = new HashMap<>();
+  private Map<String, String> allMetadata = new HashMap<>();
 
   private final Map<Integer, BooleanLogEntry> booleanLogs = new HashMap<>();
   private final Map<Integer, DoubleLogEntry> doubleLogs = new HashMap<>();
@@ -87,14 +91,15 @@ public class Logger {
 
   private DataLog log = DataLogManager.getLog();
 
-  private final NetworkTable table =
-      NetworkTableInstance.getDefault().getTable("/AdvantageKit/RealOutputs");
+  private NetworkTable outputTable;
+  private NetworkTable metadataTable;
 
   private boolean running = false;
   private boolean networkTables = false;
 
   public Logger() {
     DataLogManager.start();
+    DataLogManager.logNetworkTables(false);
     DriverStation.startDataLog(DataLogManager.getLog());
   }
 
@@ -102,6 +107,7 @@ public class Logger {
     if (RobotBase.isSimulation()) {
       // Log to project directory in simulation
       DataLogManager.start();
+      DataLogManager.logNetworkTables(false);
     } else {
       DataLogManager.start(logDir);
     }
@@ -121,18 +127,43 @@ public class Logger {
   public void start(boolean networkTables) {
     running = true;
     this.networkTables = networkTables;
+
+    if (networkTables) {
+      var table = NetworkTableInstance.getDefault().getTable("/AdvantageKit");
+      outputTable = table.getSubTable("RealOutputs");
+      metadataTable = table.getSubTable("RealMetadata");
+    }
+
+    for (Map.Entry<String, String> metadata : allMetadata.entrySet()) {
+      String key = metadata.getKey();
+      String value = metadata.getValue();
+
+      StringLogEntry entry = new StringLogEntry(log, METADATA_LOG_ENTRY_PREFIX + key);
+      entry.append(value);
+      entry.finish();
+
+      if (networkTables) {
+        StringPublisher publisher = metadataTable.getStringTopic(key).publish();
+        publisher.set(value);
+      }
+    }
+
+    allMetadata = null;
+    metadataTable = null;
   }
 
   public void recordOutput(String key, boolean value) {
     if (running) {
       int id = getId(key);
-      booleanLogs.computeIfAbsent(id, k -> new BooleanLogEntry(log, key)).append(value);
+      booleanLogs
+          .computeIfAbsent(id, k -> new BooleanLogEntry(log, OUTPUT_LOG_ENTRY_PREFIX + key))
+          .append(value);
       if (networkTables) {
         booleanPublishers
             .computeIfAbsent(
                 id,
                 k ->
-                    table
+                    outputTable
                         .getBooleanTopic(key)
                         .publish(PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true)))
             .set(value);
@@ -143,13 +174,15 @@ public class Logger {
   public void recordOutput(String key, double value) {
     if (running) {
       int id = getId(key);
-      doubleLogs.computeIfAbsent(id, k -> new DoubleLogEntry(log, key)).append(value);
+      doubleLogs
+          .computeIfAbsent(id, k -> new DoubleLogEntry(log, OUTPUT_LOG_ENTRY_PREFIX + key))
+          .append(value);
       if (networkTables) {
         doublePublishers
             .computeIfAbsent(
                 id,
                 k ->
-                    table
+                    outputTable
                         .getDoubleTopic(key)
                         .publish(PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true)))
             .set(value);
@@ -160,13 +193,15 @@ public class Logger {
   public void recordOutput(String key, float value) {
     if (running) {
       int id = getId(key);
-      floatLogs.computeIfAbsent(id, k -> new FloatLogEntry(log, key)).append(value);
+      floatLogs
+          .computeIfAbsent(id, k -> new FloatLogEntry(log, OUTPUT_LOG_ENTRY_PREFIX + key))
+          .append(value);
       if (networkTables) {
         floatPublishers
             .computeIfAbsent(
                 id,
                 k ->
-                    table
+                    outputTable
                         .getFloatTopic(key)
                         .publish(PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true)))
             .set(value);
@@ -177,13 +212,15 @@ public class Logger {
   public void recordOutput(String key, int value) {
     if (running) {
       int id = getId(key);
-      integerLogs.computeIfAbsent(id, k -> new IntegerLogEntry(log, key)).append(value);
+      integerLogs
+          .computeIfAbsent(id, k -> new IntegerLogEntry(log, OUTPUT_LOG_ENTRY_PREFIX + key))
+          .append(value);
       if (networkTables) {
         integerPublishers
             .computeIfAbsent(
                 id,
                 k ->
-                    table
+                    outputTable
                         .getIntegerTopic(key)
                         .publish(PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true)))
             .set(value);
@@ -194,13 +231,15 @@ public class Logger {
   public void recordOutput(String key, String value) {
     if (running) {
       int id = getId(key);
-      stringLogs.computeIfAbsent(id, k -> new StringLogEntry(log, key)).append(value);
+      stringLogs
+          .computeIfAbsent(id, k -> new StringLogEntry(log, OUTPUT_LOG_ENTRY_PREFIX + key))
+          .append(value);
       if (networkTables) {
         stringPublishers
             .computeIfAbsent(
                 id,
                 k ->
-                    table
+                    outputTable
                         .getStringTopic(key)
                         .publish(PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true)))
             .set(value);
@@ -211,13 +250,15 @@ public class Logger {
   public void recordOutput(String key, boolean[] values) {
     if (running) {
       int id = getId(key);
-      booleanArrayLogs.computeIfAbsent(id, k -> new BooleanArrayLogEntry(log, key)).append(values);
+      booleanArrayLogs
+          .computeIfAbsent(id, k -> new BooleanArrayLogEntry(log, OUTPUT_LOG_ENTRY_PREFIX + key))
+          .append(values);
       if (networkTables) {
         booleanArrayPublishers
             .computeIfAbsent(
                 id,
                 k ->
-                    table
+                    outputTable
                         .getBooleanArrayTopic(key)
                         .publish(PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true)))
             .set(values);
@@ -228,13 +269,15 @@ public class Logger {
   public void recordOutput(String key, double[] values) {
     if (running) {
       int id = getId(key);
-      doubleArrayLogs.computeIfAbsent(id, k -> new DoubleArrayLogEntry(log, key)).append(values);
+      doubleArrayLogs
+          .computeIfAbsent(id, k -> new DoubleArrayLogEntry(log, OUTPUT_LOG_ENTRY_PREFIX + key))
+          .append(values);
       if (networkTables) {
         doubleArrayPublishers
             .computeIfAbsent(
                 id,
                 k ->
-                    table
+                    outputTable
                         .getDoubleArrayTopic(key)
                         .publish(PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true)))
             .set(values);
@@ -245,13 +288,15 @@ public class Logger {
   public void recordOutput(String key, float[] values) {
     if (running) {
       int id = getId(key);
-      floatArrayLogs.computeIfAbsent(id, k -> new FloatArrayLogEntry(log, key)).append(values);
+      floatArrayLogs
+          .computeIfAbsent(id, k -> new FloatArrayLogEntry(log, OUTPUT_LOG_ENTRY_PREFIX + key))
+          .append(values);
       if (networkTables) {
         floatArrayPublishers
             .computeIfAbsent(
                 id,
                 k ->
-                    table
+                    outputTable
                         .getFloatArrayTopic(key)
                         .publish(PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true)))
             .set(values);
@@ -262,13 +307,15 @@ public class Logger {
   public void recordOutput(String key, long[] values) {
     if (running) {
       int id = getId(key);
-      integerArrayLogs.computeIfAbsent(id, k -> new IntegerArrayLogEntry(log, key)).append(values);
+      integerArrayLogs
+          .computeIfAbsent(id, k -> new IntegerArrayLogEntry(log, OUTPUT_LOG_ENTRY_PREFIX + key))
+          .append(values);
       if (networkTables) {
         integerArrayPublishers
             .computeIfAbsent(
                 id,
                 k ->
-                    table
+                    outputTable
                         .getIntegerArrayTopic(key)
                         .publish(PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true)))
             .set(values);
@@ -289,14 +336,16 @@ public class Logger {
   public void recordOutput(String key, String[] value) {
     if (running) {
       int id = getId(key);
-      stringArrayLogs.computeIfAbsent(id, k -> new StringArrayLogEntry(log, key)).append(value);
+      stringArrayLogs
+          .computeIfAbsent(id, k -> new StringArrayLogEntry(log, OUTPUT_LOG_ENTRY_PREFIX + key))
+          .append(value);
 
       if (networkTables) {
         stringArrayPublishers
             .computeIfAbsent(
                 id,
                 k ->
-                    table
+                    outputTable
                         .getStringArrayTopic(key)
                         .publish(PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true)))
             .set(value);
@@ -344,20 +393,7 @@ public class Logger {
 
   public void recordMetadata(String key, String value) {
     if (!running) {
-      String metadataKey = "Metadata/" + key;
-      int id = getId(metadataKey);
-
-      stringLogs.computeIfAbsent(id, k -> new StringLogEntry(log, key)).append(value);
-      if (networkTables) {
-        stringPublishers
-            .computeIfAbsent(
-                id,
-                k ->
-                    table
-                        .getStringTopic(key)
-                        .publish(PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true)))
-            .set(value);
-      }
+      allMetadata.put(key, value == null ? "" : value);
     }
   }
 
