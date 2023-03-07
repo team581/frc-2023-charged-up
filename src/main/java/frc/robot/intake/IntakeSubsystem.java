@@ -71,7 +71,7 @@ public class IntakeSubsystem extends LifecycleSubsystem {
         gamePiece = HeldGamePiece.CONE;
       }
     } else if (mode == IntakeMode.OUTTAKE_CUBE) {
-      if (cubeOuttakeCurrent > (Config.IS_SPIKE ? 5 : 10)) {
+      if (cubeOuttakeCurrent < (Config.IS_SPIKE ? 10 : 10)) {
         gamePiece = HeldGamePiece.NOTHING;
       }
     } else if (mode == IntakeMode.OUTTAKE_CONE) {
