@@ -216,11 +216,6 @@ public class Autos {
                   "Autos/TranslationError", new Pose2d(translationError, new Rotation2d()));
           Logger.getInstance().recordOutput("Autos/RotationError", rotationError.getDegrees());
         });
-
-    // Temporarily test AutoKind by trying to load every command:
-    for (AutoKind auto : AutoKind.values()) {
-      buildAutoCommand(auto);
-    }
   }
 
   public Command getAutoCommand() {
