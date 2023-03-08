@@ -8,9 +8,11 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.config.Config;
+import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
 import org.littletonrobotics.junction.Logger;
@@ -25,6 +27,7 @@ public class IntakeSubsystem extends LifecycleSubsystem {
   private IntakeMode mode = IntakeMode.STOPPED;
 
   private final TalonFX motor;
+  private final SwerveSubsystem swerve;
 
   private final LinearFilter coneFilterIntake =
       LinearFilter.movingAverage((Config.IS_SPIKE ? 20 : 30));
@@ -35,9 +38,9 @@ public class IntakeSubsystem extends LifecycleSubsystem {
   private final LinearFilter cubeFilterOuttake =
       LinearFilter.movingAverage((Config.IS_SPIKE ? 10 : 10));
 
-  public IntakeSubsystem(TalonFX motor) {
+  public IntakeSubsystem(TalonFX motor, SwerveSubsystem swerve) {
     super(SubsystemPriority.INTAKE);
-
+    this.swerve = swerve;
     this.motor = motor;
     motor.setInverted(Config.INVERTED_INTAKE);
     motor.configSupplyCurrentLimit(CURRENT_LIMIT);
@@ -80,6 +83,13 @@ public class IntakeSubsystem extends LifecycleSubsystem {
       }
     }
 
+    // When the robot is moving 3 meters per second or higher, we want to enable a "fast mode"
+    // fast mode will increase the intake speed.
+
+    ChassisSpeeds currentVelocity = swerve.getChassisSpeeds();
+    boolean fastMode =
+        Math.hypot(currentVelocity.vxMetersPerSecond, currentVelocity.vyMetersPerSecond) > 3;
+
     if (mode == IntakeMode.OUTTAKE_CUBE) {
       motor.set(TalonFXControlMode.PercentOutput, -0.3);
     } else if (mode == IntakeMode.OUTTAKE_CONE) {
@@ -89,9 +99,18 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     } else if (gamePiece == HeldGamePiece.CONE) {
       motor.set(TalonFXControlMode.PercentOutput, -0.1);
     } else if (mode == IntakeMode.INTAKE_CUBE) {
-      motor.set(TalonFXControlMode.PercentOutput, 0.5);
+      if (fastMode) {
+        motor.set(TalonFXControlMode.PercentOutput, 0.7);
+      } else {
+        motor.set(TalonFXControlMode.PercentOutput, 0.5);
+      }
     } else if (mode == IntakeMode.INTAKE_CONE) {
-      motor.set(TalonFXControlMode.PercentOutput, -0.5);
+      if (fastMode) {
+        motor.set(TalonFXControlMode.PercentOutput, -0.7);
+      } else {
+        motor.set(TalonFXControlMode.PercentOutput, -0.5);
+      }
+
     } else {
       motor.set(TalonFXControlMode.PercentOutput, 0);
     }

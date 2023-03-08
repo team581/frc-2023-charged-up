@@ -92,14 +92,14 @@ public class Robot extends LoggedRobot {
       new ElevatorSubsystem(new TalonFX(Config.ELEVATOR_MOTOR_ID, Config.CANIVORE_ID));
   private final WristSubsystem wrist =
       new WristSubsystem(new TalonFX(Config.WRIST_MOTOR_ID, Config.CANIVORE_ID));
-  private final IntakeSubsystem intake =
-      new IntakeSubsystem(new TalonFX(Config.INTAKE_MOTOR_ID, Config.CANIVORE_ID));
   private final SuperstructureMotionManager superstructureMotionManager =
       new SuperstructureMotionManager(elevator, wrist, driveController);
   private final ImuSubsystem imu =
       new ImuSubsystem(new Pigeon2(Config.PIGEON_ID, Config.CANIVORE_ID));
   private final SwerveSubsystem swerve =
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
+  private final IntakeSubsystem intake =
+      new IntakeSubsystem(new TalonFX(Config.INTAKE_MOTOR_ID, Config.CANIVORE_ID), swerve);
   private final LocalizationSubsystem localization = new LocalizationSubsystem(swerve, imu);
   private final ForksSubsystem forks = new ForksSubsystem(new TalonFX(18, "581CANivore"));
   private final FmsSubsystem fmsSubsystem = new FmsSubsystem();
