@@ -11,6 +11,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -193,7 +194,19 @@ public class SwerveSubsystem extends LifecycleSubsystem {
           snapThetaController.calculate(imu.getRobotHeading().getRadians(), goalAngle.getRadians());
     }
 
-    final var moduleStates = KINEMATICS.toSwerveModuleStates(speeds);
+    ChassisSpeeds currentSpeeds = getChassisSpeeds();
+
+    Pose2d robotPoseVelocity =
+        new Pose2d(
+            currentSpeeds.vxMetersPerSecond * 0.02,
+            currentSpeeds.vyMetersPerSecond * 0.02,
+            new Rotation2d(currentSpeeds.omegaRadiansPerSecond * 0.02));
+    Twist2d twistVelocity = new Pose2d().log(robotPoseVelocity);
+    ChassisSpeeds updatedSpeeds =
+        new ChassisSpeeds(
+            twistVelocity.dx / 0.02, twistVelocity.dy / 0.02, twistVelocity.dtheta / 0.02);
+
+    final var moduleStates = KINEMATICS.toSwerveModuleStates(updatedSpeeds);
     setModuleStates(moduleStates, openLoop, false);
   }
 
