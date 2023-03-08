@@ -188,7 +188,7 @@ public class Autos {
     autoChooser.addOption("Red mid 1.5 balance", getRedMid1_5BalanceAuto());
     autoChooser.addOption("Red mid 1 balance", getRedMid1BalanceAuto());
     autoChooser.addOption("Red short side 1", getRedShortSide1());
-    // autoChooser.addOption("Red long side 2.5 balance", getRedLongSide2_5Balance());
+    autoChooser.addOption("Red long side 2.5 balance", getRedLongSide2_5Balance());
     autoChooser.addOption("Red short side 2 balance", getRedShortSide2Balance());
     autoChooser.addOption("Red short side 2.5 balance", getRedShortSide2_5Balance());
 
@@ -276,11 +276,11 @@ public class Autos {
     return autoBuilder.fullAuto(Paths.RED_SHORT_SIDE_1_CONE);
   }
 
-  // private Command getRedLongSide2_5Balance() {
-  //   return autoBuilder
-  //       .fullAuto(Paths.RED_LONG_SIDE_2_5_CONE_BALANCE)
-  //       .andThen(autoBalance.getCommand());
-  // }
+  private Command getRedLongSide2_5Balance() {
+    return autoBuilder
+        .fullAuto(Paths.RED_LONG_SIDE_2_5_CONE_BALANCE)
+        .andThen(autoBalance.getCommand());
+  }
 
   private Command getRedShortSide2Balance() {
     return autoBuilder
