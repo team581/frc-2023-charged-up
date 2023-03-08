@@ -28,19 +28,19 @@ public class Paths {
       PathPlanner.loadPathGroup("BlueShortSide2ConeBalance", new PathConstraints(1.75, 2.0));
 
   public static final List<PathPlannerTrajectory> RED_LONG_SIDE_1_CONE =
-      PathPlanner.loadPathGroup("RedLongSide1Cone", new PathConstraints(1, 0.75));
+      PathPlanner.loadPathGroup("RedLongSide1", new PathConstraints(1, 0.75));
   public static final List<PathPlannerTrajectory> RED_SHORT_SIDE_1_CONE =
-      PathPlanner.loadPathGroup("RedShortSide1Cone", new PathConstraints(1.0, 0.75));
+      PathPlanner.loadPathGroup("RedShortSide1", new PathConstraints(1.0, 0.75));
   public static final List<PathPlannerTrajectory> RED_LONG_SIDE_1_5_CONE_BALANCE =
-      PathPlanner.loadPathGroup("RedLongSide1.5ConeBalance", new PathConstraints(1.5, 0.75));
+      PathPlanner.loadPathGroup("RedLongSide1.5Balance", new PathConstraints(1.5, 0.75));
   public static final List<PathPlannerTrajectory> RED_MID_1_5_CONE_BALANCE =
-      PathPlanner.loadPathGroup("RedMid1.5ConeBalance", new PathConstraints(2.5, 2.0));
+      PathPlanner.loadPathGroup("RedMid1.5Balance", new PathConstraints(3.3, 2.0));
   public static final List<PathPlannerTrajectory> RED_MID_1_CONE_BALANCE =
-      PathPlanner.loadPathGroup("RedMid1ConeBalance", new PathConstraints(1.5, 2.5));
-  public static final List<PathPlannerTrajectory> RED_LONG_SIDE_2_5_CONE_BALANCE =
-      PathPlanner.loadPathGroup("RedLongSide2.5ConeBalance", new PathConstraints(4.0, 3.0));
+      PathPlanner.loadPathGroup("RedMid1Balance", new PathConstraints(1.5, 2.5));
+  // public static final List<PathPlannerTrajectory> RED_LONG_SIDE_2_5_CONE_BALANCE =
+  //     PathPlanner.loadPathGroup("RedLongSide2.5Balance", new PathConstraints(4.0, 3.0));
   public static final List<PathPlannerTrajectory> RED_SHORT_SIDE_2_CONE_BALANCE =
-      PathPlanner.loadPathGroup("RedShortSide2ConeBalance", new PathConstraints(1, 1));
+      PathPlanner.loadPathGroup("RedShortSide2Balance", new PathConstraints(3.3, 3.3));
   public static final List<PathPlannerTrajectory> RED_SHORT_SIDE_2_5_CONE_BALANCE =
-      PathPlanner.loadPathGroup("RedShortSide2.5ConeBalance", new PathConstraints(2.0, 2.0));
+      PathPlanner.loadPathGroup("RedShortSide2.5Balance", new PathConstraints(2.0, 2.0));
 }

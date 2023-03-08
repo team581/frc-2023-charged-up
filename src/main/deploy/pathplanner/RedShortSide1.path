@@ -7,8 +7,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 14.507829623561982,
-        "y": 4.6964539521784205
+        "x": 14.556560663273304,
+        "y": 4.605083252719697
       },
       "holonomicAngle": 0,
       "isReversal": false,
@@ -19,7 +19,7 @@
         "names": [
           "home",
           "preloadCone",
-          "scoreLow",
+          "scoreHigh",
           "stow"
         ],
         "executionBehavior": "sequential",

@@ -92,7 +92,7 @@
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
-      "velOverride": 0.2,
+      "velOverride": 0.35,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
@@ -117,7 +117,7 @@
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
-      "velOverride": 0.25,
+      "velOverride": 0.33,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
@@ -225,18 +225,24 @@
       }
     }
   ],
-  "maxVelocity": 2.0,
-  "maxAcceleration": 1.5,
+  "maxVelocity": 3.2,
+  "maxAcceleration": 2.0,
   "isReversed": null,
   "markers": [
     {
-      "position": 4.858181818181792,
+      "position": 4.479999999999993,
       "names": [
         "intakeCone"
       ]
     },
     {
-      "position": 6.31272727272719,
+      "position": 6.3418181818181765,
+      "names": [
+        "stow"
+      ]
+    },
+    {
+      "position": 2.909090909090934,
       "names": [
         "stow"
       ]

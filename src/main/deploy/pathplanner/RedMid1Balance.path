@@ -19,7 +19,7 @@
         "names": [
           "home",
           "preloadCone",
-          "scoreLow",
+          "scoreHigh",
           "stow"
         ],
         "executionBehavior": "sequential",

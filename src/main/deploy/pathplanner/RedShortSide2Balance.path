@@ -19,7 +19,7 @@
         "names": [
           "home",
           "preloadCone",
-          "scoreLow",
+          "scoreHigh",
           "stow"
         ],
         "executionBehavior": "sequential",
@@ -179,16 +179,16 @@
     },
     {
       "anchorPoint": {
-        "x": 14.22153476525798,
-        "y": 4.519803933224887
+        "x": 13.93523990695398,
+        "y": 4.580717732864036
       },
       "prevControl": {
-        "x": 14.008336466520959,
-        "y": 4.800007411564975
+        "x": 13.590291887568288,
+        "y": 4.6512752822838355
       },
       "nextControl": {
-        "x": 14.657023458643971,
-        "y": 3.947447364774721
+        "x": 14.203260625366237,
+        "y": 4.525895313188802
       },
       "holonomicAngle": 0,
       "isReversal": false,
@@ -204,16 +204,16 @@
     },
     {
       "anchorPoint": {
-        "x": 14.635748602804197,
-        "y": 3.843660757230329
+        "x": 14.672296882587686,
+        "y": 4.391884953982674
       },
       "prevControl": {
-        "x": 14.668394615249003,
-        "y": 4.004970465781131
+        "x": 14.603517967680224,
+        "y": 4.5414043342162875
       },
       "nextControl": {
-        "x": 14.532195143417644,
-        "y": 3.331984840261473
+        "x": 14.81239862175773,
+        "y": 4.087315955786926
       },
       "holonomicAngle": 0,
       "isReversal": false,
@@ -223,7 +223,7 @@
       "stopEvent": {
         "names": [
           "preloadCube",
-          "scoreLow",
+          "scoreHigh",
           "stow"
         ],
         "executionBehavior": "sequential",
@@ -279,20 +279,26 @@
       }
     }
   ],
-  "maxVelocity": 2.0,
-  "maxAcceleration": 2.0,
+  "maxVelocity": 3.3,
+  "maxAcceleration": 3.1,
   "isReversed": null,
   "markers": [
     {
-      "position": 2.290909090909115,
+      "position": 1.9272727272727237,
       "names": [
         "intakeCube"
       ]
     },
     {
-      "position": 4.799999999999996,
+      "position": 4.436363636363621,
       "names": [
         "stow"
+      ]
+    },
+    {
+      "position": 1.0,
+      "names": [
+        "home"
       ]
     }
   ]

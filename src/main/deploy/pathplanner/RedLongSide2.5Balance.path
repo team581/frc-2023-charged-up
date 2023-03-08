@@ -19,7 +19,7 @@
         "names": [
           "home",
           "preloadCone",
-          "scoreLow"
+          "scoreHigh"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
@@ -153,16 +153,16 @@
     },
     {
       "anchorPoint": {
-        "x": 14.666205502623772,
-        "y": 1.01116907400988
+        "x": 14.641839982768111,
+        "y": 1.017260453973795
       },
       "prevControl": {
-        "x": 13.983970946665297,
-        "y": 0.8954328546954963
+        "x": 13.959605426809636,
+        "y": 0.9015242346594114
       },
       "nextControl": {
-        "x": 13.983970946665297,
-        "y": 0.8954328546954963
+        "x": 13.959605426809636,
+        "y": 0.9015242346594114
       },
       "holonomicAngle": 0,
       "isReversal": true,
@@ -343,7 +343,7 @@
     {
       "position": 5.99999999999986,
       "names": [
-        "scoreLow"
+        "scoreHigh"
       ]
     },
     {
