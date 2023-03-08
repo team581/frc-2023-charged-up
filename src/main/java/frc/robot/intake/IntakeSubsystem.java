@@ -27,7 +27,7 @@ public class IntakeSubsystem extends LifecycleSubsystem {
   private final TalonFX motor;
 
   private final LinearFilter coneFilterIntake =
-      LinearFilter.movingAverage((Config.IS_SPIKE ? 20 : 30));
+      LinearFilter.movingAverage((Config.IS_SPIKE ? 24 : 30));
   private final LinearFilter cubeFilterIntake =
       LinearFilter.movingAverage((Config.IS_SPIKE ? 10 : 10));
   private final LinearFilter coneFilterOuttake =
@@ -63,7 +63,7 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     Logger.getInstance().recordOutput("Intake/FilteredCubeOuttakeCurrent", cubeOuttakeCurrent);
 
     if (mode == IntakeMode.INTAKE_CUBE) {
-      if (cubeIntakeCurrent > 40) {
+      if (cubeIntakeCurrent > 35) {
         gamePiece = HeldGamePiece.CUBE;
       }
     } else if (mode == IntakeMode.INTAKE_CONE) {
