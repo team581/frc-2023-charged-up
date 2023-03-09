@@ -103,12 +103,5 @@
   "maxVelocity": 1.0,
   "maxAcceleration": 0.75,
   "isReversed": null,
-  "markers": [
-    {
-      "position": 0.43636363636363784,
-      "names": [
-        "home"
-      ]
-    }
-  ]
+  "markers": []
 }
