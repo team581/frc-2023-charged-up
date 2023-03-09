@@ -103,8 +103,6 @@ public class WristSubsystem extends LifecycleSubsystem {
 
     if (Config.IS_DEVELOPMENT) {
       Logger.getInstance().recordOutput("Wrist/RawAngle", motor.getSelectedSensorPosition());
-      Logger.getInstance().recordOutput("Wrist/ClosedLoopError", motor.getClosedLoopError());
-      Logger.getInstance().recordOutput("Wrist/CloosedLoopTarget", motor.getClosedLoopTarget());
       Logger.getInstance().recordOutput("Wrist/ControlMode", motor.getControlMode().toString());
     }
   }
