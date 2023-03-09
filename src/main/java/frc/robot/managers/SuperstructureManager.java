@@ -122,20 +122,30 @@ public class SuperstructureManager extends LifecycleSubsystem {
     SuperstructureState cubeState;
     SuperstructureState coneState;
 
+    SuperstructureState cubeStateScoring;
+    SuperstructureState coneStateScoring;
+
     if (scoringLocation == ManualScoringLocation.LOW) {
-      cubeState = States.CUBE_NODE_LOW;
-      coneState = States.CONE_NODE_LOW;
+      cubeStateScoring = States.CUBE_NODE_LOW;
+      coneStateScoring = States.CONE_NODE_LOW;
     } else if (scoringLocation == ManualScoringLocation.MID) {
-      cubeState = States.CUBE_NODE_MID;
-      coneState = States.CONE_NODE_MID;
+      cubeStateScoring = States.CUBE_NODE_MID;
+      coneStateScoring = States.CONE_NODE_MID;
     } else {
-      cubeState = States.CUBE_NODE_HIGH;
-      coneState = States.CONE_NODE_HIGH;
+      cubeStateScoring = States.CUBE_NODE_HIGH;
+      coneStateScoring = States.CONE_NODE_HIGH;
     }
+
+    cubeState = new SuperstructureState(cubeStateScoring.position, IntakeMode.STOPPED, true);
+    coneState = new SuperstructureState(coneStateScoring.position, IntakeMode.STOPPED, true);
 
     return Commands.either(
             finishManualScoreCommand(),
             getCommand(() -> mode == HeldGamePiece.CUBE ? cubeState : coneState)
+                .andThen(Commands.waitSeconds(0.5))
+                .andThen(
+                    getCommand(
+                        () -> mode == HeldGamePiece.CUBE ? cubeStateScoring : coneStateScoring))
                 .andThen(getCommand(States.STOWED)),
             () ->
                 goal.position.height >= Positions.CUBE_NODE_MID.height
@@ -268,9 +278,11 @@ public class SuperstructureManager extends LifecycleSubsystem {
   }
 
   public Command getHomeCommand() {
-    return intake
-        .getCommand(IntakeMode.STOPPED)
-        .andThen(motionManager.elevator.getHomeCommand())
-        .andThen(motionManager.wrist.getHomeCommand());
+    return Commands.runOnce(() -> set(States.STOWED))
+        .alongWith(
+            intake
+                .getCommand(IntakeMode.STOPPED)
+                .andThen(motionManager.elevator.getHomeCommand())
+                .andThen(motionManager.wrist.getHomeCommand()));
   }
 }

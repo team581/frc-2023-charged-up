@@ -248,6 +248,11 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   public Command getDriveTeleopCommand(DriveController controller) {
     return Commands.run(
             () -> {
+              if (DriverStation.isAutonomousEnabled()) {
+                setChassisSpeeds(new ChassisSpeeds(), true);
+                return;
+              }
+
               if (!DriverStation.isTeleopEnabled()) {
                 return;
               }
