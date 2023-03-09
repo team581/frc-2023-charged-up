@@ -13,7 +13,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.ManualScoringLocation;
@@ -68,7 +67,7 @@ public class Autos {
 
   private final LocalizationSubsystem localization;
   private final SwerveSubsystem swerve;
-  private final LoggedDashboardChooser<Command> autoChooser =
+  private final LoggedDashboardChooser<AutoKind> autoChooser =
       new LoggedDashboardChooser<>("Auto Choices");
   private final ImuSubsystem imu;
   private final SuperstructureManager superstructure;
@@ -174,23 +173,23 @@ public class Autos {
               command -> System.out.println("[COMMANDS] Finished command " + command.getName()));
     }
 
-    autoChooser.addDefaultOption("Do nothing", getDoNothingAuto());
-    autoChooser.addOption("Blue long side 1", getBlueLongSideAuto());
-    autoChooser.addOption("Blue short side 1", getBlueShortSideAuto());
-    autoChooser.addOption("Blue long sie 1.5 balance", getBlueLongSide1_5Balance());
-    autoChooser.addOption("Blue mid 1.5 balance", getBlueMid1_5Balance());
-    autoChooser.addOption("Blue mid 1 balance", getBlueMid1Balance());
-    autoChooser.addOption("Blue short side 2.5 balance", getBlueShortSide2_5Balance());
-    autoChooser.addOption("Blue short side 2 balance", getBlueShortSide2Balance());
+    autoChooser.addDefaultOption("Do nothing", AutoKind.DO_NOTHING);
+    autoChooser.addOption("Blue long side 1", AutoKind.BLUE_LONG_SIDE_1);
+    autoChooser.addOption("Blue short side 1", AutoKind.BLUE_SHORT_SIDE_1);
+    autoChooser.addOption("Blue long side 1.5 balance", AutoKind.BLUE_LONG_SIDE_1_5_BALANCE);
+    autoChooser.addOption("Blue mid 1.5 balance", AutoKind.BLUE_MID_1_5_BALANCE);
+    autoChooser.addOption("Blue mid 1 balance", AutoKind.BLUE_MID_1_BALANCE);
+    autoChooser.addOption("Blue short side 2.5 balance", AutoKind.BLUE_SHORT_SIDE_2_5_BALANCE);
+    autoChooser.addOption("Blue short side 2 balance", AutoKind.BLUE_SHORT_SIDE_2_BALANCE);
 
-    autoChooser.addOption("Red long side 1.5 balance", getRedLongSide1_5BalanceAuto());
-    autoChooser.addOption("Red long side 1", getRedLongSide1Auto());
-    autoChooser.addOption("Red mid 1.5 balance", getRedMid1_5BalanceAuto());
-    autoChooser.addOption("Red mid 1 balance", getRedMid1BalanceAuto());
-    autoChooser.addOption("Red short side 1", getRedShortSide1());
-    autoChooser.addOption("Red long side 2.5 balance", getRedLongSide2_5Balance());
-    autoChooser.addOption("Red short side 2 balance", getRedShortSide2Balance());
-    autoChooser.addOption("Red short side 2.5 balance", getRedShortSide2_5Balance());
+    autoChooser.addOption("Red long side 1.5 balance", AutoKind.RED_LONG_SIDE_1_5_BALANCE);
+    autoChooser.addOption("Red long side 1", AutoKind.RED_LONG_SIDE_1);
+    autoChooser.addOption("Red mid 1.5 balance", AutoKind.RED_MID_1_5_BALANCE);
+    autoChooser.addOption("Red mid 1 balance", AutoKind.RED_MID_1_BALANCE);
+    autoChooser.addOption("Red short side 1", AutoKind.RED_SHORT_SIDE_1);
+    autoChooser.addOption("Red long side 2.5 balance", AutoKind.RED_LONG_SIDE_2_5_BALANCE);
+    autoChooser.addOption("Red short side 2 balance", AutoKind.RED_SHORT_SIDE_2_BALANCE);
+    autoChooser.addOption("Red short side 2.5 balance", AutoKind.RED_SHORT_SIDE_2_5_BALANCE);
 
     if (Config.IS_DEVELOPMENT) {
       PathPlannerServer.startServer(5811);
@@ -219,103 +218,27 @@ public class Autos {
         });
   }
 
-  private Command getBlueLongSideAuto() {
-    return autoBuilder.fullAuto(Paths.BLUE_LONG_SIDE_1_CONE);
-  }
-
-  private Command getBlueShortSideAuto() {
-    return autoBuilder.fullAuto(Paths.BLUE_SHORT_SIDE_1_CONE);
-  }
-
-  private Command getBlueLongSide1_5Balance() {
-    return autoBuilder
-        .fullAuto(Paths.BLUE_LONG_SIDE_1_5_CONE_BALANCE)
-        .andThen(autoBalance.getCommand());
-  }
-
-  private Command getBlueMid1_5Balance() {
-    return autoBuilder.fullAuto(Paths.BLUE_MID_1_5_CONE_BALANCE).andThen(autoBalance.getCommand());
-  }
-
-  private Command getBlueMid1Balance() {
-    return autoBuilder.fullAuto(Paths.BLUE_MID_1_CONE_BALANCE).andThen(autoBalance.getCommand());
-  }
-
-  private Command getBlueShortSide2_5Balance() {
-    return autoBuilder
-        .fullAuto(Paths.BLUE_SHORT_SIDE_2_5_CONE_BALANCE)
-        .andThen(autoBalance.getCommand());
-  }
-
-  public Command getBlueShortSide2Balance() {
-    return autoBuilder
-        .fullAuto(Paths.BLUE_SHORT_SIDE_2_CONE_BALANCE)
-        .andThen(autoBalance.getCommand())
-        .withName("AutoBlueShortSide2ConeBalance");
-  }
-
-  private Command getRedLongSide1_5BalanceAuto() {
-    return autoBuilder
-        .fullAuto(Paths.RED_LONG_SIDE_1_5_CONE_BALANCE)
-        .andThen(autoBalance.getCommand());
-  }
-
-  private Command getRedLongSide1Auto() {
-    return autoBuilder.fullAuto(Paths.RED_LONG_SIDE_1_CONE);
-  }
-
-  private Command getRedMid1_5BalanceAuto() {
-    return autoBuilder.fullAuto(Paths.RED_MID_1_5_CONE_BALANCE).andThen(autoBalance.getCommand());
-  }
-
-  private Command getRedMid1BalanceAuto() {
-    return autoBuilder.fullAuto(Paths.RED_MID_1_CONE_BALANCE).andThen(autoBalance.getCommand());
-  }
-
-  private Command getRedShortSide1() {
-    return autoBuilder.fullAuto(Paths.RED_SHORT_SIDE_1_CONE);
-  }
-
-  private Command getRedLongSide2_5Balance() {
-    return autoBuilder
-        .fullAuto(Paths.RED_LONG_SIDE_2_5_CONE_BALANCE)
-        .andThen(autoBalance.getCommand());
-  }
-
-  private Command getRedShortSide2Balance() {
-    return autoBuilder
-        .fullAuto(Paths.RED_SHORT_SIDE_2_CONE_BALANCE)
-        .andThen(autoBalance.getCommand())
-        .withName("AutoRedShortSide2ConeBalance");
-  }
-
-  private Command getRedShortSide2_5Balance() {
-    return autoBuilder
-        .fullAuto(Paths.RED_SHORT_SIDE_2_5_CONE_BALANCE)
-        .andThen(autoBalance.getCommand());
-  }
-
-  private CommandBase getDoNothingAuto() {
-    return Commands.none().withName("DoNothingAuto");
-  }
-
   public Command getAutoCommand() {
-    Command command = autoChooser.get();
+    AutoKind auto = autoChooser.get();
 
-    if (command != null) {
-      return command;
+    if (auto == null) {
+      return buildAutoCommand(AutoKind.DO_NOTHING);
     }
 
-    return getDoNothingAuto();
+    return buildAutoCommand(auto);
   }
 
-  private Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
-    return Commands.runOnce(
-            () -> {
-              if (isFirstPath) {
-                localization.resetPose(traj.getInitialHolonomicPose());
-              }
-            })
-        .andThen(swerve.getFollowTrajectoryCommand(traj, localization));
+  private Command buildAutoCommand(AutoKind auto) {
+    if (auto == AutoKind.DO_NOTHING) {
+      return Commands.none();
+    }
+
+    Command autoCommand = autoBuilder.fullAuto(Paths.getInstance().getPath(auto));
+
+    if (auto.autoBalance) {
+      autoCommand = autoCommand.andThen(this.autoBalance.getCommand());
+    }
+
+    return autoCommand.withName("Auto" + auto.toString());
   }
 }
