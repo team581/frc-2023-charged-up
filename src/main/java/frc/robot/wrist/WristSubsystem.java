@@ -79,6 +79,8 @@ public class WristSubsystem extends LifecycleSubsystem {
       }
     } else if (goToGoal) {
       motor.set(ControlMode.MotionMagic, goalAngle.getRotations() * 2048 * Config.WRIST_GEARING);
+    } else {
+      motor.set(TalonFXControlMode.PercentOutput, 0);
     }
   }
 
