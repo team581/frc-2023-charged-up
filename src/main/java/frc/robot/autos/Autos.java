@@ -29,6 +29,7 @@ import frc.robot.managers.SuperstructureManager;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.wrist.WristSubsystem;
 import java.lang.ref.WeakReference;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import org.littletonrobotics.junction.Logger;
@@ -79,7 +80,7 @@ public class Autos {
   private final SwerveAutoBuilder autoBuilder;
   private final LoggedDashboardChooser<AutoKind> autoChooser =
       new LoggedDashboardChooser<>("Auto Choices");
-  private final Map<AutoKind, WeakReference<Command>> autosCache = new HashMap<>();
+  private final Map<AutoKind, WeakReference<Command>> autosCache = new EnumMap<>(AutoKind.class);
 
   public Autos(
       LocalizationSubsystem localization,
