@@ -121,11 +121,15 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     this.backRight.logValues();
 
     Logger.getInstance().recordOutput("Swerve/ModuleStates", getModuleStates());
+
     ChassisSpeeds chassisSpeeds = getChassisSpeeds();
     Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/X", chassisSpeeds.vxMetersPerSecond);
     Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/Y", chassisSpeeds.vyMetersPerSecond);
     Logger.getInstance()
         .recordOutput("Swerve/ChassisSpeeds/Omega", chassisSpeeds.omegaRadiansPerSecond);
+
+    Logger.getInstance().recordOutput("Swerve/SnapToAngle/Goal", goalAngle.getDegrees());
+    Logger.getInstance().recordOutput("Swerve/SnapToAngle/Enabled", snapToAngle);
   }
 
   @Override

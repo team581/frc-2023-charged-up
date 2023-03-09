@@ -142,7 +142,6 @@ public class SuperstructureManager extends LifecycleSubsystem {
     return Commands.either(
             finishManualScoreCommand(),
             getCommand(() -> mode == HeldGamePiece.CUBE ? cubeState : coneState)
-                .andThen(Commands.waitSeconds(0.5))
                 .andThen(
                     getCommand(
                         () -> mode == HeldGamePiece.CUBE ? cubeStateScoring : coneStateScoring))
