@@ -28,6 +28,7 @@ import frc.robot.managers.Autobalance;
 import frc.robot.managers.SuperstructureManager;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.wrist.WristSubsystem;
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 import org.littletonrobotics.junction.Logger;
@@ -65,17 +66,20 @@ public class Autos {
     return wrappedMap;
   }
 
+  private final SuperstructureManager superstructure;
+  private final Autobalance autoBalance;
+
   private final LocalizationSubsystem localization;
   private final SwerveSubsystem swerve;
-  private final LoggedDashboardChooser<AutoKind> autoChooser =
-      new LoggedDashboardChooser<>("Auto Choices");
   private final ImuSubsystem imu;
-  private final SuperstructureManager superstructure;
   private final ElevatorSubsystem elevator;
   private final WristSubsystem wrist;
   private final IntakeSubsystem intake;
+
   private final SwerveAutoBuilder autoBuilder;
-  private final Autobalance autoBalance;
+  private final LoggedDashboardChooser<AutoKind> autoChooser =
+      new LoggedDashboardChooser<>("Auto Choices");
+  private final Map<AutoKind, WeakReference<Command>> autosCache = new HashMap<>();
 
   public Autos(
       LocalizationSubsystem localization,
@@ -229,16 +233,31 @@ public class Autos {
   }
 
   private Command buildAutoCommand(AutoKind auto) {
-    if (auto == AutoKind.DO_NOTHING) {
-      return Commands.none();
+    if (autosCache.containsKey(auto)) {
+      Command autoCommand = autosCache.get(auto).get();
+
+      if (autoCommand != null) {
+        return autoCommand;
+      }
     }
 
-    Command autoCommand = autoBuilder.fullAuto(Paths.getInstance().getPath(auto));
+    String autoName = "Auto" + auto.toString();
+    Command autoCommand = Commands.runOnce(() -> swerve.driveTeleop(0, 0, 0, true, true), swerve);
+
+    if (auto == AutoKind.DO_NOTHING) {
+      return autoCommand.withName(autoName);
+    }
+
+    autoCommand = autoCommand.andThen(autoBuilder.fullAuto(Paths.getInstance().getPath(auto)));
 
     if (auto.autoBalance) {
       autoCommand = autoCommand.andThen(this.autoBalance.getCommand());
     }
 
-    return autoCommand.withName("Auto" + auto.toString());
+    autoCommand = autoCommand.withName(autoName);
+
+    autosCache.put(auto, new WeakReference<>(autoCommand));
+
+    return autoCommand;
   }
 }

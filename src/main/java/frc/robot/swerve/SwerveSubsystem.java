@@ -85,7 +85,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
           Config.SWERVE_ROTATION_PID.kI,
           Config.SWERVE_ROTATION_PID.kD,
           new TrapezoidProfile.Constraints(Math.PI * 2.0, Math.PI * 0.75));
-  private Rotation2d goalAngle;
+  private Rotation2d goalAngle = new Rotation2d();
 
   public SwerveSubsystem(
       ImuSubsystem imu,
@@ -121,11 +121,15 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     this.backRight.logValues();
 
     Logger.getInstance().recordOutput("Swerve/ModuleStates", getModuleStates());
+
     ChassisSpeeds chassisSpeeds = getChassisSpeeds();
     Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/X", chassisSpeeds.vxMetersPerSecond);
     Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/Y", chassisSpeeds.vyMetersPerSecond);
     Logger.getInstance()
         .recordOutput("Swerve/ChassisSpeeds/Omega", chassisSpeeds.omegaRadiansPerSecond);
+
+    Logger.getInstance().recordOutput("Swerve/SnapToAngle/Goal", goalAngle.getDegrees());
+    Logger.getInstance().recordOutput("Swerve/SnapToAngle/Enabled", snapToAngle);
   }
 
   @Override
