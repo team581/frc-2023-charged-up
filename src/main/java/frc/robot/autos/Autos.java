@@ -28,7 +28,6 @@ import frc.robot.managers.Autobalance;
 import frc.robot.managers.SuperstructureManager;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.wrist.WristSubsystem;
-
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
@@ -81,7 +80,6 @@ public class Autos {
   private final LoggedDashboardChooser<AutoKind> autoChooser =
       new LoggedDashboardChooser<>("Auto Choices");
   private final Map<AutoKind, WeakReference<Command>> autosCache = new HashMap<>();
-
 
   public Autos(
       LocalizationSubsystem localization,
@@ -244,19 +242,19 @@ public class Autos {
     }
 
     String autoName = "Auto" + auto.toString();
-    Command autoCommand = Commands.runOnce(() -> swerve.driveTeleop(0, 0, 0, true,true), swerve);
+    Command autoCommand = Commands.runOnce(() -> swerve.driveTeleop(0, 0, 0, true, true), swerve);
 
     if (auto == AutoKind.DO_NOTHING) {
       return autoCommand.withName(autoName);
     }
 
-     autoCommand = autoCommand.andThen(autoBuilder.fullAuto(Paths.getInstance().getPath(auto)));
+    autoCommand = autoCommand.andThen(autoBuilder.fullAuto(Paths.getInstance().getPath(auto)));
 
     if (auto.autoBalance) {
       autoCommand = autoCommand.andThen(this.autoBalance.getCommand());
     }
 
-    autoCommand= autoCommand.withName(autoName);
+    autoCommand = autoCommand.withName(autoName);
 
     autosCache.put(auto, new WeakReference<>(autoCommand));
 
