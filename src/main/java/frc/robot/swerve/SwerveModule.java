@@ -21,7 +21,6 @@ import frc.robot.config.Config;
 import frc.robot.util.CircleConverter;
 import frc.robot.util.CtreModuleState;
 import frc.robot.util.GearingConverter;
-import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule {
   private static final GearingConverter STEER_MOTOR_GEARING_CONVERTER =
@@ -155,43 +154,6 @@ public class SwerveModule {
     final var driveMotorPosition = getDriveMotorPosition();
 
     return new SwerveModulePosition(driveMotorPosition, steerMotorPosition);
-  }
-
-  public void logValues() {
-    Logger.getInstance()
-        .recordOutput(
-            "Swerve/" + this.constants.corner.toString() + "/Drive motor velocity (inches per/sec)",
-            this.getDriveMotorVelocity());
-    Logger.getInstance()
-        .recordOutput(
-            "Swerve/" + this.constants.corner.toString() + "/Steer motor position (deg)",
-            this.getSteerMotorPosition().getDegrees());
-    Logger.getInstance()
-        .recordOutput(
-            "Swerve/" + this.constants.corner.toString() + "/CANcoder position (deg)",
-            this.getCancoderPosition().getDegrees());
-    Logger.getInstance()
-        .recordOutput(
-            "Swerve/" + this.constants.corner.toString() + "/Raw CANcoder position (deg)",
-            this.getRawCancoderPosition().getDegrees());
-    Logger.getInstance()
-        .recordOutput(
-            "Swerve/" + this.constants.corner.toString() + "/Steer motor commanded angle (deg)",
-            this.previousAngle.getDegrees());
-    Logger.getInstance()
-        .recordOutput(
-            "Swerve/" + this.constants.corner.toString() + "/Drive Motor FF",
-            driveMotor.getClosedLoopFeedForward().getValue());
-    Logger.getInstance()
-        .recordOutput(
-            "Swerve/" + this.constants.corner.toString() + "/Drive Motor Reference",
-            driveMotor.getClosedLoopReference().getValue());
-    Logger.getInstance()
-        .recordOutput(
-            "Swerve/"
-                + this.constants.corner.toString()
-                + "/Drive Motor Commanded Velocity (inches/sec)",
-            this.commandedDriveVelocity);
   }
 
   private Rotation2d getSteerMotorPosition() {

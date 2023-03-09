@@ -115,11 +115,6 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
   @Override
   public void robotPeriodic() {
-    this.frontLeft.logValues();
-    this.frontRight.logValues();
-    this.backLeft.logValues();
-    this.backRight.logValues();
-
     Logger.getInstance().recordOutput("Swerve/ModuleStates", getModuleStates());
 
     ChassisSpeeds chassisSpeeds = getChassisSpeeds();
@@ -222,10 +217,6 @@ public class SwerveSubsystem extends LifecycleSubsystem {
       double thetaPercentage,
       boolean fieldRelative,
       boolean openLoop) {
-    Logger.getInstance().recordOutput("Swerve/SidewaysPercentage", sidewaysPercentage);
-    Logger.getInstance().recordOutput("Swerve/ForwardPercentage", forwardPercentage);
-    Logger.getInstance().recordOutput("Swerve/ThetaPercentage", thetaPercentage);
-
     Translation2d robotTranslation =
         new Translation2d(forwardPercentage, sidewaysPercentage)
             .times(MAX_VELOCITY_METERS_PER_SECOND);
@@ -244,9 +235,6 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     SwerveModuleState[] moduleStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_VELOCITY_METERS_PER_SECOND);
     setChassisSpeeds(KINEMATICS.toChassisSpeeds(moduleStates), openLoop);
-
-    Logger.getInstance().recordOutput("Swerve/getX", robotTranslation.getX());
-    Logger.getInstance().recordOutput("Swerve/getY", robotTranslation.getY());
   }
 
   public Command getDriveTeleopCommand(DriveController controller) {
