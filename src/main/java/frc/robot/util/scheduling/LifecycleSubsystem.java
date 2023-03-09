@@ -4,7 +4,6 @@
 
 package frc.robot.util.scheduling;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -70,15 +69,7 @@ public class LifecycleSubsystem extends SubsystemBase {
     stopwatch.start(loggerName);
     LifecycleStage stage;
 
-    if (DriverStation.isTeleopEnabled()) {
-      stage = LifecycleStage.TELEOP;
-    } else if (DriverStation.isAutonomousEnabled()) {
-      stage = LifecycleStage.AUTONOMOUS;
-    } else if (DriverStation.isDisabled()) {
-      stage = LifecycleStage.DISABLED;
-    } else {
-      stage = LifecycleStage.TEST;
-    }
+    stage = LifecycleSubsystemManager.getStage();
 
     boolean isInit = previousStage != stage;
 
@@ -96,30 +87,26 @@ public class LifecycleSubsystem extends SubsystemBase {
       }
 
       enabledPeriodic();
-    }
 
-    if (stage == LifecycleStage.TELEOP) {
-      if (isInit) {
-        teleopInit();
+      if (stage == LifecycleStage.TELEOP) {
+        if (isInit) {
+          teleopInit();
+        }
+
+        teleopPeriodic();
+      } else if (stage == LifecycleStage.AUTONOMOUS) {
+        if (isInit) {
+          autonomousInit();
+        }
+
+        autonomousPeriodic();
+      } else if (stage == LifecycleStage.TEST) {
+        if (isInit) {
+          testInit();
+        }
+
+        testPeriodic();
       }
-
-      teleopPeriodic();
-    }
-
-    if (stage == LifecycleStage.AUTONOMOUS) {
-      if (isInit) {
-        autonomousInit();
-      }
-
-      autonomousPeriodic();
-    }
-
-    if (stage == LifecycleStage.TEST) {
-      if (isInit) {
-        testInit();
-      }
-
-      testPeriodic();
     }
 
     stopwatch.stop(loggerName);

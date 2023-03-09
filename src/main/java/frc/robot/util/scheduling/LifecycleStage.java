@@ -4,7 +4,7 @@
 
 package frc.robot.util.scheduling;
 
-enum LifecycleStage {
+public enum LifecycleStage {
   TELEOP,
   AUTONOMOUS,
   TEST,

@@ -4,6 +4,7 @@
 
 package frc.robot.util.scheduling;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,6 +12,18 @@ import java.util.Comparator;
 import java.util.List;
 
 public class LifecycleSubsystemManager {
+  public static LifecycleStage getStage() {
+    if (DriverStation.isTeleopEnabled()) {
+      return LifecycleStage.TELEOP;
+    } else if (DriverStation.isAutonomousEnabled()) {
+      return LifecycleStage.AUTONOMOUS;
+    } else if (DriverStation.isDisabled()) {
+      return LifecycleStage.DISABLED;
+    } else {
+      return LifecycleStage.TEST;
+    }
+  }
+
   private static LifecycleSubsystemManager instance;
 
   public static LifecycleSubsystemManager getInstance() {

@@ -260,6 +260,9 @@ public class Robot extends LoggedRobot {
     Logger.getInstance().recordOutput("AutoScore/GoalLocation/Pose", autoScoreLocation.pose);
     Logger.getInstance()
         .recordOutput("AutoScore/GoalLocation/Node", autoScoreLocation.node.toString());
+
+    Logger.getInstance()
+        .recordOutput("Scheduler/Stage", LifecycleSubsystemManager.getStage().toString());
   }
 
   @Override
