@@ -85,7 +85,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
           Config.SWERVE_ROTATION_PID.kI,
           Config.SWERVE_ROTATION_PID.kD,
           new TrapezoidProfile.Constraints(Math.PI * 2.0, Math.PI * 0.75));
-  private Rotation2d goalAngle;
+  private Rotation2d goalAngle = new Rotation2d();
 
   public SwerveSubsystem(
       ImuSubsystem imu,
@@ -252,11 +252,6 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   public Command getDriveTeleopCommand(DriveController controller) {
     return Commands.run(
             () -> {
-              if (DriverStation.isAutonomousEnabled()) {
-                setChassisSpeeds(new ChassisSpeeds(), true);
-                return;
-              }
-
               if (!DriverStation.isTeleopEnabled()) {
                 return;
               }
