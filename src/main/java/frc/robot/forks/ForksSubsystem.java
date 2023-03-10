@@ -12,7 +12,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.config.Config;
 import frc.robot.util.HomingState;
+import frc.robot.util.scheduling.LifecycleStage;
 import frc.robot.util.scheduling.LifecycleSubsystem;
+import frc.robot.util.scheduling.LifecycleSubsystemManager;
 import frc.robot.util.scheduling.SubsystemPriority;
 import org.littletonrobotics.junction.Logger;
 
@@ -29,11 +31,7 @@ public class ForksSubsystem extends LifecycleSubsystem {
 
     this.motor = motor;
     motor.configSupplyCurrentLimit(CURRENT_LIMIT);
-    // TODO: This is too safe of a number
-    motor.configForwardSoftLimitThreshold(-2048.0);
-
-    // We assume the forks are stowed when the robot is turned on
-    motor.setSelectedSensorPosition(0);
+    motor.configForwardSoftLimitThreshold(0);
   }
 
   public void setMode(ForksMode mode) {
@@ -43,12 +41,6 @@ public class ForksSubsystem extends LifecycleSubsystem {
   @Override
   public void testInit() {
     motor.configForwardSoftLimitEnable(false);
-  }
-
-  @Override
-  public void testPeriodic() {
-    // This allows us to re-zero the forks in test mode without rebooting the robotAz
-    motor.setSelectedSensorPosition(0);
   }
 
   @Override
@@ -64,28 +56,35 @@ public class ForksSubsystem extends LifecycleSubsystem {
   @Override
   public void enabledPeriodic() {
     if (mode == ForksMode.UP) {
-      motor.set(ControlMode.PercentOutput, 1);
+      if (LifecycleSubsystemManager.getStage() == LifecycleStage.TEST) {
+        motor.set(ControlMode.PercentOutput, 0.2);
+      } else {
+        motor.set(ControlMode.PercentOutput, 1);
+      }
     } else if (mode == ForksMode.DOWN) {
-      motor.set(ControlMode.PercentOutput, -1);
+      if (LifecycleSubsystemManager.getStage() == LifecycleStage.TEST) {
+        motor.set(ControlMode.PercentOutput, -0.2);
+      } else {
+        motor.set(ControlMode.PercentOutput, -1);
+      }
     } else {
       motor.set(ControlMode.PercentOutput, 0);
     }
   }
 
-  private Rotation2d getSpoolRotation() {
+  public Rotation2d getAngle() {
     return Rotation2d.fromRotations(
         motor.getSelectedSensorPosition() / 2048.0 / Config.FORKS_GEARING);
   }
 
   public boolean atGoal(ForksMode mode) {
-    return Math.abs(getSpoolRotation().minus(mode.angle).getDegrees()) < TOLERANCE.getDegrees();
+    return Math.abs(getAngle().minus(mode.angle).getDegrees()) < TOLERANCE.getDegrees();
   }
 
   @Override
   public void robotPeriodic() {
     Logger.getInstance().recordOutput("Forks/Current", motor.getSupplyCurrent());
-    Logger.getInstance().recordOutput("Forks/SpoolRotation", getSpoolRotation().getDegrees());
-    Logger.getInstance().recordOutput("Forks/RawSpoolRotation", motor.getSelectedSensorPosition());
+    Logger.getInstance().recordOutput("Forks/Angle", getAngle().getDegrees());
     Logger.getInstance().recordOutput("Forks/Mode", mode.toString());
     Logger.getInstance().recordOutput("Forks/HomingState", homingState.toString());
   }
