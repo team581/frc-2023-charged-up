@@ -15,13 +15,13 @@ import frc.robot.Positions;
 import frc.robot.config.Config;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
-
 import org.littletonrobotics.junction.Logger;
 
 public class ElevatorSubsystem extends LifecycleSubsystem {
   private final TalonFX motor;
   private double goalPositionInMeters = 0;
-  private double sensorUnitsPerElevatorMeter = Units.inchesToMeters((Config.ELEVATOR_GEARING * 2048) / (1.75 * Math.PI));
+  private double sensorUnitsPerElevatorMeter =
+      Units.inchesToMeters((Config.ELEVATOR_GEARING * 2048) / (1.75 * Math.PI));
   private boolean isHoming = false;
   private double homingCurrent = 1.5;
   private boolean goToGoal = false;
@@ -91,7 +91,7 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
       if (current > homingCurrent) {
         motor.setSelectedSensorPosition(0);
         this.isHoming = false;
-        goToGoal=true;
+        goToGoal = true;
         setGoalPosition(Positions.STOWED.height);
       }
     } else if (goToGoal) {
