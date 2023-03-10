@@ -22,6 +22,12 @@ public class ForksSubsystem extends LifecycleSubsystem {
   private static final Rotation2d TOLERANCE = Rotation2d.fromDegrees(2); // placeholder
   private static final SupplyCurrentLimitConfiguration CURRENT_LIMIT =
       new SupplyCurrentLimitConfiguration(true, 40, 40, 0.2);
+  // make a SAFE_CURRENT_LIMIT, which is 10, 15, 0.2
+  // in testinit, use safe current limit
+  // in teleop init or auto init, use regular current limit
+  private static final SupplyCurrentLimitConfiguration SAFE_CURRENT_LIMIT =
+      new SupplyCurrentLimitConfiguration(true, 10, 15, 0.2);
+
   private final TalonFX motor;
   private ForksMode mode = ForksMode.STOPPED;
   private HomingState homingState = HomingState.NOT_HOMED;
@@ -41,16 +47,22 @@ public class ForksSubsystem extends LifecycleSubsystem {
   @Override
   public void testInit() {
     motor.configForwardSoftLimitEnable(false);
+
+    motor.configSupplyCurrentLimit(SAFE_CURRENT_LIMIT);
   }
 
   @Override
   public void teleopInit() {
     motor.configForwardSoftLimitEnable(true);
+
+    motor.configSupplyCurrentLimit(CURRENT_LIMIT);
   }
 
   @Override
   public void autonomousInit() {
     motor.configForwardSoftLimitEnable(true);
+
+    motor.configSupplyCurrentLimit(CURRENT_LIMIT);
   }
 
   @Override
