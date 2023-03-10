@@ -5,15 +5,18 @@
 package frc.robot.managers;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 
 public class SuperstructurePosition {
   public final double height;
   public final Rotation2d angle;
   public final double earlyTransitionHeight;
 
-  public SuperstructurePosition(double height, Rotation2d angle, double earlyTransitionHeight) {
-    this.height = height;
+  public SuperstructurePosition(
+      double heightInches, Rotation2d angle, double earlyTransitionHeightInches) {
+    this.height = Units.inchesToMeters(heightInches);
     this.angle = angle;
-    this.earlyTransitionHeight = earlyTransitionHeight;
+    this.earlyTransitionHeight =
+        earlyTransitionHeightInches == -1 ? -1 : Units.inchesToMeters(earlyTransitionHeightInches);
   }
 }
