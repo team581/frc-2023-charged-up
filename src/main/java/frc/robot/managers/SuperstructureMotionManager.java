@@ -6,6 +6,7 @@ package frc.robot.managers;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import frc.robot.Positions;
 import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
@@ -107,9 +108,9 @@ public class SuperstructureMotionManager extends LifecycleSubsystem {
 
   @Override
   public void robotPeriodic() {
-    if (goalPosition.height > 1) {
+    if (goalPosition.height > Units.inchesToMeters(1)) {
       controller.slowModeToggle(true);
-    } else if (elevator.getHeight() < 20) {
+    } else if (elevator.getHeight() < Units.inchesToMeters(20)) {
       controller.slowModeToggle(false);
     }
   }

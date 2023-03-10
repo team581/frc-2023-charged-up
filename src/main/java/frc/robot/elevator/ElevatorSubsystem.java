@@ -22,12 +22,11 @@ import org.littletonrobotics.junction.Logger;
 public class ElevatorSubsystem extends LifecycleSubsystem {
   private final TalonFX motor;
   private double goalPositionInMeters = 0;
-  private double sensorUnitsPerElevatorMeter =
-      Units.inchesToMeters((Config.ELEVATOR_GEARING * 2048) / (1.75 * Math.PI));
+  private double sensorUnitsPerElevatorInch = (Config.ELEVATOR_GEARING * 2048) / (1.75 * Math.PI);
   private boolean isHoming = false;
   private double homingCurrent = 1.5;
   private boolean goToGoal = false;
-  private static final double TOLERANCE = 0.5;
+  private static final double TOLERANCE = Units.inchesToMeters(0.5);
 
   public ElevatorSubsystem(TalonFX motor) {
     super(SubsystemPriority.ELEVATOR);
@@ -58,7 +57,7 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
   public double getHeight() {
     // Read talon sensor, convert to inches
     double sensorUnits = motor.getSelectedSensorPosition();
-    double position = sensorUnits / sensorUnitsPerElevatorMeter;
+    double position = Units.inchesToMeters(sensorUnits / sensorUnitsPerElevatorInch);
     return position;
   }
 
@@ -79,10 +78,11 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
 
   @Override
   public void robotPeriodic() {
-    Logger.getInstance().recordOutput("Elevator/Position", getHeight());
+    Logger.getInstance().recordOutput("Elevator/Position", Units.metersToInches(getHeight()));
     Logger.getInstance().recordOutput("Elevator/Current", motor.getSupplyCurrent());
     Logger.getInstance().recordOutput("Elevator/GoalPosition", goalPositionInMeters);
     Logger.getInstance().recordOutput("Elevator/Homing", isHoming);
+    Logger.getInstance().recordOutput("Elevator/test", Positions.CONE_NODE_MID.height);
   }
 
   @Override
@@ -97,7 +97,8 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
         setGoalPosition(Positions.STOWED.height);
       }
     } else if (goToGoal) {
-      double goalPositionInSensorUnits = goalPositionInMeters * sensorUnitsPerElevatorMeter;
+      double goalPositionInSensorUnits =
+          Units.metersToInches(goalPositionInMeters) * sensorUnitsPerElevatorInch;
       motor.set(
           ControlMode.MotionMagic,
           goalPositionInSensorUnits,
