@@ -26,14 +26,17 @@ public class IntakeSubsystem extends LifecycleSubsystem {
 
   private final TalonFX motor;
 
-  private final LinearFilter coneFilterIntake =
-      LinearFilter.movingAverage((Config.IS_SPIKE ? 24 : 30));
-  private final LinearFilter cubeFilterIntake =
-      LinearFilter.movingAverage((Config.IS_SPIKE ? 10 : 10));
-  private final LinearFilter coneFilterOuttake =
-      LinearFilter.movingAverage((Config.IS_SPIKE ? 14 : 30));
-  private final LinearFilter cubeFilterOuttake =
-      LinearFilter.movingAverage((Config.IS_SPIKE ? 10 : 10));
+  private final LinearFilter coneFilterIntakeCurrent =
+      LinearFilter.movingAverage(Config.IS_SPIKE ? 24 : 30);
+  private final LinearFilter cubeFilterIntakeCurrent =
+      LinearFilter.movingAverage(Config.IS_SPIKE ? 10 : 10);
+  private final LinearFilter coneFilterOuttakeCurrent =
+      LinearFilter.movingAverage(Config.IS_SPIKE ? 14 : 30);
+  private final LinearFilter cubeFilterOuttakeCurrent =
+      LinearFilter.movingAverage(Config.IS_SPIKE ? 10 : 10);
+
+  private final LinearFilter coneFilterSensor = LinearFilter.movingAverage(5);
+  private final LinearFilter cubeFilterSensor = LinearFilter.movingAverage(5);
 
   public IntakeSubsystem(TalonFX motor) {
     super(SubsystemPriority.INTAKE);
@@ -41,6 +44,15 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     this.motor = motor;
     motor.setInverted(Config.INVERTED_INTAKE);
     motor.configSupplyCurrentLimit(CURRENT_LIMIT);
+    motor.overrideLimitSwitchesEnable(false);
+  }
+
+  private boolean sensorHasCube() {
+    return motor.isRevLimitSwitchClosed() == 1;
+  }
+
+  private boolean sensorHasCone() {
+    return motor.isFwdLimitSwitchClosed() == 1;
   }
 
   @Override
@@ -53,29 +65,35 @@ public class IntakeSubsystem extends LifecycleSubsystem {
 
   @Override
   public void enabledPeriodic() {
-    double coneIntakeCurrent = coneFilterIntake.calculate(motor.getStatorCurrent());
-    double cubeIntakeCurrent = cubeFilterIntake.calculate(motor.getStatorCurrent());
-    double coneOuttakeCurrent = coneFilterOuttake.calculate(motor.getStatorCurrent());
-    double cubeOuttakeCurrent = cubeFilterOuttake.calculate(motor.getStatorCurrent());
+    double coneIntakeCurrent = coneFilterIntakeCurrent.calculate(motor.getStatorCurrent());
+    double cubeIntakeCurrent = cubeFilterIntakeCurrent.calculate(motor.getStatorCurrent());
+    double coneOuttakeCurrent = coneFilterOuttakeCurrent.calculate(motor.getStatorCurrent());
+    double cubeOuttakeCurrent = cubeFilterOuttakeCurrent.calculate(motor.getStatorCurrent());
     Logger.getInstance().recordOutput("Intake/FilteredConeIntakeCurrent", coneIntakeCurrent);
     Logger.getInstance().recordOutput("Intake/FilteredCubeIntakeCurrent", cubeIntakeCurrent);
     Logger.getInstance().recordOutput("Intake/FilteredConeOuttakeCurrent", coneOuttakeCurrent);
     Logger.getInstance().recordOutput("Intake/FilteredCubeOuttakeCurrent", cubeOuttakeCurrent);
 
+    double coneSensor = coneFilterSensor.calculate(sensorHasCone() ? 1 : 0);
+    double cubeSensor = cubeFilterSensor.calculate(sensorHasCube() ? 1 : 0);
+    Logger.getInstance().recordOutput("Intake/FilteredConeIntakeSensor", coneSensor);
+    Logger.getInstance().recordOutput("Intake/FilteredCubeIntakeSensor", cubeSensor);
+
     if (mode == IntakeMode.INTAKE_CUBE) {
-      if (cubeIntakeCurrent > 35) {
+      if (cubeIntakeCurrent > 35 || cubeSensor == 1) {
         gamePiece = HeldGamePiece.CUBE;
       }
     } else if (mode == IntakeMode.INTAKE_CONE) {
-      if (coneIntakeCurrent > (Config.IS_SPIKE ? 45 : 70)) { // TODO: Edit currents for tyke
+      if (coneIntakeCurrent > (Config.IS_SPIKE ? 45 : 70)
+          || coneSensor == 1) { // TODO: Edit currents for tyke
         gamePiece = HeldGamePiece.CONE;
       }
     } else if (mode == IntakeMode.OUTTAKE_CUBE) {
-      if (cubeOuttakeCurrent < (Config.IS_SPIKE ? 10 : 10)) {
+      if (cubeOuttakeCurrent < (Config.IS_SPIKE ? 10 : 10) || cubeSensor == 0) {
         gamePiece = HeldGamePiece.NOTHING;
       }
     } else if (mode == IntakeMode.OUTTAKE_CONE) {
-      if (coneOuttakeCurrent < 10) {
+      if (coneOuttakeCurrent < 10 || coneSensor == 0) {
         gamePiece = HeldGamePiece.NOTHING;
       }
     }
