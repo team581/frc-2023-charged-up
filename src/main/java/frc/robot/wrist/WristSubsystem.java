@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Positions;
 import frc.robot.config.Config;
+import frc.robot.util.HomingState;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
 import org.littletonrobotics.junction.Logger;
@@ -23,8 +24,8 @@ public class WristSubsystem extends LifecycleSubsystem {
   private final TalonFX motor;
   private Rotation2d goalAngle = Positions.STOWED.angle;
   private final LinearFilter currentFilter = LinearFilter.movingAverage(5);
-  private boolean isHoming = false;
-  private boolean goToGoal = false;
+
+  private HomingState homingState = HomingState.NOT_HOMED;
 
   public WristSubsystem(TalonFX motor) {
     super(SubsystemPriority.WRIST);
@@ -59,12 +60,15 @@ public class WristSubsystem extends LifecycleSubsystem {
   }
 
   public void startHoming() {
-    isHoming = true;
-    goToGoal = false;
+    homingState = HomingState.HOMING;
   }
 
-  public boolean isHoming() {
-    return isHoming;
+  public HomingState resetHoming() {
+    return homingState = HomingState.NOT_HOMED;
+  }
+
+  public HomingState getHomingState() {
+    return homingState;
   }
 
   @Override
@@ -75,7 +79,7 @@ public class WristSubsystem extends LifecycleSubsystem {
     Logger.getInstance().recordOutput("Wrist/FilteredCurrent", filteredCurrent);
     Logger.getInstance().recordOutput("Wrist/RawCurrent", rawCurrent);
 
-    if (isHoming) {
+    if (homingState == HomingState.HOMING) {
       motor.set(TalonFXControlMode.PercentOutput, Config.WRIST_HOMING_VOLTAGE);
 
       if (filteredCurrent > Config.WRIST_HOMED_CURRENT) {
@@ -83,10 +87,9 @@ public class WristSubsystem extends LifecycleSubsystem {
         motor.setSelectedSensorPosition(
             Config.WRIST_HOMED_ANGLE.getRotations() * 2048.0 * Config.WRIST_GEARING);
         setAngle(Positions.STOWED.angle);
-        isHoming = false;
-        goToGoal = true;
+        homingState = HomingState.HOMED;
       }
-    } else if (goToGoal) {
+    } else if (homingState == HomingState.HOMED) {
       motor.set(ControlMode.MotionMagic, goalAngle.getRotations() * 2048 * Config.WRIST_GEARING);
     } else {
       motor.set(TalonFXControlMode.PercentOutput, 0);
@@ -97,8 +100,8 @@ public class WristSubsystem extends LifecycleSubsystem {
   public void robotPeriodic() {
     Logger.getInstance().recordOutput("Wrist/Angle", getAngle().getDegrees());
     Logger.getInstance().recordOutput("Wrist/GoalAngle", goalAngle.getDegrees());
-    Logger.getInstance().recordOutput("Wrist/Homing", isHoming);
-    Logger.getInstance().recordOutput("Wrist/GoToGoal", goToGoal);
+    Logger.getInstance().recordOutput("Wrist/Homing", homingState.toString());
+
     Logger.getInstance().recordOutput("Wrist/Voltage", motor.getMotorOutputVoltage());
 
     if (Config.IS_DEVELOPMENT) {
@@ -108,6 +111,7 @@ public class WristSubsystem extends LifecycleSubsystem {
   }
 
   public Command getHomeCommand() {
-    return runOnce(() -> startHoming()).andThen(Commands.waitUntil(() -> isHoming() == false));
+    return runOnce(() -> startHoming())
+        .andThen(Commands.waitUntil(() -> getHomingState() == HomingState.HOMED));
   }
 }
