@@ -142,6 +142,14 @@ public class SuperstructureManager extends LifecycleSubsystem {
     return Commands.either(
             finishManualScoreCommand(),
             getCommand(() -> mode == HeldGamePiece.CUBE ? cubeState : coneState)
+                // delay scoring so cone doesn't wobble out when the robot shakes when the carriage
+                // goes up
+                .andThen(
+                    Commands.waitSeconds(0.5)
+                        .unless(
+                            () ->
+                                scoringLocation == ManualScoringLocation.LOW
+                                    || mode == HeldGamePiece.CONE))
                 .andThen(
                     getCommand(
                         () -> mode == HeldGamePiece.CUBE ? cubeStateScoring : coneStateScoring))
