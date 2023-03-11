@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.config.Config;
@@ -29,16 +30,16 @@ public class IntakeSubsystem extends LifecycleSubsystem {
   private final TalonFX motor;
 
   private final LinearFilter coneFilterIntakeCurrent =
-      LinearFilter.movingAverage(Config.IS_SPIKE ? 24 : 30);
+      LinearFilter.movingAverage(Config.IS_SPIKE ? 48 : 30); // Was 24 for spike
   private final LinearFilter cubeFilterIntakeCurrent =
-      LinearFilter.movingAverage(Config.IS_SPIKE ? 10 : 10);
+      LinearFilter.movingAverage(Config.IS_SPIKE ? 20 : 10); // Was 10 for spike
   private final LinearFilter coneFilterOuttakeCurrent =
-      LinearFilter.movingAverage(Config.IS_SPIKE ? 14 : 30);
+      LinearFilter.movingAverage(Config.IS_SPIKE ? 28 : 30); // Was 14 for spike
   private final LinearFilter cubeFilterOuttakeCurrent =
-      LinearFilter.movingAverage(Config.IS_SPIKE ? 10 : 10);
+      LinearFilter.movingAverage(Config.IS_SPIKE ? 20 : 10); // Was 10 for spike
 
-  private final Debouncer coneFilterSensor = new Debouncer(5 * 0.02);
-  private final Debouncer cubeFilterSensor = new Debouncer(5 * 0.02);
+  private final Debouncer coneFilterSensor = new Debouncer(5 * 0.02, DebounceType.kBoth);
+  private final Debouncer cubeFilterSensor = new Debouncer(5 * 0.02, DebounceType.kBoth);
 
   public IntakeSubsystem(TalonFX motor) {
     super(SubsystemPriority.INTAKE);
@@ -50,11 +51,11 @@ public class IntakeSubsystem extends LifecycleSubsystem {
   }
 
   private boolean sensorHasCube() {
-    return motor.isRevLimitSwitchClosed() == 1;
+    return motor.isFwdLimitSwitchClosed() == 1;
   }
 
   private boolean sensorHasCone() {
-    return motor.isFwdLimitSwitchClosed() == 1;
+    return motor.isRevLimitSwitchClosed() == 1;
   }
 
   @Override
@@ -63,6 +64,8 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     Logger.getInstance().recordOutput("Intake/HeldGamePiece", gamePiece.toString());
     Logger.getInstance().recordOutput("Intake/Current", motor.getStatorCurrent());
     Logger.getInstance().recordOutput("Intake/Voltage", motor.getMotorOutputVoltage());
+    Logger.getInstance().recordOutput("Intake/ConeIntakeSensor", sensorHasCone());
+    Logger.getInstance().recordOutput("Intake/CubeIntakeSensor", sensorHasCube());
   }
 
   @Override
