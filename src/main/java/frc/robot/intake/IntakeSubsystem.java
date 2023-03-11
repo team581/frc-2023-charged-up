@@ -7,6 +7,8 @@ package frc.robot.intake;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -35,8 +37,8 @@ public class IntakeSubsystem extends LifecycleSubsystem {
   private final LinearFilter cubeFilterOuttakeCurrent =
       LinearFilter.movingAverage(Config.IS_SPIKE ? 10 : 10);
 
-  private final LinearFilter coneFilterSensor = LinearFilter.movingAverage(5);
-  private final LinearFilter cubeFilterSensor = LinearFilter.movingAverage(5);
+  private final Debouncer coneFilterSensor = new Debouncer(5 * 0.02);
+  private final Debouncer cubeFilterSensor = new Debouncer(5 * 0.02);
 
   public IntakeSubsystem(TalonFX motor) {
     super(SubsystemPriority.INTAKE);
@@ -74,26 +76,26 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     Logger.getInstance().recordOutput("Intake/FilteredConeOuttakeCurrent", coneOuttakeCurrent);
     Logger.getInstance().recordOutput("Intake/FilteredCubeOuttakeCurrent", cubeOuttakeCurrent);
 
-    double coneSensor = coneFilterSensor.calculate(sensorHasCone() ? 1 : 0);
-    double cubeSensor = cubeFilterSensor.calculate(sensorHasCube() ? 1 : 0);
+    boolean coneSensor = coneFilterSensor.calculate(sensorHasCone());
+    boolean cubeSensor = cubeFilterSensor.calculate(sensorHasCube());
     Logger.getInstance().recordOutput("Intake/FilteredConeIntakeSensor", coneSensor);
     Logger.getInstance().recordOutput("Intake/FilteredCubeIntakeSensor", cubeSensor);
 
     if (mode == IntakeMode.INTAKE_CUBE) {
-      if (cubeIntakeCurrent > 35 || cubeSensor == 1) {
+      if (cubeIntakeCurrent > 35 || cubeSensor) {
         gamePiece = HeldGamePiece.CUBE;
       }
     } else if (mode == IntakeMode.INTAKE_CONE) {
       if (coneIntakeCurrent > (Config.IS_SPIKE ? 45 : 70)
-          || coneSensor == 1) { // TODO: Edit currents for tyke
+          || coneSensor) { // TODO: Edit currents for tyke
         gamePiece = HeldGamePiece.CONE;
       }
     } else if (mode == IntakeMode.OUTTAKE_CUBE) {
-      if (cubeOuttakeCurrent < (Config.IS_SPIKE ? 10 : 10) || cubeSensor == 0) {
+      if (cubeOuttakeCurrent < (Config.IS_SPIKE ? 10 : 10) || !cubeSensor) {
         gamePiece = HeldGamePiece.NOTHING;
       }
     } else if (mode == IntakeMode.OUTTAKE_CONE) {
-      if (coneOuttakeCurrent < 10 || coneSensor == 0) {
+      if (coneOuttakeCurrent < 10 || !coneSensor) {
         gamePiece = HeldGamePiece.NOTHING;
       }
     }
