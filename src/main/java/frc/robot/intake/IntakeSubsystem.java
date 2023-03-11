@@ -7,10 +7,9 @@ package frc.robot.intake;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-
 import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.config.Config;
