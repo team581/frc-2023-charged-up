@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import frc.robot.ManualScoringLocation;
 import frc.robot.Positions;
 import frc.robot.States;
@@ -107,6 +106,26 @@ public class SuperstructureManager extends LifecycleSubsystem {
     return mode;
   }
 
+  private Command scoreGamePieceCommand() {
+    return Commands.either(
+        Commands.either(
+            getCommand(new SuperstructureState(goal.position, IntakeMode.OUTTAKE_CONE)),
+            getDunkCommand(),
+            () -> goal.position.height >= Positions.CONE_NODE_MID.height),
+        getCommand(new SuperstructureState(goal.position, IntakeMode.OUTTAKE_CUBE)),
+        () -> mode == HeldGamePiece.CONE);
+  }
+
+  private Command getDunkCommand() {
+    return getCommand(
+        new SuperstructureState(
+            new SuperstructurePosition(
+                goal.position.height + 0.5,
+                Rotation2d.fromDegrees(goal.position.angle.getDegrees() + 15),
+                -1),
+            IntakeMode.OUTTAKE_CONE));
+  }
+
   public Command getCommand(Supplier<SuperstructureState> state) {
     return Commands.run(
             () -> this.set(state.get()), motionManager.wrist, motionManager.elevator, intake)
@@ -144,15 +163,8 @@ public class SuperstructureManager extends LifecycleSubsystem {
             getCommand(() -> mode == HeldGamePiece.CUBE ? cubeState : coneState)
                 // delay scoring so cone doesn't wobble out when the robot shakes when the carriage
                 // goes up
-                .andThen(
-                    Commands.waitSeconds(0.5)
-                        .unless(
-                            () ->
-                                scoringLocation == ManualScoringLocation.LOW
-                                    || mode == HeldGamePiece.CONE))
-                .andThen(
-                    getCommand(
-                        () -> mode == HeldGamePiece.CUBE ? cubeStateScoring : coneStateScoring))
+                .andThen(Commands.waitSeconds(0.5).unless(() -> mode == HeldGamePiece.CUBE))
+                .andThen(scoreGamePieceCommand())
                 .andThen(getCommand(States.STOWED)),
             () ->
                 goal.position.height >= Positions.CUBE_NODE_MID.height
@@ -265,22 +277,7 @@ public class SuperstructureManager extends LifecycleSubsystem {
   public Command finishManualScoreCommand() {
     return Commands.waitUntil(() -> atPosition(goal.position))
         // Dunk motion when we are scoring a cone
-        .andThen(
-            new ProxyCommand(
-                    () ->
-                        getCommand(
-                            new SuperstructureState(
-                                new SuperstructurePosition(
-                                    goal.position.height + 0.5,
-                                    Rotation2d.fromDegrees(goal.position.angle.getDegrees() + 15),
-                                    -1),
-                                IntakeMode.OUTTAKE_CONE)))
-                .unless(() -> mode == HeldGamePiece.CUBE))
-        .andThen(
-            Commands.either(
-                Commands.runOnce(() -> setManualIntakeMode(IntakeMode.OUTTAKE_CUBE)),
-                Commands.runOnce(() -> setManualIntakeMode(IntakeMode.OUTTAKE_CONE)),
-                () -> mode == HeldGamePiece.CUBE))
+        .andThen(scoreGamePieceCommand())
         .withName("SuperstructureFinishManualScore");
   }
 
