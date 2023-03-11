@@ -5,6 +5,8 @@
 package frc.robot.util.scheduling;
 
 public enum SubsystemPriority {
+  AUTOSCORE(22),
+
   SUPERSTRUCTURE_MANAGER(21),
 
   SUPERSTRUCTURE_MOTION_MANAGER(20),

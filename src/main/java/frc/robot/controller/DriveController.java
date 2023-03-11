@@ -57,7 +57,7 @@ public class DriveController extends CommandXboxController {
 
     if (rightY > 0.6) {
       scoringHeight = ManualScoringLocation.HIGH;
-    } else if (rightY < -0.7) {
+    } else if (rightY < -0.6) {
       scoringHeight = ManualScoringLocation.LOW;
     } else {
       scoringHeight = ManualScoringLocation.MID;

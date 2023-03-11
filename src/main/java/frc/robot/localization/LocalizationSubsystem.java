@@ -155,12 +155,10 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
         () -> resetGyro(Rotation2d.fromDegrees(FmsSubsystem.isRedAlliance() ? 180 : 0)));
   }
 
-
   public boolean atPose(Pose2d goal) {
 
     Pose2d pose = getPose();
     double distanceRelative = goal.getTranslation().getDistance(pose.getTranslation());
-
 
     Logger.getInstance().recordOutput("Localization/AtPoseGoal", goal);
 

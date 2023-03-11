@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.autos.Autos;
-import frc.robot.autoscore.AutoScoreLocation;
+import frc.robot.autoscore.Autoscore;
 import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
 import frc.robot.elevator.ElevatorSubsystem;
@@ -104,7 +104,9 @@ public class Robot extends LoggedRobot {
       new ForksSubsystem(new TalonFX(Config.FORKS_MOTOR_ID, Config.CANIVORE_ID));
   private final FmsSubsystem fmsSubsystem = new FmsSubsystem();
   private final SuperstructureManager superstructureManager =
-      new SuperstructureManager(superstructureMotionManager, intake, localization);
+      new SuperstructureManager(superstructureMotionManager, intake);
+  private final Autoscore autoscore =
+      new Autoscore(localization, swerve, superstructureManager, driveController, intake);
   private final LightsSubsystem lights =
       new LightsSubsystem(
           new CANdle(Config.LIGHTS_CANDLE_ID, Config.CANIVORE_ID),
@@ -174,10 +176,10 @@ public class Robot extends LoggedRobot {
         .leftTrigger(0.3)
         .onTrue(superstructureManager.getFloorIntakeSpinningCommand())
         .onFalse(superstructureManager.getFloorIntakeIdleCommand());
-    // Outtake/score low node/finish manual score
-    driveController
-        .rightTrigger(0.3)
-        .onTrue(superstructureManager.getScoreCommand(ManualScoringLocation.LOW));
+    // Auto align
+    driveController.rightBumper().whileTrue(autoscore.getAutoAlignCommand());
+    // Autoscore/finish manual score
+    driveController.rightTrigger().whileTrue(autoscore.getCommand());
     // Zero gyro
     driveController.back().onTrue(localization.getZeroCommand());
     // Set mode to cubes
@@ -254,21 +256,11 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-
-    AutoScoreLocation autoScoreLocation =
-        superstructureManager.getAutoScoreLocation(driveController.getAutoScoreNodeKind());
-    Logger.getInstance().recordOutput("AutoScore/GoalLocation/Pose", autoScoreLocation.pose);
-    Logger.getInstance()
-        .recordOutput("AutoScore/GoalLocation/Node", autoScoreLocation.node.toString());
-
-    Logger.getInstance()
-        .recordOutput("Scheduler/Stage", LifecycleSubsystemManager.getStage().toString());
   }
 
   @Override
   public void autonomousInit() {
     autoCommand = autos.getAutoCommand();
-    CommandScheduler.getInstance().schedule(autoCommand);
   }
 
   @Override

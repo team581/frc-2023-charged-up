@@ -4,7 +4,6 @@
 
 package frc.robot.managers;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -12,18 +11,11 @@ import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import frc.robot.ManualScoringLocation;
 import frc.robot.Positions;
 import frc.robot.States;
-import frc.robot.autoscore.AutoScoreLocation;
-import frc.robot.autoscore.GridKind;
-import frc.robot.autoscore.NodeKind;
-import frc.robot.fms.FmsSubsystem;
 import frc.robot.intake.HeldGamePiece;
 import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
-import frc.robot.localization.Landmarks;
-import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
-import java.util.List;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -33,19 +25,14 @@ public class SuperstructureManager extends LifecycleSubsystem {
   private SuperstructureState goal = States.STOWED;
   private HeldGamePiece mode = HeldGamePiece.CUBE;
   private ScoringState scoringState = ScoringState.IDLE;
-  private LocalizationSubsystem localization;
-  private boolean autoScoreEnabled = false;
+
   private IntakeMode manualIntakeMode;
 
-  public SuperstructureManager(
-      SuperstructureMotionManager motionManager,
-      IntakeSubsystem intake,
-      LocalizationSubsystem localization) {
+  public SuperstructureManager(SuperstructureMotionManager motionManager, IntakeSubsystem intake) {
     super(SubsystemPriority.SUPERSTRUCTURE_MANAGER);
 
     this.motionManager = motionManager;
     this.intake = intake;
-    this.localization = localization;
   }
 
   public ScoringState getScoringState() {
@@ -220,27 +207,6 @@ public class SuperstructureManager extends LifecycleSubsystem {
         .withName("SuperstructureShelfIntake");
   }
 
-  public AutoScoreLocation getAutoScoreLocation(NodeKind node) {
-    List<Pose2d> grids = FmsSubsystem.isRedAlliance() ? Landmarks.RED_GRIDS : Landmarks.BLUE_GRIDS;
-    Pose2d nearestGrid = localization.getPose().nearest(grids);
-    if (nearestGrid == Landmarks.RED_GRID_LEFT || nearestGrid == Landmarks.BLUE_GRID_LEFT) {
-      return new AutoScoreLocation(GridKind.LEFT, node, nearestGrid);
-    } else if (nearestGrid == Landmarks.RED_GRID_CENTER
-        || nearestGrid == Landmarks.BLUE_GRID_CENTER) {
-      return new AutoScoreLocation(GridKind.CENTER, node, nearestGrid);
-    } else {
-      return new AutoScoreLocation(GridKind.RIGHT, node, nearestGrid);
-    }
-  }
-
-  public boolean isAutoScoreEnabled() {
-    return autoScoreEnabled;
-  }
-
-  public void setAutoScoreEnabled(boolean enabled) {
-    autoScoreEnabled = enabled;
-  }
-
   public Command setIntakeModeCommand(HeldGamePiece gamePiece) {
     return Commands.runOnce(() -> setIntakeMode(gamePiece));
   }
@@ -261,7 +227,6 @@ public class SuperstructureManager extends LifecycleSubsystem {
     return Commands.runOnce(() -> setManualIntakeMode(manualIntakeMode));
   }
 
-  // TODO: Ignore this command when the superstructure is STOWED
   public Command finishManualScoreCommand() {
     return Commands.waitUntil(() -> atPosition(goal.position))
         // Dunk motion when we are scoring a cone

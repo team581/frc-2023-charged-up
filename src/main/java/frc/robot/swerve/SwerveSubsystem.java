@@ -26,6 +26,7 @@ import frc.robot.imu.ImuSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveSubsystem extends LifecycleSubsystem {
@@ -72,19 +73,20 @@ public class SwerveSubsystem extends LifecycleSubsystem {
           Config.SWERVE_TRANSLATION_PID.kP,
           Config.SWERVE_TRANSLATION_PID.kI,
           Config.SWERVE_TRANSLATION_PID.kD,
-          new TrapezoidProfile.Constraints(2.0, 1.5));
+          new TrapezoidProfile.Constraints(0.25, 0.5));
   private final ProfiledPIDController yProfiledController =
       new ProfiledPIDController(
           Config.SWERVE_TRANSLATION_PID.kP,
           Config.SWERVE_TRANSLATION_PID.kI,
           Config.SWERVE_TRANSLATION_PID.kD,
-          new TrapezoidProfile.Constraints(2.0, 1.5));
+          new TrapezoidProfile.Constraints(0.25, 0.5));
   private final ProfiledPIDController thetaProfiledController =
       new ProfiledPIDController(
           Config.SWERVE_ROTATION_PID.kP,
           Config.SWERVE_ROTATION_PID.kI,
           Config.SWERVE_ROTATION_PID.kD,
           new TrapezoidProfile.Constraints(Math.PI * 2.0, Math.PI * 0.75));
+  private boolean steeringEnabled;
   private Rotation2d goalAngle = new Rotation2d();
 
   public SwerveSubsystem(
@@ -226,6 +228,10 @@ public class SwerveSubsystem extends LifecycleSubsystem {
       fieldRelativeHeading = fieldRelativeHeading.plus(Rotation2d.fromDegrees(180));
     }
 
+    if (!steeringEnabled) {
+      thetaPercentage = 0;
+    }
+
     ChassisSpeeds chassisSpeeds =
         ChassisSpeeds.fromFieldRelativeSpeeds(
             robotTranslation.getX(),
@@ -233,7 +239,6 @@ public class SwerveSubsystem extends LifecycleSubsystem {
             thetaPercentage * MAX_ANGULAR_VELOCITY,
             fieldRelative ? fieldRelativeHeading : new Rotation2d());
     SwerveModuleState[] moduleStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_VELOCITY_METERS_PER_SECOND);
     setChassisSpeeds(KINEMATICS.toChassisSpeeds(moduleStates), openLoop);
   }
 
@@ -275,36 +280,65 @@ public class SwerveSubsystem extends LifecycleSubsystem {
         .withName("SwerveFollowTrajectory");
   }
 
-  // Create a command that accepts a Pose2d and drives to it using a PPHolonomicDriveController
-  // The command should exit once it's at the pose
   public Command goToPoseCommand(Pose2d goal, LocalizationSubsystem localization) {
-    return run(() -> {
-          Logger.getInstance().recordOutput("AutoAlign/TargetPose", goal);
-          Pose2d pose = localization.getPose();
-          double xVelocity = xProfiledController.calculate(pose.getX(), goal.getX());
-          double yVelocity = yProfiledController.calculate(pose.getY(), goal.getY());
-          double thetaVelocity =
-              thetaProfiledController.calculate(
-                  pose.getRotation().getRadians(), goal.getRotation().getRadians());
+    return resetPoseCommand(localization)
+        .andThen(
+            run(
+                () -> {
+                  ChassisSpeeds chassisSpeeds = getSpeedsForGoal(goal, localization);
 
-          ChassisSpeeds chassisSpeeds =
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  xVelocity, yVelocity, thetaVelocity, pose.getRotation());
+                  setChassisSpeeds(chassisSpeeds, false);
+                }))
+        .until(() -> localization.atPose(goal))
+        .andThen(runOnce(() -> setChassisSpeeds(new ChassisSpeeds(), false)));
+  }
 
-          setChassisSpeeds(chassisSpeeds, false);
-        })
-        .until(
-            () -> {
-              // 3 degree rotation and 0.1 meter distance
-              Pose2d pose = localization.getPose();
-              double distanceRelative = goal.getTranslation().getDistance(pose.getTranslation());
-              Rotation2d rotationDifference = goal.getRotation().minus(pose.getRotation());
-              if (distanceRelative < 0.1 && Math.abs(rotationDifference.getDegrees()) < 3) {
-                return true;
-              } else {
-                return false;
-              }
-            })
-        .withName("SwerveGoToPose");
+  public Command goToPoseContinuousCommand(
+      Supplier<Pose2d> goal, LocalizationSubsystem localization) {
+    return resetPoseCommand(localization)
+        .andThen(
+            run(
+                () -> {
+                  ChassisSpeeds chassisSpeeds = getSpeedsForGoal(goal.get(), localization);
+
+                  setChassisSpeeds(chassisSpeeds, false);
+                }))
+        .until(() -> localization.atPose(goal.get()))
+        .andThen(runOnce(() -> setChassisSpeeds(new ChassisSpeeds(), false)));
+  }
+
+  private Command resetPoseCommand(LocalizationSubsystem localization) {
+    return Commands.runOnce(
+        () -> {
+          ChassisSpeeds speeds = getChassisSpeeds();
+          xProfiledController.reset(localization.getPose().getX(), speeds.vxMetersPerSecond);
+          xProfiledController.reset(localization.getPose().getY(), speeds.vyMetersPerSecond);
+          xProfiledController.reset(
+              localization.getPose().getRotation().getRadians(), speeds.omegaRadiansPerSecond);
+        });
+  }
+
+  private ChassisSpeeds getSpeedsForGoal(Pose2d goal, LocalizationSubsystem localization) {
+    Logger.getInstance().recordOutput("Autoscore/TargetPose", goal);
+    Pose2d pose = localization.getPose();
+
+    double xVelocity = xController.calculate(pose.getX(), goal.getX());
+    double yVelocity = yController.calculate(pose.getY(), goal.getY());
+    double thetaVelocity =
+        thetaController.calculate(pose.getRotation().getRadians(), goal.getRotation().getRadians());
+
+    if (Config.IS_SPIKE) {
+      xVelocity = -xVelocity;
+      yVelocity = -yVelocity;
+    }
+
+    ChassisSpeeds chassisSpeeds =
+        ChassisSpeeds.fromFieldRelativeSpeeds(
+            xVelocity, yVelocity, thetaVelocity, pose.getRotation());
+    return chassisSpeeds;
+  }
+
+  public void setSteeringEnabled(boolean enabled) {
+    steeringEnabled = enabled;
   }
 }
