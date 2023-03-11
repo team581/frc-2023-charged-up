@@ -15,7 +15,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class AutoRotate extends LifecycleSubsystem {
   public static Rotation2d getShelfAngle() {
-    return FmsSubsystem.isRedAlliance() ? Rotation2d.fromDegrees(0) : Rotation2d.fromDegrees(0);
+    return FmsSubsystem.isRedAlliance() ? Rotation2d.fromDegrees(0) : Rotation2d.fromDegrees(180);
   }
 
   public static Rotation2d getGridAngle() {

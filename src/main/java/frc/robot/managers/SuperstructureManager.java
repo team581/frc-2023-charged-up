@@ -289,6 +289,7 @@ public class SuperstructureManager extends LifecycleSubsystem {
         .alongWith(
             intake
                 .getCommand(IntakeMode.STOPPED)
+                .andThen(Commands.runOnce(() -> motionManager.wrist.resetHoming()))
                 .andThen(motionManager.elevator.getHomeCommand())
                 .andThen(motionManager.wrist.getHomeCommand()));
   }
