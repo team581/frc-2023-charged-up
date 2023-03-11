@@ -92,6 +92,10 @@ public class IntakeSubsystem extends LifecycleSubsystem {
       motor.set(TalonFXControlMode.PercentOutput, 0.5);
     } else if (mode == IntakeMode.INTAKE_CONE) {
       motor.set(TalonFXControlMode.PercentOutput, -0.5);
+    } else if (mode == IntakeMode.MANUAL_INTAKE) {
+      motor.set(TalonFXControlMode.PercentOutput, 0.5);
+    } else if (mode == IntakeMode.MANUAL_OUTTAKE) {
+      motor.set(TalonFXControlMode.PercentOutput, -0.5);
     } else {
       motor.set(TalonFXControlMode.PercentOutput, 0);
     }
@@ -123,6 +127,9 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     }
     if (mode == IntakeMode.INTAKE_CONE) {
       return gamePiece == HeldGamePiece.CONE;
+    }
+    if (mode == IntakeMode.MANUAL_INTAKE || mode == IntakeMode.MANUAL_OUTTAKE) {
+      return false;
     }
     return false;
   }
