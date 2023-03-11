@@ -20,7 +20,7 @@ import org.littletonrobotics.junction.Logger;
 public class ForksSubsystem extends LifecycleSubsystem {
 
   private static final SupplyCurrentLimitConfiguration CURRENT_LIMIT =
-      new SupplyCurrentLimitConfiguration(true, 40, 40, 0.2);
+      new SupplyCurrentLimitConfiguration(true, 30, 30, 0.0);
 
   private final TalonFX motor;
   private ForksMode mode = ForksMode.STOPPED;
