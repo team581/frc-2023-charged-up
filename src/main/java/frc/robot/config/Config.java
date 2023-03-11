@@ -49,7 +49,7 @@ public class Config {
   public static final SwerveModuleConstants SWERVE_FL_CONSTANTS =
       IS_SPIKE
           ? new SwerveModuleConstants(
-              Rotation2d.fromDegrees(135.61), SwerveCorner.FRONT_LEFT, true, true)
+              Rotation2d.fromDegrees(295.4004), SwerveCorner.FRONT_LEFT, true, true)
           : new SwerveModuleConstants(
               Rotation2d.fromDegrees(117.19), SwerveCorner.FRONT_LEFT, false, false);
   // -62.84
@@ -59,7 +59,7 @@ public class Config {
   public static final SwerveModuleConstants SWERVE_FR_CONSTANTS =
       IS_SPIKE
           ? new SwerveModuleConstants(
-              Rotation2d.fromDegrees(67.94), SwerveCorner.FRONT_RIGHT, true, true)
+              Rotation2d.fromDegrees(160.0488), SwerveCorner.FRONT_RIGHT, true, true)
           : new SwerveModuleConstants(
               Rotation2d.fromDegrees(32.2), SwerveCorner.FRONT_RIGHT, false, false);
   // -147.8
@@ -69,7 +69,7 @@ public class Config {
   public static final SwerveModuleConstants SWERVE_BL_CONSTANTS =
       IS_SPIKE
           ? new SwerveModuleConstants(
-              Rotation2d.fromDegrees(307.0), SwerveCorner.BACK_LEFT, true, true)
+              Rotation2d.fromDegrees(2.6367), SwerveCorner.BACK_LEFT, true, true)
           : new SwerveModuleConstants(
               Rotation2d.fromDegrees(-101.25), SwerveCorner.BACK_LEFT, false, false);
   // 78.75
@@ -79,7 +79,7 @@ public class Config {
   public static final SwerveModuleConstants SWERVE_BR_CONSTANTS =
       IS_SPIKE
           ? new SwerveModuleConstants(
-              Rotation2d.fromDegrees(68.82), SwerveCorner.BACK_RIGHT, true, true)
+              Rotation2d.fromDegrees(110.1270), SwerveCorner.BACK_RIGHT, true, true)
           : new SwerveModuleConstants(
               Rotation2d.fromDegrees(-75.42), SwerveCorner.BACK_RIGHT, false, false);
   // 104.58
@@ -108,12 +108,16 @@ public class Config {
   public static final int WRIST_KD = IS_SPIKE ? 0 : 0;
   public static final int WRIST_MOTION_CRUISE_VELOCITY = IS_SPIKE ? 10000 : 20000;
   public static final int WRIST_MOTION_ACCELERATION = IS_SPIKE ? 65000 : 50000;
-  public static final double WRIST_HOMED_CURRENT = IS_SPIKE ? 15 : 15;
+  public static final double WRIST_HOMED_CURRENT = IS_SPIKE ? 4 : 5;
   public static final Rotation2d WRIST_HOMED_ANGLE =
       IS_SPIKE ? Rotation2d.fromDegrees(0) : Rotation2d.fromDegrees(0.0);
   public static final double WRIST_HOMING_VOLTAGE = IS_SPIKE ? -0.15 : -0.15;
 
   public static final int INTAKE_MOTOR_ID = 17;
+  public static final boolean INVERTED_INTAKE = IS_SPIKE ? false : true;
+
+  public static final int FORKS_MOTOR_ID = 18;
+  public static final double FORKS_GEARING = IS_SPIKE ? 25 : 999;
 
   public static final double SWERVE_STEER_KV = IS_SPIKE ? 0.0 : 0.0;
   public static final double SWERVE_STEER_KP = IS_SPIKE ? 5.0 : 3.0;
@@ -134,8 +138,9 @@ public class Config {
 
   public static final double STEER_MOTOR_LIMITS = IS_SPIKE ? 35 : 0.0;
   public static final boolean SWERVE_MOTOR_LIMITS_ENABLED = IS_SPIKE ? true : true;
-  public static final PIDConstants SWERVE_TRANSLATION_PID = new PIDConstants(1, 0, 0);
-  public static final PIDConstants SWERVE_ROTATION_PID = new PIDConstants(1, 0, 0);
+  public static final PIDConstants SWERVE_TRANSLATION_PID = new PIDConstants(3, 0, 0);
+  public static final PIDConstants SWERVE_ROTATION_PID = new PIDConstants(2.6, 0, 0);
+  public static final boolean SWERVE_USE_FOC = IS_SPIKE ? true : true;
 
   public static final double SUPERSTRUCTURE_COLLISION_HEIGHT = IS_SPIKE ? 0.75 : 26;
   public static final Rotation2d SUPERSTRUCTURE_WRIST_RANGE =

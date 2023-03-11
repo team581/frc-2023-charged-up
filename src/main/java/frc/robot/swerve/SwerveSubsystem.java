@@ -17,11 +17,11 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
+import frc.robot.fms.FmsSubsystem;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
@@ -40,7 +40,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   public static final double MAX_VELOCITY_INCHES_PER_SECOND = 127;
   public static final double MAX_VELOCITY_METERS_PER_SECOND =
       MAX_VELOCITY_INCHES_PER_SECOND / 39.37;
-  public static final double MAX_ANGULAR_VELOCITY = 30;
+  public static final double MAX_ANGULAR_VELOCITY = 20;
 
   private final ImuSubsystem imu;
   private final SwerveModule frontRight;
@@ -48,6 +48,9 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   private final SwerveModule backRight;
   private final SwerveModule backLeft;
   private boolean doneResetting = false;
+
+  private boolean snapToAngle = false;
+  private boolean xSwerveEnabled = false;
 
   private final PIDController xController =
       new PIDController(
@@ -84,6 +87,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
           Config.SWERVE_ROTATION_PID.kD,
           new TrapezoidProfile.Constraints(Math.PI * 2.0, Math.PI * 0.75));
   private boolean steeringEnabled;
+  private Rotation2d goalAngle = new Rotation2d();
 
   public SwerveSubsystem(
       ImuSubsystem imu,
@@ -99,6 +103,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     this.backRight = backRight;
     this.backLeft = backLeft;
 
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
     thetaProfiledController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
@@ -112,17 +117,23 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
   @Override
   public void robotPeriodic() {
-    this.frontLeft.logValues();
-    this.frontRight.logValues();
-    this.backLeft.logValues();
-    this.backRight.logValues();
-
     Logger.getInstance().recordOutput("Swerve/ModuleStates", getModuleStates());
+
     ChassisSpeeds chassisSpeeds = getChassisSpeeds();
     Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/X", chassisSpeeds.vxMetersPerSecond);
     Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/Y", chassisSpeeds.vyMetersPerSecond);
     Logger.getInstance()
         .recordOutput("Swerve/ChassisSpeeds/Omega", chassisSpeeds.omegaRadiansPerSecond);
+
+    Logger.getInstance().recordOutput("Swerve/SnapToAngle/Goal", goalAngle.getDegrees());
+    Logger.getInstance().recordOutput("Swerve/SnapToAngle/Enabled", snapToAngle);
+  }
+
+  @Override
+  public void enabledPeriodic() {
+    if (xSwerveEnabled) {
+      xSwerve();
+    }
   }
 
   public ChassisSpeeds getChassisSpeeds() {
@@ -150,19 +161,56 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     };
   }
 
-  public void setChassisSpeeds(ChassisSpeeds speeds, boolean openLoop) {
-    final var moduleStates = KINEMATICS.toSwerveModuleStates(speeds);
-    setModuleStates(moduleStates, openLoop);
+  public void setSnapToAngle(Rotation2d angle) {
+    goalAngle = angle;
+    snapToAngle = true;
   }
 
-  public void setModuleStates(SwerveModuleState[] moduleStates, boolean openLoop) {
-    SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_VELOCITY_METERS_PER_SECOND);
-    Logger.getInstance().recordOutput("Swerve/GoalModuleStates", moduleStates);
+  public void disableSnapToAngle() {
+    snapToAngle = false;
+  }
 
-    frontLeft.setDesiredState(moduleStates[0], openLoop);
-    frontRight.setDesiredState(moduleStates[1], openLoop);
-    backLeft.setDesiredState(moduleStates[2], openLoop);
-    backRight.setDesiredState(moduleStates[3], openLoop);
+  public void setXSwerve(boolean xSwerve) {
+    this.xSwerveEnabled = xSwerve;
+  }
+
+  public void setChassisSpeeds(ChassisSpeeds speeds, boolean openLoop) {
+    if (snapToAngle) {
+      speeds.omegaRadiansPerSecond =
+          thetaController.calculate(imu.getRobotHeading().getRadians(), goalAngle.getRadians());
+    }
+
+    final var moduleStates = KINEMATICS.toSwerveModuleStates(speeds);
+    setModuleStates(moduleStates, openLoop, false);
+  }
+
+  public void setModuleStates(
+      SwerveModuleState[] moduleStates, boolean openLoop, boolean skipJitterOptimization) {
+    Logger.getInstance().recordOutput("Swerve/GoalModuleStates", moduleStates);
+    frontLeft.setDesiredState(moduleStates[0], openLoop, skipJitterOptimization);
+    frontRight.setDesiredState(moduleStates[1], openLoop, skipJitterOptimization);
+    backLeft.setDesiredState(moduleStates[2], openLoop, skipJitterOptimization);
+    backRight.setDesiredState(moduleStates[3], openLoop, skipJitterOptimization);
+  }
+
+  public void xSwerve() {
+    setModuleStates(
+        new SwerveModuleState[] {
+          new SwerveModuleState(0.0, Rotation2d.fromDegrees(45)),
+          new SwerveModuleState(0.0, Rotation2d.fromDegrees(135)),
+          new SwerveModuleState(0.0, Rotation2d.fromDegrees(135)),
+          new SwerveModuleState(0.0, Rotation2d.fromDegrees(45))
+        },
+        true,
+        true);
+  }
+
+  public Command getXSwerveCommand() {
+    return run(() -> setXSwerve(true));
+  }
+
+  public Command disableXSwerveCommand() {
+    return runOnce(() -> setXSwerve(false));
   }
 
   public void driveTeleop(
@@ -171,16 +219,12 @@ public class SwerveSubsystem extends LifecycleSubsystem {
       double thetaPercentage,
       boolean fieldRelative,
       boolean openLoop) {
-    Logger.getInstance().recordOutput("Swerve/SidewaysPercentage", sidewaysPercentage);
-    Logger.getInstance().recordOutput("Swerve/ForwardPercentage", forwardPercentage);
-    Logger.getInstance().recordOutput("Swerve/ThetaPercentage", thetaPercentage);
-
     Translation2d robotTranslation =
         new Translation2d(forwardPercentage, sidewaysPercentage)
             .times(MAX_VELOCITY_METERS_PER_SECOND);
     Rotation2d fieldRelativeHeading = imu.getRobotHeading();
 
-    if (DriverStation.getAlliance() == Alliance.Red) {
+    if (FmsSubsystem.isRedAlliance()) {
       fieldRelativeHeading = fieldRelativeHeading.plus(Rotation2d.fromDegrees(180));
     }
 
@@ -196,45 +240,44 @@ public class SwerveSubsystem extends LifecycleSubsystem {
             fieldRelative ? fieldRelativeHeading : new Rotation2d());
     SwerveModuleState[] moduleStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds);
     setChassisSpeeds(KINEMATICS.toChassisSpeeds(moduleStates), openLoop);
-
-    Logger.getInstance().recordOutput("Swerve/getX", robotTranslation.getX());
-    Logger.getInstance().recordOutput("Swerve/getY", robotTranslation.getY());
   }
 
   public Command getDriveTeleopCommand(DriveController controller) {
     return Commands.run(
-        () -> {
-          if (!DriverStation.isTeleopEnabled()) {
-            return;
-          }
+            () -> {
+              if (!DriverStation.isTeleopEnabled()) {
+                return;
+              }
 
-          boolean openLoop = false;
+              boolean openLoop = true;
 
-          driveTeleop(
-              -controller.getSidewaysPercentage(),
-              controller.getForwardPercentage(),
-              controller.getThetaPercentage(),
-              true,
-              openLoop);
-        },
-        this);
+              driveTeleop(
+                  -controller.getSidewaysPercentage(),
+                  controller.getForwardPercentage(),
+                  controller.getThetaPercentage(),
+                  true,
+                  openLoop);
+            },
+            this)
+        .withName("SwerveDriveTeleop");
   }
 
   public Command getFollowTrajectoryCommand(
       PathPlannerTrajectory traj, LocalizationSubsystem localization) {
     return new PPSwerveControllerCommand(
-        traj,
-        localization::getPose,
-        SwerveSubsystem.KINEMATICS,
-        // x controller
-        xController,
-        // y controller
-        yController,
-        // theta controller
-        thetaController,
-        states -> setModuleStates(states, false),
-        false,
-        this);
+            traj,
+            localization::getPose,
+            SwerveSubsystem.KINEMATICS,
+            // x controller
+            xController,
+            // y controller
+            yController,
+            // theta controller
+            thetaController,
+            states -> setModuleStates(states, false, false),
+            false,
+            this)
+        .withName("SwerveFollowTrajectory");
   }
 
   public Command goToPoseCommand(Pose2d goal, LocalizationSubsystem localization) {

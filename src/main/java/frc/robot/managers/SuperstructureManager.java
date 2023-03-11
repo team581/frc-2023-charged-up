@@ -7,6 +7,7 @@ package frc.robot.managers;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import frc.robot.ManualScoringLocation;
 import frc.robot.Positions;
 import frc.robot.States;
@@ -15,6 +16,7 @@ import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class SuperstructureManager extends LifecycleSubsystem {
@@ -39,7 +41,6 @@ public class SuperstructureManager extends LifecycleSubsystem {
 
   public void set(SuperstructureState state) {
     goal = state;
-    motionManager.set(goal.position);
     manualIntakeMode = null;
     if (state == States.STOWED) {
       scoringState = ScoringState.IDLE;
@@ -64,6 +65,8 @@ public class SuperstructureManager extends LifecycleSubsystem {
 
   @Override
   public void enabledPeriodic() {
+    motionManager.set(goal.position);
+
     if (manualIntakeMode != null) {
       intake.setMode(manualIntakeMode);
     } else {
@@ -91,37 +94,57 @@ public class SuperstructureManager extends LifecycleSubsystem {
     return mode;
   }
 
+  public Command getCommand(Supplier<SuperstructureState> state) {
+    return Commands.run(
+            () -> this.set(state.get()), motionManager.wrist, motionManager.elevator, intake)
+        .until(() -> atGoal(state.get()))
+        .withName("SuperstructureCommand");
+  }
+
   public Command getCommand(SuperstructureState state) {
-    return Commands.runOnce(
-            () -> this.set(state), motionManager.wrist, motionManager.elevator, intake)
-        .andThen(Commands.waitUntil(() -> atGoal(state)));
+    return getCommand(() -> state);
   }
 
   public Command getScoreCommand(ManualScoringLocation scoringLocation) {
     SuperstructureState cubeState;
     SuperstructureState coneState;
 
+    SuperstructureState cubeStateScoring;
+    SuperstructureState coneStateScoring;
+
     if (scoringLocation == ManualScoringLocation.LOW) {
-      cubeState = States.CUBE_NODE_LOW;
-      coneState = States.CONE_NODE_LOW;
+      cubeStateScoring = States.CUBE_NODE_LOW;
+      coneStateScoring = States.CONE_NODE_LOW;
     } else if (scoringLocation == ManualScoringLocation.MID) {
-      cubeState = States.CUBE_NODE_MID;
-      coneState = States.CONE_NODE_MID;
+      cubeStateScoring = States.CUBE_NODE_MID;
+      coneStateScoring = States.CONE_NODE_MID;
     } else {
-      cubeState = States.CUBE_NODE_HIGH;
-      coneState = States.CONE_NODE_HIGH;
+      cubeStateScoring = States.CUBE_NODE_HIGH;
+      coneStateScoring = States.CONE_NODE_HIGH;
     }
 
+    cubeState = new SuperstructureState(cubeStateScoring.position, IntakeMode.STOPPED, true);
+    coneState = new SuperstructureState(coneStateScoring.position, IntakeMode.STOPPED, true);
+
     return Commands.either(
-        finishManualScoreCommand(),
-        Commands.either(
-                getCommand(cubeState),
-                getCommand(coneState),
-                () -> intake.getGamePiece() == HeldGamePiece.CUBE)
-            .andThen(getCommand(States.STOWED)),
-        () ->
-            goal.position.height >= Positions.CUBE_NODE_MID.height
-                || goal.position.height >= Positions.CONE_NODE_MID.height);
+            finishManualScoreCommand(),
+            getCommand(() -> mode == HeldGamePiece.CUBE ? cubeState : coneState)
+                // delay scoring so cone doesn't wobble out when the robot shakes when the carriage
+                // goes up
+                .andThen(
+                    Commands.waitSeconds(0.5)
+                        .unless(
+                            () ->
+                                scoringLocation == ManualScoringLocation.LOW
+                                    || mode == HeldGamePiece.CONE))
+                .andThen(
+                    getCommand(
+                        () -> mode == HeldGamePiece.CUBE ? cubeStateScoring : coneStateScoring))
+                .andThen(getCommand(States.STOWED)),
+            () ->
+                goal.position.height >= Positions.CUBE_NODE_MID.height
+                    || goal.position.height >= Positions.CONE_NODE_MID.height)
+        .withName("SuperstructureScore");
   }
 
   public Command getManualScoreCommand(ManualScoringLocation scoringLocation) {
@@ -141,42 +164,59 @@ public class SuperstructureManager extends LifecycleSubsystem {
 
     return Commands.runOnce(() -> scoringState = ScoringState.ALIGNING)
         .andThen(
-            Commands.either(
-                getCommand(new SuperstructureState(cubeState.position, IntakeMode.STOPPED, true)),
-                getCommand(new SuperstructureState(coneState.position, IntakeMode.STOPPED, true)),
-                () -> intake.getGamePiece() == HeldGamePiece.CUBE));
+            getCommand(
+                () ->
+                    mode == HeldGamePiece.CUBE
+                        ? new SuperstructureState(cubeState.position, IntakeMode.STOPPED, true)
+                        : new SuperstructureState(coneState.position, IntakeMode.STOPPED, true)))
+        .andThen(
+            getCommand(
+                () ->
+                    mode == HeldGamePiece.CUBE
+                        ? new SuperstructureState(cubeState.position, IntakeMode.STOPPED, true)
+                        : new SuperstructureState(coneState.position, IntakeMode.STOPPED, true)))
+        .withName("SuperstructureManualScore");
   }
 
   public Command getFloorIntakeIdleCommand() {
     return Commands.either(
-        getFloorIntakeSpinningCommand(),
-        getCommand(States.INTAKING_CONE_FLOOR_IDLE)
-            .unless(() -> intake.getGamePiece() == HeldGamePiece.CONE),
-        () -> mode == HeldGamePiece.CUBE);
+            getFloorIntakeSpinningCommand(),
+            getCommand(States.INTAKING_CONE_FLOOR_IDLE)
+                .unless(() -> intake.getGamePiece() == HeldGamePiece.CONE),
+            () -> mode == HeldGamePiece.CUBE)
+        .withName("SuperstructureFloorIntakeIdle");
   }
 
   public Command getFloorIntakeSpinningCommand() {
-    return Commands.either(
-            getCommand(States.INTAKING_CUBE_FLOOR_SPINNING),
-            getCommand(States.INTAKING_CONE_FLOOR_SPINNING),
-            () -> mode == HeldGamePiece.CUBE)
-        .andThen(getCommand(States.STOWED));
+    return getCommand(
+            () ->
+                mode == HeldGamePiece.CUBE
+                    ? States.INTAKING_CUBE_FLOOR_SPINNING
+                    : States.INTAKING_CONE_FLOOR_SPINNING)
+        .andThen(getCommand(States.STOWED))
+        .withName("SuperstructureFloorIntakeSpinning");
   }
 
   public Command getShelfIntakeCommand() {
-    return Commands.either(
-            getCommand(States.INTAKING_CUBE_SHELF),
-            getCommand(States.INTAKING_CONE_SHELF),
-            () -> mode == HeldGamePiece.CUBE)
-        .andThen(getCommand(States.STOWED));
+    return getCommand(
+            () ->
+                mode == HeldGamePiece.CUBE
+                    ? States.INTAKING_CUBE_SHELF
+                    : States.INTAKING_CONE_SHELF)
+        .andThen(getCommand(States.STOWED))
+        .withName("SuperstructureShelfIntake");
   }
 
   public Command setIntakeModeCommand(HeldGamePiece gamePiece) {
     return Commands.runOnce(() -> setIntakeMode(gamePiece));
   }
 
-  public void setIntakeMode(HeldGamePiece gamePiece) {
-    mode = gamePiece;
+  public void setIntakeMode(HeldGamePiece newMode) {
+    if (mode != newMode) {
+      intake.setGamePiece(HeldGamePiece.NOTHING);
+    }
+
+    mode = newMode;
   }
 
   public void setManualIntakeMode(IntakeMode manualIntakeMode) {
@@ -189,18 +229,33 @@ public class SuperstructureManager extends LifecycleSubsystem {
 
   public Command finishManualScoreCommand() {
     return Commands.waitUntil(() -> atPosition(goal.position))
+        // Dunk motion when we are scoring a cone
         .andThen(
-            () ->
-                motionManager.set(
-                    new SuperstructurePosition(
-                        goal.position.height + 0.5,
-                        Rotation2d.fromDegrees(goal.position.angle.getDegrees() + 15),
-                        -1)))
+            new ProxyCommand(
+                    () ->
+                        getCommand(
+                            new SuperstructureState(
+                                new SuperstructurePosition(
+                                    goal.position.height + 0.5,
+                                    Rotation2d.fromDegrees(goal.position.angle.getDegrees() + 15),
+                                    -1),
+                                IntakeMode.OUTTAKE_CONE)))
+                .unless(() -> mode == HeldGamePiece.CUBE))
         .andThen(
             Commands.either(
                 Commands.runOnce(() -> setManualIntakeMode(IntakeMode.OUTTAKE_CUBE)),
                 Commands.runOnce(() -> setManualIntakeMode(IntakeMode.OUTTAKE_CONE)),
-                () -> intake.getGamePiece() == HeldGamePiece.CUBE))
-        .unless(() -> goal == States.STOWED);
+                () -> mode == HeldGamePiece.CUBE))
+        .withName("SuperstructureFinishManualScore");
+  }
+
+  public Command getHomeCommand() {
+    return Commands.runOnce(() -> set(States.STOWED))
+        .alongWith(
+            intake
+                .getCommand(IntakeMode.STOPPED)
+                .andThen(Commands.runOnce(() -> motionManager.wrist.resetHoming()))
+                .andThen(motionManager.elevator.getHomeCommand())
+                .andThen(motionManager.wrist.getHomeCommand()));
   }
 }

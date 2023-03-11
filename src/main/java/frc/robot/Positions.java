@@ -18,7 +18,7 @@ public class Positions {
 
   public static final SuperstructurePosition INTAKING_CUBE_FLOOR =
       Config.IS_SPIKE
-          ? new SuperstructurePosition(0, Rotation2d.fromDegrees(136), -1)
+          ? new SuperstructurePosition(0, Rotation2d.fromDegrees(137), -1)
           : new SuperstructurePosition(0, Rotation2d.fromDegrees(154), -1);
   public static final SuperstructurePosition INTAKING_CUBE_SHELF =
       Config.IS_SPIKE
@@ -26,32 +26,36 @@ public class Positions {
           : new SuperstructurePosition(0.5, Rotation2d.fromDegrees(145), -1);
   public static final SuperstructurePosition CUBE_NODE_LOW =
       Config.IS_SPIKE
-          ? new SuperstructurePosition(0, Rotation2d.fromDegrees(127), -1)
+          ? new SuperstructurePosition(0, Rotation2d.fromDegrees(125), -1)
           : new SuperstructurePosition(0.5, Rotation2d.fromDegrees(125), -1);
   public static final SuperstructurePosition CUBE_NODE_MID =
       Config.IS_SPIKE
-          ? new SuperstructurePosition(12, Rotation2d.fromDegrees(110), -1)
+          ? new SuperstructurePosition(12, Rotation2d.fromDegrees(125), -1)
           : new SuperstructurePosition(17, Rotation2d.fromDegrees(146), -1);
   public static final SuperstructurePosition CUBE_NODE_HIGH =
       Config.IS_SPIKE
-          ? new SuperstructurePosition(23, Rotation2d.fromDegrees(125), -1)
+          ? new SuperstructurePosition(24, Rotation2d.fromDegrees(125), -1)
           : new SuperstructurePosition(28, Rotation2d.fromDegrees(157), -1);
 
   public static final SuperstructurePosition INTAKING_CONE_FLOOR =
       Config.IS_SPIKE
-          ? new SuperstructurePosition(0, Rotation2d.fromDegrees(130), -1)
+          ? new SuperstructurePosition(0, Rotation2d.fromDegrees(131), -1)
           : new SuperstructurePosition(3.39, Rotation2d.fromDegrees(161), -1);
   public static final SuperstructurePosition INTAKING_CONE_SHELF =
       Config.IS_SPIKE
-          ? new SuperstructurePosition(23, Rotation2d.fromDegrees(130), -1)
+          ? new SuperstructurePosition(23, Rotation2d.fromDegrees(131), -1)
           : new SuperstructurePosition(1, Rotation2d.fromDegrees(143), -1);
+  public static final SuperstructurePosition INTAKING_CONE_SINGLE_SUBSTATION =
+      Config.IS_SPIKE
+          ? new SuperstructurePosition(0, Rotation2d.fromDegrees(50), -1)
+          : new SuperstructurePosition(0, Rotation2d.fromDegrees(35), -1);
   public static final SuperstructurePosition CONE_NODE_LOW =
       Config.IS_SPIKE
           ? new SuperstructurePosition(0, Rotation2d.fromDegrees(130), -1)
           : new SuperstructurePosition(0.5, Rotation2d.fromDegrees(145), -1);
   public static final SuperstructurePosition CONE_NODE_MID =
       Config.IS_SPIKE
-          ? new SuperstructurePosition(23, Rotation2d.fromDegrees(155), -1)
+          ? new SuperstructurePosition(21, Rotation2d.fromDegrees(155), -1)
           : new SuperstructurePosition(25, Rotation2d.fromDegrees(175), -1);
   public static final SuperstructurePosition CONE_NODE_HIGH =
       Config.IS_SPIKE

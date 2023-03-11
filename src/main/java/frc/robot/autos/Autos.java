@@ -13,38 +13,74 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.ManualScoringLocation;
 import frc.robot.States;
 import frc.robot.config.Config;
 import frc.robot.elevator.ElevatorSubsystem;
-import frc.robot.elevator.commands.ElevatorHomingCommand;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.intake.HeldGamePiece;
+import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.managers.Autobalance;
 import frc.robot.managers.SuperstructureManager;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.wrist.WristSubsystem;
-import frc.robot.wrist.commands.WristHomingCommand;
+import java.lang.ref.WeakReference;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class Autos {
+  private static Command wrapAutoEvent(String commandName, Command command) {
+    if (!Config.IS_DEVELOPMENT) {
+      return command;
+    }
+
+    return Commands.sequence(
+            Commands.print("[COMMANDS] Starting auto event " + commandName),
+            command.deadlineWith(
+                Commands.waitSeconds(5)
+                    .andThen(
+                        Commands.print(
+                            "[COMMANDS] Auto event "
+                                + commandName
+                                + " has been running for 5+ seconds!"))),
+            Commands.print("[COMMANDS] Finished auto event " + commandName))
+        .handleInterrupt(() -> System.out.println("[COMMANDS] Cancelled auto event " + commandName))
+        .withName(commandName);
+  }
+
+  private static Map<String, Command> wrapAutoEventMap(Map<String, Command> eventMap) {
+    if (!Config.IS_DEVELOPMENT) {
+      return eventMap;
+    }
+
+    Map<String, Command> wrappedMap = new HashMap<>();
+    for (Map.Entry<String, Command> entry : eventMap.entrySet()) {
+      wrappedMap.put(entry.getKey(), wrapAutoEvent(entry.getKey(), entry.getValue()));
+    }
+    return wrappedMap;
+  }
+
+  private final SuperstructureManager superstructure;
+  private final Autobalance autoBalance;
+
   private final LocalizationSubsystem localization;
   private final SwerveSubsystem swerve;
-  private final LoggedDashboardChooser<Command> autoChooser =
-      new LoggedDashboardChooser<>("Auto Choices");
   private final ImuSubsystem imu;
-  private final SuperstructureManager superstructure;
   private final ElevatorSubsystem elevator;
   private final WristSubsystem wrist;
   private final IntakeSubsystem intake;
+
   private final SwerveAutoBuilder autoBuilder;
-  private final Autobalance autoBalance;
+  private final LoggedDashboardChooser<AutoKind> autoChooser =
+      new LoggedDashboardChooser<>("Auto Choices");
+  private final Map<AutoKind, WeakReference<Command>> autosCache = new EnumMap<>(AutoKind.class);
 
   public Autos(
       LocalizationSubsystem localization,
@@ -73,43 +109,50 @@ public class Autos {
                 "preloadCube",
                 superstructure
                     .setIntakeModeCommand(HeldGamePiece.CUBE)
-                    .andThen(
-                        Commands.runOnce(() -> intake.setPreloadForAutos(HeldGamePiece.CUBE)))),
+                    .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.CUBE)))),
             Map.entry(
                 "preloadCone",
                 superstructure
                     .setIntakeModeCommand(HeldGamePiece.CONE)
-                    .andThen(
-                        Commands.runOnce(() -> intake.setPreloadForAutos(HeldGamePiece.CONE)))),
+                    .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.CONE)))
+                    .andThen(superstructure.setManualIntakeCommand(IntakeMode.INTAKE_CONE))
+                    .andThen(Commands.waitSeconds(0.5))
+                    .andThen(superstructure.setManualIntakeCommand(null))),
             Map.entry(
                 "scoreLow",
                 superstructure
-                    .getManualScoreCommand(ManualScoringLocation.LOW)
-                    .andThen(superstructure.finishManualScoreCommand())),
+                    .getScoreCommand(ManualScoringLocation.LOW)
+                    .withTimeout(3)
+                    .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
             Map.entry(
                 "scoreMid",
                 superstructure
-                    .getManualScoreCommand(ManualScoringLocation.MID)
-                    .andThen(superstructure.finishManualScoreCommand())),
+                    .getScoreCommand(
+                        Config.IS_SPIKE ? ManualScoringLocation.MID : ManualScoringLocation.LOW)
+                    .withTimeout(3)
+                    .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
             Map.entry(
                 "scoreHigh",
                 superstructure
-                    .getManualScoreCommand(ManualScoringLocation.HIGH)
-                    .andThen(superstructure.finishManualScoreCommand())),
-            Map.entry(
-                "home", new ElevatorHomingCommand(elevator).andThen(new WristHomingCommand(wrist))),
+                    .getScoreCommand(
+                        Config.IS_SPIKE ? ManualScoringLocation.HIGH : ManualScoringLocation.LOW)
+                    .withTimeout(3)
+                    .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
+            Map.entry("home", superstructure.getHomeCommand()),
             Map.entry(
                 "intakeCone",
                 superstructure
                     .setIntakeModeCommand(HeldGamePiece.CONE)
-                    .andThen(superstructure.getFloorIntakeIdleCommand())),
+                    .andThen(superstructure.getFloorIntakeSpinningCommand())),
             Map.entry(
                 "intakeCube",
                 superstructure
                     .setIntakeModeCommand(HeldGamePiece.CUBE)
-                    .andThen(superstructure.getFloorIntakeIdleCommand())),
-            Map.entry("stow", superstructure.getCommand(States.STOWED)));
-    Map.entry("autoBalance", autoBalance.getCommand());
+                    .andThen(superstructure.getFloorIntakeSpinningCommand())),
+            Map.entry("stow", superstructure.getCommand(States.STOWED)),
+            Map.entry("autoBalance", autoBalance.getCommand().withName("AutoAutoBalance")));
+
+    eventMap = wrapAutoEventMap(eventMap);
 
     autoBuilder =
         new SwerveAutoBuilder(
@@ -118,27 +161,40 @@ public class Autos {
             SwerveSubsystem.KINEMATICS,
             Config.SWERVE_TRANSLATION_PID,
             Config.SWERVE_ROTATION_PID,
-            (states) -> swerve.setModuleStates(states, false),
+            (states) -> swerve.setModuleStates(states, false, false),
             eventMap,
             false,
             swerve);
 
-    autoChooser.addDefaultOption("Do nothing", getDoNothingAuto());
-    autoChooser.addOption("Blue long side 1 cone", getBlueLongSideConeAuto());
-    autoChooser.addOption("Blue short side 1 cone", getBlueShortSideConeAuto());
-    autoChooser.addOption("Blue long sie 1.5 cone balance", getBlueLongSide1_5ConeBalance());
-    autoChooser.addOption("Blue mid 1.5 cone balance", getBlueMid1_5ConeBalance());
-    autoChooser.addOption("Blue mid 1 cone balance", getBlueMid1ConeBalance());
-    autoChooser.addOption("Blue short side 2.5 cone balance", getBlueShortSide2_5ConeBalance());
-    autoChooser.addOption("Blue short side 2 cone balance", getBlueShortSide2ConeBalance());
+    if (Config.IS_DEVELOPMENT) {
+      CommandScheduler.getInstance()
+          .onCommandInitialize(
+              command -> System.out.println("[COMMANDS] Starting command " + command.getName()));
+      CommandScheduler.getInstance()
+          .onCommandInterrupt(
+              command -> System.out.println("[COMMANDS] Cancelled command " + command.getName()));
+      CommandScheduler.getInstance()
+          .onCommandFinish(
+              command -> System.out.println("[COMMANDS] Finished command " + command.getName()));
+    }
 
-    autoChooser.addOption("Red long side 1.5 cone balance", getRedLongSide1_5ConeBalanceAuto());
-    autoChooser.addOption("Red long side 1 cone", getRedLongSide1ConeAuto());
-    autoChooser.addOption("Red mid 1.5 cone balance", getRedMid1_5ConeBalanceAuto());
-    autoChooser.addOption("Red mid 1 cone balance", getRedMid1ConeBalanceAuto());
-    autoChooser.addOption("Red short side 1 cone", getRedShortSide1Cone());
-    autoChooser.addOption("Red short side 2.5 cone balance", getRedShortSide2_5ConeBalance());
-    autoChooser.addOption("Red short side 2 cone balance", getRedShortSide2ConeBalance());
+    autoChooser.addDefaultOption("Do nothing", AutoKind.DO_NOTHING);
+    autoChooser.addOption("Blue long side 1", AutoKind.BLUE_LONG_SIDE_1);
+    autoChooser.addOption("Blue short side 1", AutoKind.BLUE_SHORT_SIDE_1);
+    autoChooser.addOption("Blue long side 1.5 balance", AutoKind.BLUE_LONG_SIDE_1_5_BALANCE);
+    autoChooser.addOption("Blue mid 1.5 balance", AutoKind.BLUE_MID_1_5_BALANCE);
+    autoChooser.addOption("Blue mid 1 balance", AutoKind.BLUE_MID_1_BALANCE);
+    autoChooser.addOption("Blue short side 2.5 balance", AutoKind.BLUE_SHORT_SIDE_2_5_BALANCE);
+    autoChooser.addOption("Blue short side 2 balance", AutoKind.BLUE_SHORT_SIDE_2_BALANCE);
+
+    autoChooser.addOption("Red long side 1.5 balance", AutoKind.RED_LONG_SIDE_1_5_BALANCE);
+    autoChooser.addOption("Red long side 1", AutoKind.RED_LONG_SIDE_1);
+    autoChooser.addOption("Red mid 1.5 balance", AutoKind.RED_MID_1_5_BALANCE);
+    autoChooser.addOption("Red mid 1 balance", AutoKind.RED_MID_1_BALANCE);
+    autoChooser.addOption("Red short side 1", AutoKind.RED_SHORT_SIDE_1);
+    autoChooser.addOption("Red long side 2.5 balance", AutoKind.RED_LONG_SIDE_2_5_BALANCE);
+    autoChooser.addOption("Red short side 2 balance", AutoKind.RED_SHORT_SIDE_2_BALANCE);
+    autoChooser.addOption("Red short side 2.5 balance", AutoKind.RED_SHORT_SIDE_2_5_BALANCE);
 
     if (Config.IS_DEVELOPMENT) {
       PathPlannerServer.startServer(5811);
@@ -167,95 +223,42 @@ public class Autos {
         });
   }
 
-  private Command getBlueLongSideConeAuto() {
-    return autoBuilder.fullAuto(Paths.BLUE_LONG_SIDE_1_CONE);
-  }
-
-  private Command getBlueShortSideConeAuto() {
-    return autoBuilder.fullAuto(Paths.BLUE_SHORT_SIDE_1_CONE);
-  }
-
-  private Command getBlueLongSide1_5ConeBalance() {
-    return autoBuilder
-        .fullAuto(Paths.BLUE_LONG_SIDE_1_5_CONE_BALANCE)
-        .andThen(autoBalance.getCommand());
-  }
-
-  private Command getBlueMid1_5ConeBalance() {
-    return autoBuilder.fullAuto(Paths.BLUE_MID_1_5_CONE_BALANCE).andThen(autoBalance.getCommand());
-  }
-
-  private Command getBlueMid1ConeBalance() {
-    return autoBuilder.fullAuto(Paths.BLUE_MID_1_CONE_BALANCE).andThen(autoBalance.getCommand());
-  }
-
-  private Command getBlueShortSide2_5ConeBalance() {
-    return autoBuilder
-        .fullAuto(Paths.BLUE_SHORT_SIDE_2_5_CONE_BALANCE)
-        .andThen(autoBalance.getCommand());
-  }
-
-  public Command getBlueShortSide2ConeBalance() {
-    return autoBuilder
-        .fullAuto(Paths.BLUE_SHORT_SIDE_2_CONE_BALANCE)
-        .andThen(autoBalance.getCommand());
-  }
-
-  private Command getRedLongSide1_5ConeBalanceAuto() {
-    return autoBuilder
-        .fullAuto(Paths.RED_LONG_SIDE_1_5_CONE_BALANCE)
-        .andThen(autoBalance.getCommand());
-  }
-
-  private Command getRedLongSide1ConeAuto() {
-    return autoBuilder.fullAuto(Paths.RED_LONG_SIDE_1_CONE);
-  }
-
-  private Command getRedMid1_5ConeBalanceAuto() {
-    return autoBuilder.fullAuto(Paths.RED_MID_1_5_CONE_BALANCE).andThen(autoBalance.getCommand());
-  }
-
-  private Command getRedMid1ConeBalanceAuto() {
-    return autoBuilder.fullAuto(Paths.RED_MID_1_CONE_BALANCE).andThen(autoBalance.getCommand());
-  }
-
-  private Command getRedShortSide1Cone() {
-    return autoBuilder.fullAuto(Paths.RED_SHORT_SIDE_1_CONE);
-  }
-
-  private Command getRedShortSide2_5ConeBalance() {
-    return autoBuilder
-        .fullAuto(Paths.RED_SHORT_SIDE_2_CONE_BALANCE)
-        .andThen(autoBalance.getCommand());
-  }
-
-  private Command getRedShortSide2ConeBalance() {
-    return autoBuilder
-        .fullAuto(Paths.RED_SHORT_SIDE_2_CONE_BALANCE)
-        .andThen(autoBalance.getCommand());
-  }
-
-  private CommandBase getDoNothingAuto() {
-    return Commands.none().withName("DoNothingAutoCommand");
-  }
-
   public Command getAutoCommand() {
-    Command command = autoChooser.get();
+    AutoKind auto = autoChooser.get();
 
-    if (command != null) {
-      return command;
+    if (auto == null) {
+      return buildAutoCommand(AutoKind.DO_NOTHING);
     }
 
-    return getDoNothingAuto();
+    return buildAutoCommand(auto);
   }
 
-  private Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
-    return Commands.runOnce(
-            () -> {
-              if (isFirstPath) {
-                localization.resetPose(traj.getInitialHolonomicPose());
-              }
-            })
-        .andThen(swerve.getFollowTrajectoryCommand(traj, localization));
+  private Command buildAutoCommand(AutoKind auto) {
+    if (autosCache.containsKey(auto)) {
+      Command autoCommand = autosCache.get(auto).get();
+
+      if (autoCommand != null) {
+        return autoCommand;
+      }
+    }
+
+    String autoName = "Auto" + auto.toString();
+    Command autoCommand = Commands.runOnce(() -> swerve.driveTeleop(0, 0, 0, true, true), swerve);
+
+    if (auto == AutoKind.DO_NOTHING) {
+      return autoCommand.withName(autoName);
+    }
+
+    autoCommand = autoCommand.andThen(autoBuilder.fullAuto(Paths.getInstance().getPath(auto)));
+
+    if (auto.autoBalance) {
+      autoCommand = autoCommand.andThen(this.autoBalance.getCommand());
+    }
+
+    autoCommand = autoCommand.withName(autoName);
+
+    autosCache.put(auto, new WeakReference<>(autoCommand));
+
+    return autoCommand;
   }
 }

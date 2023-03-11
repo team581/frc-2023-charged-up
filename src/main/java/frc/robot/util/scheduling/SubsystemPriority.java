@@ -11,20 +11,23 @@ public enum SubsystemPriority {
 
   SUPERSTRUCTURE_MOTION_MANAGER(20),
 
-  // Run autobalance before swerve
+  // Run autobalance and autorotate before swerve
   AUTOBALANCE(11),
+  AUTOROTATE(11),
 
   WRIST(10),
   ELEVATOR(10),
   INTAKE(10),
   SWERVE(10),
   IMU(10),
+  FORKS(10),
 
   // Run localization after swerve & IMU
   LOCALIZATION(9),
 
   // Update the lights after everything else has been updated
-  LIGHTS(0);
+  LIGHTS(0),
+  FMS(0);
 
   final int value;
 

@@ -4,12 +4,12 @@
 
 package frc.robot.managers;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.fms.FmsSubsystem;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
@@ -19,11 +19,10 @@ public class Autobalance extends LifecycleSubsystem {
   private final SwerveSubsystem swerve;
   private final ImuSubsystem imu;
   private boolean enabled = false;
-  private double driveVelocity = 0.35;
-  private double angleThreshold = 10;
+  private static final double DRIVE_VELOCITY = -0.55;
+  private static final double ANGLE_THRESHOLD = 7;
   private final LinearFilter autoBalanceFilter = LinearFilter.movingAverage(13);
   private Rotation2d averageRoll = new Rotation2d();
-  private PIDController yawController = new PIDController(0.05, 0, 0);
 
   public Autobalance(SwerveSubsystem swerve, ImuSubsystem imu) {
     super(SubsystemPriority.AUTOBALANCE);
@@ -33,42 +32,48 @@ public class Autobalance extends LifecycleSubsystem {
 
   public void setEnabled(boolean mode) {
     enabled = mode;
+    if (!mode) {
+      swerve.disableSnapToAngle();
+    }
   }
 
   @Override
   public void robotPeriodic() {
-    averageRoll = Rotation2d.fromDegrees(autoBalanceFilter.calculate(angleThreshold));
+    averageRoll = Rotation2d.fromDegrees(autoBalanceFilter.calculate(ANGLE_THRESHOLD));
   }
 
   @Override
   public void enabledPeriodic() {
     if (enabled) {
-      ChassisSpeeds chassisSpeeds =
-          new ChassisSpeeds(
-              getDriveVelocity(),
-              0,
-              yawController.calculate(imu.getRobotHeading().getDegrees(), 0));
+      Rotation2d goalAngle = Rotation2d.fromDegrees(FmsSubsystem.isRedAlliance() ? 0 : 180);
+
+      ChassisSpeeds chassisSpeeds = new ChassisSpeeds(getDriveVelocity(), 0, 0);
+      swerve.setSnapToAngle(goalAngle);
       swerve.setChassisSpeeds(chassisSpeeds, false);
     }
   }
 
   private double getDriveVelocity() {
-    if (imu.getRoll().getDegrees() > angleThreshold) {
-      return driveVelocity * -1;
-    } else if (imu.getRoll().getDegrees() < -angleThreshold) {
-      return driveVelocity;
+    if (imu.getRoll().getDegrees() > ANGLE_THRESHOLD) {
+      return DRIVE_VELOCITY * -1;
+    } else if (imu.getRoll().getDegrees() < -ANGLE_THRESHOLD) {
+      return DRIVE_VELOCITY;
     } else {
-      return driveVelocity * 0;
+      return DRIVE_VELOCITY * 0;
     }
   }
 
   private boolean atGoal() {
-    return averageRoll.getDegrees() < angleThreshold && averageRoll.getDegrees() > -angleThreshold;
+    return averageRoll.getDegrees() < ANGLE_THRESHOLD
+        && averageRoll.getDegrees() > -ANGLE_THRESHOLD;
   }
 
   public Command getCommand() {
     return Commands.run(() -> setEnabled(true), swerve)
         .until(() -> atGoal())
-        .andThen(runOnce(() -> setEnabled(false)));
+        .withTimeout(15.0)
+        .andThen(runOnce(() -> setEnabled(false)))
+        .andThen(runOnce(() -> swerve.getXSwerveCommand()))
+        .handleInterrupt(() -> setEnabled(false));
   }
 }

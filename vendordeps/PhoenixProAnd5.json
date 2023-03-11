@@ -13,7 +13,7 @@
     {
       "groupId": "com.ctre.phoenixpro",
       "artifactId": "wpiapi-java",
-      "version": "23.0.8"
+      "version": "23.0.10"
     }
   ],
   "fileName": "PhoenixProAnd5.json",
@@ -58,7 +58,7 @@
       "artifactId": "tools",
       "skipInvalidPlatforms": true,
       "isJar": false,
-      "version": "23.0.8"
+      "version": "23.0.10"
     },
     {
       "simMode": "swsim",
@@ -71,7 +71,7 @@
       "artifactId": "tools-sim",
       "skipInvalidPlatforms": true,
       "isJar": false,
-      "version": "23.0.8"
+      "version": "23.0.10"
     },
     {
       "simMode": "swsim",
@@ -84,7 +84,7 @@
       "artifactId": "simTalonSRX",
       "skipInvalidPlatforms": true,
       "isJar": false,
-      "version": "23.0.8"
+      "version": "23.0.10"
     },
     {
       "simMode": "swsim",
@@ -97,7 +97,7 @@
       "artifactId": "simTalonFX",
       "skipInvalidPlatforms": true,
       "isJar": false,
-      "version": "23.0.8"
+      "version": "23.0.10"
     },
     {
       "simMode": "swsim",
@@ -110,7 +110,7 @@
       "artifactId": "simVictorSPX",
       "skipInvalidPlatforms": true,
       "isJar": false,
-      "version": "23.0.8"
+      "version": "23.0.10"
     },
     {
       "simMode": "swsim",
@@ -123,7 +123,7 @@
       "artifactId": "simPigeonIMU",
       "skipInvalidPlatforms": true,
       "isJar": false,
-      "version": "23.0.8"
+      "version": "23.0.10"
     },
     {
       "simMode": "swsim",
@@ -136,7 +136,7 @@
       "artifactId": "simCANCoder",
       "skipInvalidPlatforms": true,
       "isJar": false,
-      "version": "23.0.8"
+      "version": "23.0.10"
     },
     {
       "simMode": "swsim",
@@ -149,7 +149,7 @@
       "artifactId": "simProTalonFX",
       "skipInvalidPlatforms": true,
       "isJar": false,
-      "version": "23.0.8"
+      "version": "23.0.10"
     },
     {
       "simMode": "swsim",
@@ -162,7 +162,7 @@
       "artifactId": "simProCANcoder",
       "skipInvalidPlatforms": true,
       "isJar": false,
-      "version": "23.0.8"
+      "version": "23.0.10"
     },
     {
       "simMode": "swsim",
@@ -175,7 +175,7 @@
       "artifactId": "simProPigeon2",
       "skipInvalidPlatforms": true,
       "isJar": false,
-      "version": "23.0.8"
+      "version": "23.0.10"
     }
   ],
   "mavenUrls": ["https://maven.ctr-electronics.com/release/"],
@@ -231,7 +231,7 @@
       "libName": "CTRE_PhoenixTools",
       "artifactId": "tools",
       "skipInvalidPlatforms": true,
-      "version": "23.0.8",
+      "version": "23.0.10",
       "headerClassifier": "headers",
       "binaryPlatforms": [
         "windowsx86-64",
@@ -291,7 +291,7 @@
       "libName": "CTRE_PhoenixTools_Sim",
       "artifactId": "tools-sim",
       "skipInvalidPlatforms": true,
-      "version": "23.0.8",
+      "version": "23.0.10",
       "headerClassifier": "headers",
       "binaryPlatforms": [
         "windowsx86-64",
@@ -306,7 +306,7 @@
       "libName": "CTRE_SimTalonSRX",
       "artifactId": "simTalonSRX",
       "skipInvalidPlatforms": true,
-      "version": "23.0.8",
+      "version": "23.0.10",
       "headerClassifier": "headers",
       "binaryPlatforms": [
         "windowsx86-64",
@@ -321,7 +321,7 @@
       "libName": "CTRE_SimTalonFX",
       "artifactId": "simTalonFX",
       "skipInvalidPlatforms": true,
-      "version": "23.0.8",
+      "version": "23.0.10",
       "headerClassifier": "headers",
       "binaryPlatforms": [
         "windowsx86-64",
@@ -336,7 +336,7 @@
       "libName": "CTRE_SimVictorSPX",
       "artifactId": "simVictorSPX",
       "skipInvalidPlatforms": true,
-      "version": "23.0.8",
+      "version": "23.0.10",
       "headerClassifier": "headers",
       "binaryPlatforms": [
         "windowsx86-64",
@@ -351,7 +351,7 @@
       "libName": "CTRE_SimPigeonIMU",
       "artifactId": "simPigeonIMU",
       "skipInvalidPlatforms": true,
-      "version": "23.0.8",
+      "version": "23.0.10",
       "headerClassifier": "headers",
       "binaryPlatforms": [
         "windowsx86-64",
@@ -366,7 +366,7 @@
       "libName": "CTRE_SimCANCoder",
       "artifactId": "simCANCoder",
       "skipInvalidPlatforms": true,
-      "version": "23.0.8",
+      "version": "23.0.10",
       "headerClassifier": "headers",
       "binaryPlatforms": [
         "windowsx86-64",
@@ -381,7 +381,7 @@
       "libName": "CTRE_SimProTalonFX",
       "artifactId": "simProTalonFX",
       "skipInvalidPlatforms": true,
-      "version": "23.0.8",
+      "version": "23.0.10",
       "headerClassifier": "headers",
       "binaryPlatforms": [
         "windowsx86-64",
@@ -396,7 +396,7 @@
       "libName": "CTRE_SimProCANcoder",
       "artifactId": "simProCANcoder",
       "skipInvalidPlatforms": true,
-      "version": "23.0.8",
+      "version": "23.0.10",
       "headerClassifier": "headers",
       "binaryPlatforms": [
         "windowsx86-64",
@@ -411,7 +411,7 @@
       "libName": "CTRE_SimProPigeon2",
       "artifactId": "simProPigeon2",
       "skipInvalidPlatforms": true,
-      "version": "23.0.8",
+      "version": "23.0.10",
       "headerClassifier": "headers",
       "binaryPlatforms": [
         "windowsx86-64",
@@ -426,7 +426,7 @@
       "libName": "CTRE_PhoenixPro_WPI",
       "artifactId": "wpiapi-cpp",
       "skipInvalidPlatforms": true,
-      "version": "23.0.8",
+      "version": "23.0.10",
       "headerClassifier": "headers",
       "binaryPlatforms": [
         "windowsx86-64",
@@ -441,7 +441,7 @@
       "libName": "CTRE_PhoenixPro_WPISim",
       "artifactId": "wpiapi-cpp-sim",
       "skipInvalidPlatforms": true,
-      "version": "23.0.8",
+      "version": "23.0.10",
       "headerClassifier": "headers",
       "binaryPlatforms": [
         "windowsx86-64",
@@ -451,6 +451,6 @@
       "sharedLibrary": true
     }
   ],
-  "version": "23.0.8",
+  "version": "23.0.10",
   "uuid": "3fcf3402-e646-4fa6-971e-18afe8173b1a"
 }

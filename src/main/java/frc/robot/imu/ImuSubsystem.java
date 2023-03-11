@@ -23,6 +23,8 @@ public class ImuSubsystem extends LifecycleSubsystem {
 
   public void robotPeriodic() {
     Logger.getInstance().recordOutput("Imu/RobotHeading", this.getRobotHeading().getDegrees());
+    Logger.getInstance()
+        .recordOutput("Imu/RobotHeadingRadians", this.getRobotHeading().getRadians());
   }
 
   public Rotation2d getRobotHeading() {
@@ -34,13 +36,17 @@ public class ImuSubsystem extends LifecycleSubsystem {
   }
 
   public void zero() {
-    // TODO: This should use setAngle()
-    this.imu.setYaw(0);
+
+    setAngle(new Rotation2d());
     this.imu.configMountPoseRoll(this.imu.getRoll());
   }
 
   public void setAngle(Rotation2d zeroAngle) {
     this.imu.setYaw(zeroAngle.getDegrees());
+  }
+
+  public boolean atAngle(Rotation2d angle) {
+    return Math.abs(getRobotHeading().minus(angle).getDegrees()) < 3;
   }
 
   public Command getZeroCommand() {

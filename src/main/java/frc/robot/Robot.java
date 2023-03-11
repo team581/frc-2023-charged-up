@@ -9,24 +9,26 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.autos.Autos;
 import frc.robot.autoscore.Autoscore;
 import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
 import frc.robot.elevator.ElevatorSubsystem;
-import frc.robot.elevator.commands.ElevatorHomingCommand;
+import frc.robot.fms.FmsSubsystem;
+import frc.robot.forks.ForksMode;
+import frc.robot.forks.ForksSubsystem;
 import frc.robot.generated.BuildConstants;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.intake.HeldGamePiece;
 import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
-import frc.robot.intake.commands.IntakeCommand;
 import frc.robot.lights.LightsSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
+import frc.robot.managers.AutoRotate;
 import frc.robot.managers.Autobalance;
 import frc.robot.managers.SuperstructureManager;
 import frc.robot.managers.SuperstructureMotionManager;
@@ -34,7 +36,6 @@ import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystemManager;
 import frc.robot.wrist.WristSubsystem;
-import frc.robot.wrist.commands.WristHomingCommand;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -93,12 +94,15 @@ public class Robot extends LoggedRobot {
   private final IntakeSubsystem intake =
       new IntakeSubsystem(new TalonFX(Config.INTAKE_MOTOR_ID, Config.CANIVORE_ID));
   private final SuperstructureMotionManager superstructureMotionManager =
-      new SuperstructureMotionManager(elevator, wrist);
+      new SuperstructureMotionManager(elevator, wrist, driveController);
   private final ImuSubsystem imu =
       new ImuSubsystem(new Pigeon2(Config.PIGEON_ID, Config.CANIVORE_ID));
   private final SwerveSubsystem swerve =
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
   private final LocalizationSubsystem localization = new LocalizationSubsystem(swerve, imu);
+  private final ForksSubsystem forks =
+      new ForksSubsystem(new TalonFX(Config.FORKS_MOTOR_ID, Config.CANIVORE_ID));
+  private final FmsSubsystem fmsSubsystem = new FmsSubsystem();
   private final SuperstructureManager superstructureManager =
       new SuperstructureManager(superstructureMotionManager, intake);
   private final Autoscore autoscore =
@@ -111,6 +115,7 @@ public class Robot extends LoggedRobot {
           localization);
 
   private final Autobalance autobalance = new Autobalance(swerve, imu);
+  private final AutoRotate autoRotate = new AutoRotate(swerve);
 
   private final Autos autos =
       new Autos(
@@ -152,6 +157,8 @@ public class Robot extends LoggedRobot {
     LifecycleSubsystemManager.getInstance().ready();
 
     configureButtonBindings();
+
+    enableLiveWindowInTest(false);
   }
 
   /**
@@ -185,15 +192,33 @@ public class Robot extends LoggedRobot {
     // Intake on shelf
     driveController.leftBumper().onTrue(superstructureManager.getShelfIntakeCommand());
 
+    // X swerve
+    driveController.x().onTrue(swerve.getXSwerveCommand());
+
+    // Face towards grids
+    driveController.b().onTrue(autoRotate.getCommand(() -> AutoRotate.getGridAngle()));
+    // Face towards shelf
+    driveController.a().onTrue(autoRotate.getCommand(() -> AutoRotate.getShelfAngle()));
+
+    new Trigger(() -> driveController.getThetaPercentage() == 0)
+        .onFalse(autoRotate.getDisableCommand());
+
+    new Trigger(
+            () ->
+                driveController.getSidewaysPercentage() == 0
+                    && driveController.getForwardPercentage() == 0
+                    && driveController.getThetaPercentage() == 0)
+        .onFalse(swerve.disableXSwerveCommand());
+
     // Manual intake
     operatorController
         .leftTrigger(0.3)
-        .onTrue(superstructureManager.setManualIntakeCommand(IntakeMode.INTAKE_CONE))
+        .onTrue(superstructureManager.setManualIntakeCommand(IntakeMode.MANUAL_INTAKE))
         .onFalse(superstructureManager.setManualIntakeCommand(null));
     // Manual outtake
     operatorController
         .rightTrigger(0.3)
-        .onTrue(superstructureManager.setManualIntakeCommand(IntakeMode.INTAKE_CUBE))
+        .onTrue(superstructureManager.setManualIntakeCommand(IntakeMode.MANUAL_OUTTAKE))
         .onFalse(superstructureManager.setManualIntakeCommand(null));
     // Manual score low
     operatorController
@@ -210,28 +235,22 @@ public class Robot extends LoggedRobot {
         .y()
         .onTrue(superstructureManager.getManualScoreCommand(ManualScoringLocation.HIGH))
         .onFalse(superstructureManager.getCommand(States.STOWED));
+
     // Stow all
     operatorController.x().onTrue(superstructureManager.getCommand(States.STOWED));
     // Home superstructure
+    operatorController.back().onTrue(superstructureManager.getHomeCommand());
+
+    // Forks go up
     operatorController
-        .back()
-        .onTrue(
-            new ElevatorHomingCommand(elevator)
-                .andThen(new WristHomingCommand(wrist))
-                .alongWith(new IntakeCommand(intake, IntakeMode.STOPPED)));
-
-    // operatorController
-    //     .rightTrigger()
-    //     .whileTrue(
-    //         swerve.goToPoseCommand(
-    //             Landmarks.RED_STAGING_MARK_FAR_RIGHT,
-    //             localization));
-
-    // Autobalance
-    // operatorController
-    //     .rightTrigger()
-    //     .onTrue(autobalance.getCommand())
-    //     .onFalse(Commands.runOnce(() -> autobalance.setEnabled(false)));
+        .povUp()
+        .onTrue(forks.getCommand(ForksMode.UP))
+        .onFalse(forks.getCommand(ForksMode.STOPPED));
+    // Forks go down
+    operatorController
+        .povDown()
+        .onTrue(forks.getCommand(ForksMode.DOWN))
+        .onFalse(forks.getCommand(ForksMode.STOPPED));
   }
 
   @Override
@@ -243,7 +262,6 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     autoCommand = autos.getAutoCommand();
-    CommandScheduler.getInstance().schedule(autoCommand);
   }
 
   @Override

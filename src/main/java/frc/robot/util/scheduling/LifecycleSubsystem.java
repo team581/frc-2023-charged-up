@@ -4,8 +4,8 @@
 
 package frc.robot.util.scheduling;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.util.Stopwatch;
@@ -29,9 +29,11 @@ public class LifecycleSubsystem extends SubsystemBase {
 
     String name = this.getClass().getSimpleName();
     name = name.substring(name.lastIndexOf('.') + 1);
+    // First string concat causes lag spike. This shifts lag spike to code init.
     loggerName = "Scheduler/LifecycleSubsystem/" + name + ".periodic()";
 
     robotInit();
+    SmartDashboard.putData(this);
   }
 
   /** {@link IterativeRobotBase#robotInit()} */
@@ -67,13 +69,7 @@ public class LifecycleSubsystem extends SubsystemBase {
     stopwatch.start(loggerName);
     LifecycleStage stage;
 
-    if (DriverStation.isTeleopEnabled()) {
-      stage = LifecycleStage.TELEOP;
-    } else if (DriverStation.isAutonomousEnabled()) {
-      stage = LifecycleStage.AUTONOMOUS;
-    } else {
-      stage = LifecycleStage.DISABLED;
-    }
+    stage = LifecycleSubsystemManager.getStage();
 
     boolean isInit = previousStage != stage;
 
@@ -91,26 +87,35 @@ public class LifecycleSubsystem extends SubsystemBase {
       }
 
       enabledPeriodic();
-    }
 
-    if (stage == LifecycleStage.TELEOP) {
-      if (isInit) {
-        teleopInit();
+      if (stage == LifecycleStage.TELEOP) {
+        if (isInit) {
+          teleopInit();
+        }
+
+        teleopPeriodic();
+      } else if (stage == LifecycleStage.AUTONOMOUS) {
+        if (isInit) {
+          autonomousInit();
+        }
+
+        autonomousPeriodic();
+      } else if (stage == LifecycleStage.TEST) {
+        if (isInit) {
+          testInit();
+        }
+
+        testPeriodic();
       }
-
-      teleopPeriodic();
-    }
-
-    if (stage == LifecycleStage.AUTONOMOUS) {
-      if (isInit) {
-        autonomousInit();
-      }
-
-      autonomousPeriodic();
     }
 
     stopwatch.stop(loggerName);
 
     previousStage = stage;
   }
+  /** {@link IterativeRobotBase#testInit()} */
+  public void testInit() {}
+
+  /** {@link IterativeRobotBase#testPeriodic()} */
+  public void testPeriodic() {}
 }
