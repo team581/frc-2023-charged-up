@@ -20,7 +20,7 @@ public class Autobalance extends LifecycleSubsystem {
   private final ImuSubsystem imu;
   private boolean enabled = false;
   private static final double DRIVE_VELOCITY = -0.55;
-  private static final double ANGLE_THRESHOLD = 10;
+  private static final double ANGLE_THRESHOLD = 7;
   private final LinearFilter autoBalanceFilter = LinearFilter.movingAverage(13);
   private Rotation2d averageRoll = new Rotation2d();
 

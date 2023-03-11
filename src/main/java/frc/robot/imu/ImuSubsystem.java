@@ -36,8 +36,8 @@ public class ImuSubsystem extends LifecycleSubsystem {
   }
 
   public void zero() {
-    // TODO: This should use setAngle()
-    this.imu.setYaw(0);
+
+    setAngle(new Rotation2d());
     this.imu.configMountPoseRoll(this.imu.getRoll());
   }
 
