@@ -150,6 +150,7 @@ public class Autos {
                     .setIntakeModeCommand(HeldGamePiece.CUBE)
                     .andThen(superstructure.getFloorIntakeSpinningCommand())),
             Map.entry("stow", superstructure.getCommand(States.STOWED)),
+            Map.entry("stowFast", Commands.runOnce(() -> superstructure.set(States.STOWED));
             Map.entry("autoBalance", autoBalance.getCommand().withName("AutoAutoBalance")));
 
     eventMap = wrapAutoEventMap(eventMap);
