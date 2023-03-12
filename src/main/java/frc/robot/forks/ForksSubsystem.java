@@ -30,7 +30,6 @@ public class ForksSubsystem extends LifecycleSubsystem {
 
     this.motor = motor;
     motor.configSupplyCurrentLimit(CURRENT_LIMIT);
-    // TODO: This is too safe of a number
     motor.configForwardSoftLimitThreshold(-2048.0);
 
     // We assume the forks are stowed when the robot is turned on
@@ -51,6 +50,11 @@ public class ForksSubsystem extends LifecycleSubsystem {
   public void autonomousInit() {
     motor.configForwardSoftLimitEnable(true);
     zeroEncoder();
+  }
+
+  @Override
+  public void testInit() {
+    motor.configForwardSoftLimitEnable(false);
   }
 
   @Override
