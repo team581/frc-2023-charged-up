@@ -63,12 +63,17 @@ public class WristSubsystem extends LifecycleSubsystem {
     homingState = HomingState.HOMING;
   }
 
-  public HomingState resetHoming() {
-    return homingState = HomingState.NOT_HOMED;
+  public void resetHoming() {
+    homingState = HomingState.NOT_HOMED;
   }
 
   public HomingState getHomingState() {
     return homingState;
+  }
+
+  @Override
+  public void autonomousInit() {
+    resetHoming();
   }
 
   @Override

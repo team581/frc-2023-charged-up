@@ -127,15 +127,24 @@ public class Autos {
             Map.entry(
                 "scoreMid",
                 superstructure
-                    .getScoreCommand(
+                    .getManualScoreCommand(
                         Config.IS_SPIKE ? ManualScoringLocation.MID : ManualScoringLocation.LOW)
+                    .andThen(superstructure.finishManualScoreCommand())
+                    .andThen(superstructure.getCommand(States.STOWED))
                     .withTimeout(3)
                     .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
             Map.entry(
                 "scoreHigh",
                 superstructure
-                    .getScoreCommand(
+                    .getManualScoreCommand(
                         Config.IS_SPIKE ? ManualScoringLocation.HIGH : ManualScoringLocation.LOW)
+                    .andThen(Commands.print("finished manual score movement"))
+                    .andThen(Commands.print("starting manual score"))
+                    .andThen(superstructure.finishManualScoreCommand())
+                    .andThen(Commands.print("finished manual score"))
+                    .andThen(Commands.print("starting stow"))
+                    .andThen(superstructure.getCommand(States.STOWED))
+                    .andThen(Commands.print("finished stow"))
                     .withTimeout(3)
                     .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
             Map.entry("home", superstructure.getHomeCommand()),
@@ -185,7 +194,7 @@ public class Autos {
     autoChooser.addOption("Blue long side 1.5", AutoKind.BLUE_LONG_SIDE_1_5);
     autoChooser.addOption("Blue mid 1.5 balance", AutoKind.BLUE_MID_1_5_BALANCE);
     autoChooser.addOption("Blue mid 1 balance", AutoKind.BLUE_MID_1_BALANCE);
-    //autoChooser.addOption("Blue short side 2.5 balance", AutoKind.BLUE_SHORT_SIDE_2_5_BALANCE);
+    // autoChooser.addOption("Blue short side 2.5 balance", AutoKind.BLUE_SHORT_SIDE_2_5_BALANCE);
     autoChooser.addOption("Blue short side 2", AutoKind.BLUE_SHORT_SIDE_2);
 
     autoChooser.addOption("Red long side 1.5", AutoKind.RED_LONG_SIDE_1_5);
@@ -193,12 +202,11 @@ public class Autos {
     autoChooser.addOption("Red mid 1.5 balance", AutoKind.RED_MID_1_5_BALANCE);
     autoChooser.addOption("Red mid 1 balance", AutoKind.RED_MID_1_BALANCE);
     autoChooser.addOption("Red short side 1", AutoKind.RED_SHORT_SIDE_1);
-    //autoChooser.addOption("Red long side 2.5 balance", AutoKind.RED_LONG_SIDE_2_5_BALANCE);
+    // autoChooser.addOption("Red long side 2.5 balance", AutoKind.RED_LONG_SIDE_2_5_BALANCE);
     autoChooser.addOption("Red short side 2", AutoKind.RED_SHORT_SIDE_2);
-    //autoChooser.addOption("Red short side 2.5 balance", AutoKind.RED_SHORT_SIDE_2_5_BALANCE);
+    // autoChooser.addOption("Red short side 2.5 balance", AutoKind.RED_SHORT_SIDE_2_5_BALANCE);
 
     autoChooser.addOption("Test", AutoKind.TEST);
-
 
     if (Config.IS_DEVELOPMENT) {
       PathPlannerServer.startServer(5811);

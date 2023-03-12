@@ -179,15 +179,15 @@
     },
     {
       "anchorPoint": {
-        "x": 14.639467093661029,
+        "x": 14.696590058263252,
         "y": 4.407988768471599
       },
       "prevControl": {
-        "x": 14.570688178753567,
+        "x": 14.62781114335579,
         "y": 4.557508148705212
       },
       "nextControl": {
-        "x": 14.570688178753567,
+        "x": 14.62781114335579,
         "y": 4.557508148705212
       },
       "holonomicAngle": 0,
@@ -197,9 +197,8 @@
       "isStopPoint": true,
       "stopEvent": {
         "names": [
-          "preloadCube",
           "scoreHigh",
-          "stow"
+          "stowFast"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",

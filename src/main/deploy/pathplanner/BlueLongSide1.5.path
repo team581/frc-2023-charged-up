@@ -169,7 +169,8 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "scoreLow"
+          "scoreHigh",
+          "stowFast"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",

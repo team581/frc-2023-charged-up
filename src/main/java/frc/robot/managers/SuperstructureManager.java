@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import frc.robot.ManualScoringLocation;
 import frc.robot.Positions;
 import frc.robot.States;
@@ -36,6 +35,7 @@ public class SuperstructureManager extends LifecycleSubsystem {
   private LocalizationSubsystem localization;
   private boolean autoScoreEnabled = false;
   private IntakeMode manualIntakeMode;
+  private SuperstructureState goalBeforeDunk;
 
   public SuperstructureManager(
       SuperstructureMotionManager motionManager,
@@ -265,22 +265,31 @@ public class SuperstructureManager extends LifecycleSubsystem {
   public Command finishManualScoreCommand() {
     return Commands.waitUntil(() -> atPosition(goal.position))
         // Dunk motion when we are scoring a cone
+        .andThen(Commands.print("at position"))
         .andThen(
-            new ProxyCommand(
+            () -> {
+              goalBeforeDunk = goal;
+            })
+        .andThen(
+            getCommand(
                     () ->
-                        getCommand(
-                            new SuperstructureState(
-                                new SuperstructurePosition(
-                                    goal.position.height + 0.5,
-                                    Rotation2d.fromDegrees(goal.position.angle.getDegrees() + 15),
-                                    -1),
-                                IntakeMode.OUTTAKE_CONE)))
+                        new SuperstructureState(
+                            new SuperstructurePosition(
+                                goalBeforeDunk.position.height + 0.5,
+                                Rotation2d.fromDegrees(
+                                    goalBeforeDunk.position.angle.getDegrees() + 15),
+                                -1),
+                            IntakeMode.OUTTAKE_CONE))
                 .unless(() -> mode == HeldGamePiece.CUBE))
+        .andThen(Commands.print("at goal height"))
         .andThen(
             Commands.either(
                 Commands.runOnce(() -> setManualIntakeMode(IntakeMode.OUTTAKE_CUBE)),
                 Commands.runOnce(() -> setManualIntakeMode(IntakeMode.OUTTAKE_CONE)),
                 () -> mode == HeldGamePiece.CUBE))
+        .andThen(Commands.print("outtake piece"))
+        .andThen(Commands.waitUntil(() -> intake.getGamePiece() == HeldGamePiece.NOTHING))
+        .andThen(Commands.print("has nothing"))
         .withName("SuperstructureFinishManualScore");
   }
 
