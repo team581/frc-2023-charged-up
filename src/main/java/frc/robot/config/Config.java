@@ -138,8 +138,8 @@ public class Config {
 
   public static final double STEER_MOTOR_LIMITS = IS_SPIKE ? 35 : 0.0;
   public static final boolean SWERVE_MOTOR_LIMITS_ENABLED = IS_SPIKE ? true : true;
-  public static final PIDConstants SWERVE_TRANSLATION_PID = new PIDConstants(3, 0, 0);
-  public static final PIDConstants SWERVE_ROTATION_PID = new PIDConstants(2.6, 0, 0);
+  public static final PIDConstants SWERVE_TRANSLATION_PID = IS_SPIKE ? new PIDConstants(7, 0, 0.05) : new PIDConstants(7, 0, 0.05);
+  public static final PIDConstants SWERVE_ROTATION_PID = IS_SPIKE ? new PIDConstants(4.25, 0, 0.4) : new PIDConstants(4.25, 0, 0.4);
   public static final boolean SWERVE_USE_FOC = IS_SPIKE ? true : true;
 
   public static final double SUPERSTRUCTURE_COLLISION_HEIGHT = IS_SPIKE ? 0.75 : 26;
