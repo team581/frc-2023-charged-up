@@ -112,7 +112,7 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
         }
 
         // Update pose estimator if vision is valid.
-        if (visionIsValid) {
+        if (visionIsValid && false) {
           // Adjust vision measurement standard deviation by average distance from tags.
           double stdForVision =
               visionStdLookup.get(averageDistanceToIndividualFiducialTags) / fiducialTagCount;

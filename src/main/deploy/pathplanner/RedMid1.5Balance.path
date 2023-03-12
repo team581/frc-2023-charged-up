@@ -19,7 +19,8 @@
         "names": [
           "home",
           "preloadCone",
-          "scoreHigh"
+          "scoreHigh",
+          "stowFast"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
@@ -236,12 +237,6 @@
     },
     {
       "position": 6.23,
-      "names": [
-        "stow"
-      ]
-    },
-    {
-      "position": 0.02,
       "names": [
         "stow"
       ]
