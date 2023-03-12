@@ -85,9 +85,9 @@ public class Config {
   // 104.58
   public static final int ELEVATOR_MOTOR_ID = 14;
 
-  public static final double ELEVATOR_GEARING = IS_SPIKE ? 7.2 : 16.0;
+  public static final double ELEVATOR_GEARING = IS_SPIKE ? 7.2 / 2.0 : 16.0 / 2.0;
   public static final double ELEVATOR_MIN_HEIGHT = IS_SPIKE ? 0 : 0;
-  public static final double ELEVATOR_MAX_HEIGHT = IS_SPIKE ? 25.3 : 12;
+  public static final double ELEVATOR_MAX_HEIGHT = Units.inchesToMeters(IS_SPIKE ? 25.3 : 12);
   public static final double ELEVATOR_KF = IS_SPIKE ? 0 : 0;
   public static final double ELEVATOR_KP = IS_SPIKE ? 0.7 : 0.8;
   public static final double ELEVATOR_KI = IS_SPIKE ? 0 : 0;
@@ -142,7 +142,7 @@ public class Config {
   public static final PIDConstants SWERVE_ROTATION_PID = IS_SPIKE ? new PIDConstants(4.25, 0, 0.4) : new PIDConstants(4.25, 0, 0.4);
   public static final boolean SWERVE_USE_FOC = IS_SPIKE ? true : true;
 
-  public static final double SUPERSTRUCTURE_COLLISION_HEIGHT = IS_SPIKE ? 0.75 : 26;
+  public static final double SUPERSTRUCTURE_COLLISION_HEIGHT = Units.inchesToMeters(IS_SPIKE ? 0.75 : 26);
   public static final Rotation2d SUPERSTRUCTURE_WRIST_RANGE =
       IS_SPIKE ? Rotation2d.fromDegrees(50) : Rotation2d.fromDegrees(13);
 

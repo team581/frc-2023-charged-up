@@ -6,6 +6,7 @@ package frc.robot.managers;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
@@ -271,7 +272,7 @@ public class SuperstructureManager extends LifecycleSubsystem {
                         getCommand(
                             new SuperstructureState(
                                 new SuperstructurePosition(
-                                    goal.position.height + 0.5,
+                                    goal.position.height + Units.inchesToMeters(0.5),
                                     Rotation2d.fromDegrees(goal.position.angle.getDegrees() + 15),
                                     -1),
                                 IntakeMode.OUTTAKE_CONE)))
