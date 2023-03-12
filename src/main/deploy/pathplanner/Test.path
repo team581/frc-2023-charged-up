@@ -2,42 +2,38 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.858994068865331,
-        "y": 4.987500501316792
+        "x": 12.66823287445967,
+        "y": 4.781733271673231
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4574994764024627,
-        "y": 4.988727947631334
+        "x": 11.943358658753793,
+        "y": 4.787824651637145
       },
-      "holonomicAngle": 180.0,
+      "holonomicAngle": 0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [
-          "home",
-          "preloadCone",
-          "scoreLow"
-        ],
-        "executionBehavior": "sequential",
+        "names": [],
+        "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
       }
     },
     {
       "anchorPoint": {
-        "x": 3.844943830238538,
-        "y": 4.751725643802166
+        "x": 10.615437826620335,
+        "y": 4.781733271673231
       },
       "prevControl": {
-        "x": 3.491362040675568,
-        "y": 4.771369076555667
+        "x": 10.877367165068684,
+        "y": 4.781733271673231
       },
       "nextControl": {
-        "x": 4.008172577748664,
-        "y": 4.742657380051602
+        "x": 10.335168145449238,
+        "y": 4.781733271673231
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
@@ -53,15 +49,15 @@
     },
     {
       "anchorPoint": {
-        "x": 4.461585765276794,
-        "y": 4.751725643802166
+        "x": 9.677365312177434,
+        "y": 4.78
       },
       "prevControl": {
-        "x": 4.497858820279045,
-        "y": 4.751725643802166
+        "x": 10.0185048976311,
+        "y": 4.78
       },
       "nextControl": null,
-      "holonomicAngle": 0,
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -74,21 +70,5 @@
       }
     }
   ],
-  "maxVelocity": 1.0,
-  "maxAcceleration": 0.75,
-  "isReversed": null,
-  "markers": [
-    {
-      "position": 0.02,
-      "names": [
-        "stow"
-      ]
-    },
-    {
-      "position": 0.6254545454545517,
-      "names": [
-        "home"
-      ]
-    }
-  ]
+  "markers": []
 }

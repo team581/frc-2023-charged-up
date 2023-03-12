@@ -19,8 +19,7 @@
         "names": [
           "home",
           "preloadCone",
-          "scoreHigh",
-          "stow"
+          "scoreHigh"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
@@ -103,5 +102,18 @@
   "maxVelocity": 1.5,
   "maxAcceleration": 2.5,
   "isReversed": null,
-  "markers": []
+  "markers": [
+    {
+      "position": 0.02,
+      "names": [
+        "stow"
+      ]
+    },
+    {
+      "position": 0.3054545454546274,
+      "names": [
+        "home"
+      ]
+    }
+  ]
 }
