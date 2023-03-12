@@ -154,4 +154,23 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
     return Commands.runOnce(
         () -> resetGyro(Rotation2d.fromDegrees(FmsSubsystem.isRedAlliance() ? 180 : 0)));
   }
+
+
+  public boolean atPose(Pose2d goal) {
+
+    Pose2d pose = getPose();
+    double distanceRelative = goal.getTranslation().getDistance(pose.getTranslation());
+
+
+    Logger.getInstance().recordOutput("Localization/AtPoseGoal", goal);
+
+    Rotation2d rotationDifference = goal.getRotation().minus(pose.getRotation());
+    if (distanceRelative < 0.2 && Math.abs(rotationDifference.getDegrees()) < 5) {
+      Logger.getInstance().recordOutput("Localization/AtPose", true);
+      return true;
+    } else {
+      Logger.getInstance().recordOutput("Localization/AtPose", false);
+      return false;
+    }
+  }
 }

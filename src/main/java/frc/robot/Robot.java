@@ -211,12 +211,12 @@ public class Robot extends LoggedRobot {
     // Manual intake
     operatorController
         .leftTrigger(0.3)
-        .onTrue(superstructureManager.setManualIntakeCommand(IntakeMode.INTAKE_CONE))
+        .onTrue(superstructureManager.setManualIntakeCommand(IntakeMode.MANUAL_INTAKE))
         .onFalse(superstructureManager.setManualIntakeCommand(null));
     // Manual outtake
     operatorController
         .rightTrigger(0.3)
-        .onTrue(superstructureManager.setManualIntakeCommand(IntakeMode.INTAKE_CUBE))
+        .onTrue(superstructureManager.setManualIntakeCommand(IntakeMode.MANUAL_OUTTAKE))
         .onFalse(superstructureManager.setManualIntakeCommand(null));
     // Manual score low
     operatorController
