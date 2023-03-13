@@ -72,8 +72,18 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
   }
 
   private void update() {
-    poseEstimator.update(imu.getRobotHeading(), swerve.getModulePositions());
-    odometry.update(imu.getRobotHeading(), swerve.getModulePositions());
+    try {
+      poseEstimator.update(imu.getRobotHeading(), swerve.getModulePositions());
+    } catch (Exception e) {
+      System.err.println("Pose estimator threw while adding odometry measurement:");
+      e.printStackTrace();
+    }
+    try {
+      odometry.update(imu.getRobotHeading(), swerve.getModulePositions());
+    } catch (Exception e) {
+      System.err.println("Odometry threw while adding measurement:");
+      e.printStackTrace();
+    }
 
     boolean visionIsValid = false; // Indicates if vision is valid in this loop.
 
@@ -117,10 +127,16 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
           // Adjust vision measurement standard deviation by average distance from tags.
           double stdForVision =
               visionStdLookup.get(averageDistanceToIndividualFiducialTags) / fiducialTagCount;
-          poseEstimator.addVisionMeasurement(
-              angleAdjustedVisionPose,
-              visionTimestamp,
-              VecBuilder.fill(stdForVision, stdForVision, Units.degreesToRadians(360)));
+          try {
+            poseEstimator.addVisionMeasurement(
+                angleAdjustedVisionPose,
+                visionTimestamp,
+                VecBuilder.fill(stdForVision, stdForVision, Units.degreesToRadians(360)));
+
+          } catch (Exception e) {
+            System.err.println("Pose estimator threw while adding vision measurement:");
+            e.printStackTrace();
+          }
           Logger.getInstance().recordOutput("Localization/VisionPose", angleAdjustedVisionPose);
           visionWorking = true;
         }
