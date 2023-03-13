@@ -58,9 +58,6 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
     visionStdLookup.put(0.5, 1.0);
     visionStdLookup.put(1.0, 2.0);
     visionStdLookup.put(2.0, 2.5);
-
-    // Parse LL json in init to remove initial lag in json deserialization.
-    LimelightHelpers.getLatestResults("");
   }
 
   @Override
@@ -87,7 +84,7 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
 
     boolean visionIsValid = false; // Indicates if vision is valid in this loop.
 
-    if (LimelightHelpers.getTV("")) {
+    if (LimelightHelpers.getTV("") == 1) {
       Pose2d ntCurrentVisionPose = LimelightHelpers.getBotPose2d_wpiBlue("");
       if (previousPose.getX() != ntCurrentVisionPose.getX()
           && previousPose.getY() != ntCurrentVisionPose.getY()) {
@@ -108,7 +105,7 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
         double fiducialTagCount = 0;
 
         // Calculate average distance of each tag seen.
-        if (results.targetingResults.valid
+        if (results.targetingResults.valid == 1
             && ntCurrentVisionPose.getX() != 0.0
             && ntCurrentVisionPose.getY() != 0.0) {
           for (int i = 0; i < results.targetingResults.targets_Fiducials.length; ++i) {

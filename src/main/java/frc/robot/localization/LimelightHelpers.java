@@ -4,8 +4,6 @@
 
 package frc.robot.localization;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -27,6 +25,7 @@ import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 
 public class LimelightHelpers {
+
   public static class LimelightTarget_Retro {
 
     @JsonProperty("t6c_ts")
@@ -113,7 +112,7 @@ public class LimelightHelpers {
 
   public static class LimelightTarget_Fiducial {
 
-    @JsonProperty("fID")
+    @JsonProperty("fid")
     public double fiducialID;
 
     @JsonProperty("fam")
@@ -281,8 +280,7 @@ public class LimelightHelpers {
     public double timestamp_RIOFPGA_capture;
 
     @JsonProperty("v")
-    @JsonFormat(shape = Shape.NUMBER)
-    public boolean valid;
+    public double valid;
 
     @JsonProperty("botpose")
     public double[] botpose;
@@ -605,8 +603,8 @@ public class LimelightHelpers {
     return toPose2D(result);
   }
 
-  public static boolean getTV(String limelightName) {
-    return 1.0 == getLimelightNTDouble(limelightName, "tv");
+  public static double getTV(String limelightName) {
+    return getLimelightNTDouble(limelightName, "tv");
   }
 
   /////

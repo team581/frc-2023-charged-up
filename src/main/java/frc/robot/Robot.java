@@ -27,6 +27,7 @@ import frc.robot.intake.HeldGamePiece;
 import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.lights.LightsSubsystem;
+import frc.robot.localization.JacksonLagUtil;
 import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.managers.AutoRotate;
 import frc.robot.managers.Autobalance;
@@ -157,6 +158,8 @@ public class Robot extends LoggedRobot {
     configureButtonBindings();
 
     enableLiveWindowInTest(false);
+
+    JacksonLagUtil.causeLag();
   }
 
   /**
