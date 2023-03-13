@@ -20,7 +20,7 @@
           "home",
           "preloadCone",
           "scoreHigh",
-          "stow"
+          "stowFast"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",

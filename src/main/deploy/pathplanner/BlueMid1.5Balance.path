@@ -19,8 +19,8 @@
         "names": [
           "home",
           "preloadCone",
-          "scoreLow",
-          "stow"
+          "scoreHigh",
+          "stowFast"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
@@ -180,7 +180,7 @@
   "isReversed": null,
   "markers": [
     {
-      "position": 2.44363636363632,
+      "position": 2.0945454545454956,
       "names": [
         "intakeCone"
       ]

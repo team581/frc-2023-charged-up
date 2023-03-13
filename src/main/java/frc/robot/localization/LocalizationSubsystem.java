@@ -54,7 +54,8 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
         new SwerveDriveOdometry(
             SwerveSubsystem.KINEMATICS, imu.getRobotHeading(), swerve.getModulePositions());
 
-    visionStdLookup.put(0.5, 0.5);
+    visionStdLookup.put(0.1, 0.8);
+    visionStdLookup.put(0.5, 1.0);
     visionStdLookup.put(1.0, 2.0);
     visionStdLookup.put(2.0, 2.5);
 
@@ -119,11 +120,15 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
           poseEstimator.addVisionMeasurement(
               angleAdjustedVisionPose,
               visionTimestamp,
-              VecBuilder.fill(stdForVision, stdForVision, Units.degreesToRadians(5)));
+              VecBuilder.fill(stdForVision, stdForVision, Units.degreesToRadians(360)));
           Logger.getInstance().recordOutput("Localization/VisionPose", angleAdjustedVisionPose);
           visionWorking = true;
         }
       }
+    }
+
+    if (!visionIsValid) {
+      Logger.getInstance().recordOutput("Localization/VisionPose", new Pose2d());
     }
   }
 
@@ -155,12 +160,10 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
         () -> resetGyro(Rotation2d.fromDegrees(FmsSubsystem.isRedAlliance() ? 180 : 0)));
   }
 
-
   public boolean atPose(Pose2d goal) {
 
     Pose2d pose = getPose();
     double distanceRelative = goal.getTranslation().getDistance(pose.getTranslation());
-
 
     Logger.getInstance().recordOutput("Localization/AtPoseGoal", goal);
 
