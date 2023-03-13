@@ -265,7 +265,6 @@ public class SuperstructureManager extends LifecycleSubsystem {
   public Command finishManualScoreCommand() {
     return Commands.waitUntil(() -> atPosition(goal.position))
         // Dunk motion when we are scoring a cone
-        .andThen(Commands.print("at position"))
         .andThen(
             () -> {
               goalBeforeDunk = goal;
@@ -281,15 +280,12 @@ public class SuperstructureManager extends LifecycleSubsystem {
                                 -1),
                             IntakeMode.OUTTAKE_CONE))
                 .unless(() -> mode == HeldGamePiece.CUBE))
-        .andThen(Commands.print("at goal height"))
         .andThen(
             Commands.either(
                 Commands.runOnce(() -> setManualIntakeMode(IntakeMode.OUTTAKE_CUBE)),
                 Commands.runOnce(() -> setManualIntakeMode(IntakeMode.OUTTAKE_CONE)),
                 () -> mode == HeldGamePiece.CUBE))
-        .andThen(Commands.print("outtake piece"))
         .andThen(Commands.waitUntil(() -> intake.getGamePiece() == HeldGamePiece.NOTHING))
-        .andThen(Commands.print("has nothing"))
         .withName("SuperstructureFinishManualScore");
   }
 

@@ -138,13 +138,8 @@ public class Autos {
                 superstructure
                     .getManualScoreCommand(
                         Config.IS_SPIKE ? ManualScoringLocation.HIGH : ManualScoringLocation.LOW)
-                    .andThen(Commands.print("finished manual score movement"))
-                    .andThen(Commands.print("starting manual score"))
                     .andThen(superstructure.finishManualScoreCommand())
-                    .andThen(Commands.print("finished manual score"))
-                    .andThen(Commands.print("starting stow"))
                     .andThen(superstructure.getCommand(States.STOWED))
-                    .andThen(Commands.print("finished stow"))
                     .withTimeout(3)
                     .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
             Map.entry("home", superstructure.getHomeCommand()),
