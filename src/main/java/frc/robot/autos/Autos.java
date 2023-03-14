@@ -195,7 +195,8 @@ public class Autos {
     autoChooser.addOption("Red short side 1", AutoKind.RED_SHORT_SIDE_1);
     autoChooser.addOption("Red short side 2", AutoKind.RED_SHORT_SIDE_2);
 
-    autoChooser.addOption("(Extra) Red short side 1 balance", AutoKind.EXTRA_RED_SHORT_SIDE_1_BALANCE);
+    autoChooser.addOption(
+        "(Extra) Red short side 1 balance", AutoKind.EXTRA_RED_SHORT_SIDE_1_BALANCE);
 
     autoChooser.addOption("Test", AutoKind.TEST);
 
