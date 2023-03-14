@@ -38,7 +38,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class Autos {
   private static Command wrapAutoEvent(String commandName, Command command) {
     if (!Config.IS_DEVELOPMENT) {
-      return command;
+      return command.withName(commandName);
     }
 
     return Commands.sequence(
@@ -56,13 +56,10 @@ public class Autos {
   }
 
   private static Map<String, Command> wrapAutoEventMap(Map<String, Command> eventMap) {
-    if (!Config.IS_DEVELOPMENT) {
-      return eventMap;
-    }
-
     Map<String, Command> wrappedMap = new HashMap<>();
     for (Map.Entry<String, Command> entry : eventMap.entrySet()) {
-      wrappedMap.put(entry.getKey(), wrapAutoEvent(entry.getKey(), entry.getValue()));
+      wrappedMap.put(
+          entry.getKey(), wrapAutoEvent("AutoEvent_" + entry.getKey(), entry.getValue()));
     }
     return wrappedMap;
   }
