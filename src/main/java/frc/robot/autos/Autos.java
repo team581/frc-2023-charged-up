@@ -113,7 +113,7 @@ public class Autos {
                     .setIntakeModeCommand(HeldGamePiece.CONE)
                     .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.CONE)))
                     .andThen(superstructure.setManualIntakeCommand(IntakeMode.INTAKE_CONE))
-                    .andThen(Commands.waitSeconds(0.5))
+                    .andThen(Commands.waitSeconds(0.2))
                     .andThen(superstructure.setManualIntakeCommand(null))),
             Map.entry(
                 "scoreLow",
