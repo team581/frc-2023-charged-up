@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -204,6 +205,14 @@ public class Autos {
     if (Config.IS_DEVELOPMENT) {
       PathPlannerServer.startServer(5811);
     }
+
+    Logger.getInstance().recordOutput("Autos/CurrentTrajectory", new Trajectory());
+    Logger.getInstance().recordOutput("Autos/TargetPose", new Pose2d());
+    Logger.getInstance().recordOutput("Autos/SetpointSpeeds/X", 0);
+    Logger.getInstance().recordOutput("Autos/SetpointSpeeds/Y", 0);
+    Logger.getInstance().recordOutput("Autos/SetpointSpeeds/Omega", 0);
+    Logger.getInstance().recordOutput("Autos/TranslationError", new Pose2d());
+    Logger.getInstance().recordOutput("Autos/RotationError", 0);
 
     PPSwerveControllerCommand.setLoggingCallbacks(
         (PathPlannerTrajectory activeTrajectory) -> {
