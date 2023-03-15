@@ -19,6 +19,7 @@ import frc.robot.ManualScoringLocation;
 import frc.robot.States;
 import frc.robot.config.Config;
 import frc.robot.elevator.ElevatorSubsystem;
+import frc.robot.fms.FmsSubsystem;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.intake.HeldGamePiece;
 import frc.robot.intake.IntakeMode;
@@ -183,24 +184,28 @@ public class Autos {
               command -> System.out.println("[COMMANDS] Finished command " + command.getName()));
     }
 
-    autoChooser.addDefaultOption("Do nothing", AutoKind.DO_NOTHING);
-    autoChooser.addOption("Blue long side 1", AutoKind.BLUE_LONG_SIDE_1);
-    autoChooser.addOption("Blue short side 1", AutoKind.BLUE_SHORT_SIDE_1);
+    autoChooser.addOption("Do nothing", AutoKind.DO_NOTHING);
+
     autoChooser.addOption("Blue long side 2", AutoKind.BLUE_LONG_SIDE_2);
     autoChooser.addOption("Blue mid 1.5 balance", AutoKind.BLUE_MID_1_5_BALANCE);
-    autoChooser.addOption("Blue mid 1 balance", AutoKind.BLUE_MID_1_BALANCE);
     autoChooser.addOption("Blue short side 2", AutoKind.BLUE_SHORT_SIDE_2);
 
     autoChooser.addOption("Red long side 2", AutoKind.RED_LONG_SIDE_2);
-    autoChooser.addOption("Red long side 1", AutoKind.RED_LONG_SIDE_1);
     autoChooser.addOption("Red mid 1.5 balance", AutoKind.RED_MID_1_5_BALANCE);
-    autoChooser.addOption("Red mid 1 balance", AutoKind.RED_MID_1_BALANCE);
-    autoChooser.addOption("Red short side 1", AutoKind.RED_SHORT_SIDE_1);
     autoChooser.addOption("Red short side 2", AutoKind.RED_SHORT_SIDE_2);
 
-    autoChooser.addOption("(Extra) Red short side 1 balance", AutoKind.EXTRA_RED_SHORT_SIDE_1_BALANCE);
+    // autoChooser.addOption("Blue long side 1", AutoKind.BLUE_LONG_SIDE_1);
+    // autoChooser.addOption("Blue short side 1", AutoKind.BLUE_SHORT_SIDE_1);
+    // autoChooser.addOption("Blue mid 1 balance", AutoKind.BLUE_MID_1_BALANCE);
 
-    autoChooser.addOption("Test", AutoKind.TEST);
+    // autoChooser.addOption("Red long side 1", AutoKind.RED_LONG_SIDE_1);
+    // autoChooser.addOption("Red mid 1 balance", AutoKind.RED_MID_1_BALANCE);
+    // autoChooser.addOption("Red short side 1", AutoKind.RED_SHORT_SIDE_1);
+
+    // autoChooser.addOption("(Extra) Red short side 1 balance",
+    // AutoKind.EXTRA_RED_SHORT_SIDE_1_BALANCE);
+
+    // autoChooser.addOption("Test", AutoKind.TEST);
 
     if (Config.IS_DEVELOPMENT) {
       PathPlannerServer.startServer(5811);
@@ -233,7 +238,10 @@ public class Autos {
     AutoKind auto = autoChooser.get();
 
     if (auto == null) {
-      return buildAutoCommand(AutoKind.DO_NOTHING);
+      return buildAutoCommand(
+          FmsSubsystem.isRedAlliance()
+              ? AutoKind.RED_MID_1_5_BALANCE
+              : AutoKind.BLUE_MID_1_5_BALANCE);
     }
 
     return buildAutoCommand(auto);

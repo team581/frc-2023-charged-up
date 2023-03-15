@@ -47,6 +47,12 @@ public class Autobalance extends LifecycleSubsystem {
     if (enabled) {
       Rotation2d goalAngle = Rotation2d.fromDegrees(FmsSubsystem.isRedAlliance() ? 0 : 180);
 
+      if (getDriveVelocity() == 0) {
+        swerve.setXSwerve(true);
+      } else {
+        swerve.setXSwerve(false);
+      }
+
       ChassisSpeeds chassisSpeeds = new ChassisSpeeds(getDriveVelocity(), 0, 0);
       swerve.setSnapToAngle(goalAngle);
       swerve.setChassisSpeeds(chassisSpeeds, false);
@@ -59,7 +65,7 @@ public class Autobalance extends LifecycleSubsystem {
     } else if (imu.getRoll().getDegrees() < -ANGLE_THRESHOLD) {
       return DRIVE_VELOCITY;
     } else {
-      return DRIVE_VELOCITY * 0;
+      return 0;
     }
   }
 
