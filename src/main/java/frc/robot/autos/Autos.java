@@ -111,9 +111,10 @@ public class Autos {
                 "preloadCone",
                 superstructure
                     .setIntakeModeCommand(HeldGamePiece.CONE)
-                    .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.CONE)))
                     .andThen(superstructure.setManualIntakeCommand(IntakeMode.INTAKE_CONE))
-                    .andThen(Commands.waitSeconds(0.2))
+                    .until(() -> intake.getGamePiece() == HeldGamePiece.CONE)
+                    .withTimeout(0.2)
+                    .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.CONE)))
                     .andThen(superstructure.setManualIntakeCommand(null))),
             Map.entry(
                 "scoreLow",
