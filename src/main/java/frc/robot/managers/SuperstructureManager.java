@@ -286,6 +286,7 @@ public class SuperstructureManager extends LifecycleSubsystem {
                 Commands.runOnce(() -> setManualIntakeMode(IntakeMode.OUTTAKE_CONE)),
                 () -> mode == HeldGamePiece.CUBE))
         .andThen(Commands.waitUntil(() -> intake.getGamePiece() == HeldGamePiece.NOTHING))
+        .andThen(Commands.runOnce(() -> scoringState = ScoringState.FINISHED_SCORING))
         .withName("SuperstructureFinishManualScore");
   }
 
