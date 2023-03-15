@@ -5,7 +5,7 @@
 package frc.robot.controller;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.ManualScoringLocation;
+import frc.robot.NodeHeight;
 import frc.robot.autoscore.NodeKind;
 
 public class DriveController extends CommandXboxController {
@@ -53,37 +53,37 @@ public class DriveController extends CommandXboxController {
     double rightX = getRightX();
     double rightY = -getRightY();
 
-    ManualScoringLocation scoringHeight;
+    NodeHeight scoringHeight;
 
     if (rightY > 0.6) {
-      scoringHeight = ManualScoringLocation.HIGH;
+      scoringHeight = NodeHeight.HIGH;
     } else if (rightY < -0.7) {
-      scoringHeight = ManualScoringLocation.LOW;
+      scoringHeight = NodeHeight.LOW;
     } else {
-      scoringHeight = ManualScoringLocation.MID;
+      scoringHeight = NodeHeight.MID;
     }
 
     if (rightX < -0.6) {
-      if (scoringHeight == ManualScoringLocation.LOW) {
+      if (scoringHeight == NodeHeight.LOW) {
         return NodeKind.LEFT_HYBRID;
-      } else if (scoringHeight == ManualScoringLocation.MID) {
+      } else if (scoringHeight == NodeHeight.MID) {
         return NodeKind.LEFT_MID_CONE;
-      } else if (scoringHeight == ManualScoringLocation.HIGH) {
+      } else if (scoringHeight == NodeHeight.HIGH) {
         return NodeKind.LEFT_HIGH_CONE;
       }
     } else if (rightX > 0.6) {
-      if (scoringHeight == ManualScoringLocation.LOW) {
+      if (scoringHeight == NodeHeight.LOW) {
         return NodeKind.RIGHT_HYBRID;
-      } else if (scoringHeight == ManualScoringLocation.MID) {
+      } else if (scoringHeight == NodeHeight.MID) {
         return NodeKind.RIGHT_MID_CONE;
-      } else if (scoringHeight == ManualScoringLocation.HIGH) {
+      } else if (scoringHeight == NodeHeight.HIGH) {
         return NodeKind.RIGHT_HIGH_CONE;
       }
     }
 
-    if (scoringHeight == ManualScoringLocation.LOW) {
+    if (scoringHeight == NodeHeight.LOW) {
       return NodeKind.CENTER_HYBRID;
-    } else if (scoringHeight == ManualScoringLocation.HIGH) {
+    } else if (scoringHeight == NodeHeight.HIGH) {
       return NodeKind.CENTER_HIGH_CUBE;
     }
 

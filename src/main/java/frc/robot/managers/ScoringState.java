@@ -8,5 +8,6 @@ public enum ScoringState {
   IDLE,
   ALIGNING,
   READY,
-  SCORING;
+  SCORING,
+  FINISHED_SCORING;
 }

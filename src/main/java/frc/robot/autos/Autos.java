@@ -12,10 +12,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.ManualScoringLocation;
+import frc.robot.NodeHeight;
 import frc.robot.States;
 import frc.robot.config.Config;
 import frc.robot.elevator.ElevatorSubsystem;
@@ -39,7 +40,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class Autos {
   private static Command wrapAutoEvent(String commandName, Command command) {
     if (!Config.IS_DEVELOPMENT) {
-      return command;
+      return command.withName(commandName);
     }
 
     return Commands.sequence(
@@ -57,13 +58,10 @@ public class Autos {
   }
 
   private static Map<String, Command> wrapAutoEventMap(Map<String, Command> eventMap) {
-    if (!Config.IS_DEVELOPMENT) {
-      return eventMap;
-    }
-
     Map<String, Command> wrappedMap = new HashMap<>();
     for (Map.Entry<String, Command> entry : eventMap.entrySet()) {
-      wrappedMap.put(entry.getKey(), wrapAutoEvent(entry.getKey(), entry.getValue()));
+      wrappedMap.put(
+          entry.getKey(), wrapAutoEvent("AutoEvent_" + entry.getKey(), entry.getValue()));
     }
     return wrappedMap;
   }
@@ -115,32 +113,27 @@ public class Autos {
                 "preloadCone",
                 superstructure
                     .setIntakeModeCommand(HeldGamePiece.CONE)
-                    .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.CONE)))
                     .andThen(superstructure.setManualIntakeCommand(IntakeMode.INTAKE_CONE))
-                    .andThen(Commands.waitSeconds(0.5))
+                    .until(() -> intake.getGamePiece() == HeldGamePiece.CONE)
+                    .withTimeout(0.2)
+                    .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.CONE)))
                     .andThen(superstructure.setManualIntakeCommand(null))),
             Map.entry(
                 "scoreLow",
                 superstructure
-                    .getScoreCommand(ManualScoringLocation.LOW)
+                    .getScoreCommand(NodeHeight.LOW)
                     .withTimeout(3)
                     .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
             Map.entry(
                 "scoreMid",
                 superstructure
-                    .getManualScoreCommand(
-                        Config.IS_SPIKE ? ManualScoringLocation.MID : ManualScoringLocation.LOW)
-                    .andThen(superstructure.finishManualScoreCommand())
-                    .andThen(superstructure.getCommand(States.STOWED))
+                    .getScoreCommand(Config.IS_SPIKE ? NodeHeight.MID : NodeHeight.LOW)
                     .withTimeout(3)
                     .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
             Map.entry(
                 "scoreHigh",
                 superstructure
-                    .getManualScoreCommand(
-                        Config.IS_SPIKE ? ManualScoringLocation.HIGH : ManualScoringLocation.LOW)
-                    .andThen(superstructure.finishManualScoreCommand())
-                    .andThen(superstructure.getCommand(States.STOWED))
+                    .getScoreCommand(Config.IS_SPIKE ? NodeHeight.HIGH : NodeHeight.LOW)
                     .withTimeout(3)
                     .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
             Map.entry("home", superstructure.getHomeCommand()),
@@ -210,6 +203,14 @@ public class Autos {
     if (Config.IS_DEVELOPMENT) {
       PathPlannerServer.startServer(5811);
     }
+
+    Logger.getInstance().recordOutput("Autos/CurrentTrajectory", new Trajectory());
+    Logger.getInstance().recordOutput("Autos/TargetPose", new Pose2d());
+    Logger.getInstance().recordOutput("Autos/SetpointSpeeds/X", 0);
+    Logger.getInstance().recordOutput("Autos/SetpointSpeeds/Y", 0);
+    Logger.getInstance().recordOutput("Autos/SetpointSpeeds/Omega", 0);
+    Logger.getInstance().recordOutput("Autos/TranslationError", new Pose2d());
+    Logger.getInstance().recordOutput("Autos/RotationError", 0);
 
     PPSwerveControllerCommand.setLoggingCallbacks(
         (PathPlannerTrajectory activeTrajectory) -> {
