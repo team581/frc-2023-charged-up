@@ -16,7 +16,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.ManualScoringLocation;
+import frc.robot.NodeHeight;
 import frc.robot.States;
 import frc.robot.config.Config;
 import frc.robot.elevator.ElevatorSubsystem;
@@ -120,25 +120,19 @@ public class Autos {
             Map.entry(
                 "scoreLow",
                 superstructure
-                    .getScoreCommand(ManualScoringLocation.LOW)
+                    .getScoreCommand(NodeHeight.LOW)
                     .withTimeout(3)
                     .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
             Map.entry(
                 "scoreMid",
                 superstructure
-                    .getManualScoreCommand(
-                        Config.IS_SPIKE ? ManualScoringLocation.MID : ManualScoringLocation.LOW)
-                    .andThen(superstructure.finishManualScoreCommand())
-                    .andThen(superstructure.getCommand(States.STOWED))
+                    .getScoreCommand(Config.IS_SPIKE ? NodeHeight.MID : NodeHeight.LOW)
                     .withTimeout(3)
                     .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
             Map.entry(
                 "scoreHigh",
                 superstructure
-                    .getManualScoreCommand(
-                        Config.IS_SPIKE ? ManualScoringLocation.HIGH : ManualScoringLocation.LOW)
-                    .andThen(superstructure.finishManualScoreCommand())
-                    .andThen(superstructure.getCommand(States.STOWED))
+                    .getScoreCommand(Config.IS_SPIKE ? NodeHeight.HIGH : NodeHeight.LOW)
                     .withTimeout(3)
                     .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
             Map.entry("home", superstructure.getHomeCommand()),

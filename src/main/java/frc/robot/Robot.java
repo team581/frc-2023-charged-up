@@ -180,7 +180,7 @@ public class Robot extends LoggedRobot {
     // Outtake/score low node/finish manual score
     driveController
         .rightTrigger(0.3)
-        .onTrue(superstructureManager.getScoreCommand(ManualScoringLocation.LOW));
+        .onTrue(superstructureManager.getScoreCommand(NodeHeight.LOW));
     // Zero gyro
     driveController.back().onTrue(localization.getZeroCommand());
     // Set mode to cubes
@@ -224,17 +224,17 @@ public class Robot extends LoggedRobot {
     // Manual score low
     operatorController
         .a()
-        .onTrue(superstructureManager.getManualScoreCommand(ManualScoringLocation.LOW))
+        .onTrue(superstructureManager.getManualScoreCommand(NodeHeight.LOW))
         .onFalse(superstructureManager.getCommand(States.STOWED));
     // Manual score mid
     operatorController
         .b()
-        .onTrue(superstructureManager.getManualScoreCommand(ManualScoringLocation.MID))
+        .onTrue(superstructureManager.getManualScoreCommand(NodeHeight.MID))
         .onFalse(superstructureManager.getCommand(States.STOWED));
     // Manual score high
     operatorController
         .y()
-        .onTrue(superstructureManager.getManualScoreCommand(ManualScoringLocation.HIGH))
+        .onTrue(superstructureManager.getManualScoreCommand(NodeHeight.HIGH))
         .onFalse(superstructureManager.getCommand(States.STOWED));
 
     // Stow all

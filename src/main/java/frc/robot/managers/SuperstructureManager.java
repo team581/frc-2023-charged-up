@@ -8,8 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.ManualScoringLocation;
-import frc.robot.Positions;
+import frc.robot.NodeHeight;
 import frc.robot.States;
 import frc.robot.autoscore.AutoScoreLocation;
 import frc.robot.autoscore.GridKind;
@@ -118,56 +117,21 @@ public class SuperstructureManager extends LifecycleSubsystem {
     return getCommand(() -> state);
   }
 
-  public Command getScoreCommand(ManualScoringLocation scoringLocation) {
-    SuperstructureState cubeState;
-    SuperstructureState coneState;
-
-    SuperstructureState cubeStateScoring;
-    SuperstructureState coneStateScoring;
-
-    if (scoringLocation == ManualScoringLocation.LOW) {
-      cubeStateScoring = States.CUBE_NODE_LOW;
-      coneStateScoring = States.CONE_NODE_LOW;
-    } else if (scoringLocation == ManualScoringLocation.MID) {
-      cubeStateScoring = States.CUBE_NODE_MID;
-      coneStateScoring = States.CONE_NODE_MID;
-    } else {
-      cubeStateScoring = States.CUBE_NODE_HIGH;
-      coneStateScoring = States.CONE_NODE_HIGH;
-    }
-
-    cubeState = new SuperstructureState(cubeStateScoring.position, IntakeMode.STOPPED, true);
-    coneState = new SuperstructureState(coneStateScoring.position, IntakeMode.STOPPED, true);
-
-    return Commands.either(
-            finishManualScoreCommand(),
-            getCommand(() -> mode == HeldGamePiece.CUBE ? cubeState : coneState)
-                // delay scoring so cone doesn't wobble out when the robot shakes when the carriage
-                // goes up
-                .andThen(
-                    Commands.waitSeconds(0.5)
-                        .unless(
-                            () ->
-                                scoringLocation == ManualScoringLocation.LOW
-                                    || mode == HeldGamePiece.CONE))
-                .andThen(
-                    getCommand(
-                        () -> mode == HeldGamePiece.CUBE ? cubeStateScoring : coneStateScoring))
-                .andThen(getCommand(States.STOWED)),
-            () ->
-                goal.position.height >= Positions.CUBE_NODE_MID.height
-                    || goal.position.height >= Positions.CONE_NODE_MID.height)
-        .withName("SuperstructureScore");
+  public Command getScoreCommand(NodeHeight scoringLocation) {
+    return getManualScoreCommand(scoringLocation)
+        .andThen(Commands.waitSeconds(0.5))
+        .andThen(finishManualScoreCommand())
+        .andThen(getCommand(States.STOWED));
   }
 
-  public Command getManualScoreCommand(ManualScoringLocation scoringLocation) {
+  public Command getManualScoreCommand(NodeHeight scoringLocation) {
     SuperstructureState cubeState;
     SuperstructureState coneState;
 
-    if (scoringLocation == ManualScoringLocation.LOW) {
+    if (scoringLocation == NodeHeight.LOW) {
       cubeState = States.CUBE_NODE_LOW;
       coneState = States.CONE_NODE_LOW;
-    } else if (scoringLocation == ManualScoringLocation.MID) {
+    } else if (scoringLocation == NodeHeight.MID) {
       cubeState = States.CUBE_NODE_MID;
       coneState = States.CONE_NODE_MID;
     } else {
@@ -176,12 +140,6 @@ public class SuperstructureManager extends LifecycleSubsystem {
     }
 
     return Commands.runOnce(() -> scoringState = ScoringState.ALIGNING)
-        .andThen(
-            getCommand(
-                () ->
-                    mode == HeldGamePiece.CUBE
-                        ? new SuperstructureState(cubeState.position, IntakeMode.STOPPED, true)
-                        : new SuperstructureState(coneState.position, IntakeMode.STOPPED, true)))
         .andThen(
             getCommand(
                 () ->
