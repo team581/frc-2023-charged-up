@@ -18,7 +18,6 @@ import frc.robot.util.scheduling.SubsystemPriority;
 import org.littletonrobotics.junction.Logger;
 
 public class ForksSubsystem extends LifecycleSubsystem {
-
   private static final SupplyCurrentLimitConfiguration CURRENT_LIMIT =
       new SupplyCurrentLimitConfiguration(true, 30, 30, 0.0);
 
@@ -31,6 +30,7 @@ public class ForksSubsystem extends LifecycleSubsystem {
     this.motor = motor;
     motor.configSupplyCurrentLimit(CURRENT_LIMIT);
     motor.configForwardSoftLimitThreshold(-2048.0);
+    motor.configForwardSoftLimitEnable(true);
 
     // We assume the forks are stowed when the robot is turned on
     zeroEncoder();
