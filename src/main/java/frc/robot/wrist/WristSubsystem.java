@@ -88,7 +88,6 @@ public class WristSubsystem extends LifecycleSubsystem {
     if (homingState == HomingState.HOMING) {
       motor.set(TalonFXControlMode.PercentOutput, Config.WRIST_HOMING_VOLTAGE);
 
-
       if (filteredCurrent > Config.WRIST_HOMED_CURRENT) {
         motor.set(TalonFXControlMode.PercentOutput, 0);
         motor.setSelectedSensorPosition(

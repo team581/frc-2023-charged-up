@@ -72,7 +72,8 @@ public class LightsSubsystem extends LifecycleSubsystem {
         color = Color.kRed;
       }
       blinkPattern = BlinkPattern.BLINK_SLOW;
-    } else if (scoringState == ScoringState.READY || scoringState == ScoringState.FINISHED_SCORING) {
+    } else if (scoringState == ScoringState.READY
+        || scoringState == ScoringState.FINISHED_SCORING) {
       if (localization.isVisionWorking()) {
         color = Color.kGreen;
       } else {
