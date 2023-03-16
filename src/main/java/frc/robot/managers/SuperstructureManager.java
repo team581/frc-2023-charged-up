@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.NodeHeight;
+import frc.robot.Positions;
 import frc.robot.States;
 import frc.robot.autoscore.AutoScoreLocation;
 import frc.robot.autoscore.GridKind;
@@ -117,11 +118,16 @@ public class SuperstructureManager extends LifecycleSubsystem {
     return getCommand(() -> state);
   }
 
-  public Command getScoreCommand(NodeHeight scoringLocation) {
-    return getManualScoreCommand(scoringLocation)
-        .andThen(Commands.waitSeconds(0.5))
-        .andThen(finishManualScoreCommand())
-        .andThen(getCommand(States.STOWED));
+  public Command getScoreCommand(NodeHeight scoringLocation, double delay) {
+    return Commands.either(
+        finishManualScoreCommand(),
+        getManualScoreCommand(scoringLocation)
+            .andThen(Commands.waitSeconds(delay))
+            .andThen(finishManualScoreCommand())
+            .andThen(getCommand(States.STOWED)),
+        () ->
+            goal.position.height >= Positions.CONE_NODE_MID.height
+                || goal.position.height >= Positions.CUBE_NODE_MID.height);
   }
 
   public Command getManualScoreCommand(NodeHeight scoringLocation) {
@@ -151,7 +157,8 @@ public class SuperstructureManager extends LifecycleSubsystem {
 
   public Command getFloorIntakeIdleCommand() {
     return Commands.either(
-            getFloorIntakeSpinningCommand(),
+            getFloorIntakeSpinningCommand()
+                .unless(() -> intake.getGamePiece() == HeldGamePiece.CUBE),
             getCommand(States.INTAKING_CONE_FLOOR_IDLE)
                 .unless(() -> intake.getGamePiece() == HeldGamePiece.CONE),
             () -> mode == HeldGamePiece.CUBE)
@@ -237,7 +244,10 @@ public class SuperstructureManager extends LifecycleSubsystem {
                                     goalBeforeDunk.position.angle.getDegrees() + 15),
                                 -1),
                             IntakeMode.OUTTAKE_CONE))
-                .unless(() -> mode == HeldGamePiece.CUBE))
+                .unless(
+                    () ->
+                        mode == HeldGamePiece.CUBE
+                            || goal.position.height < Positions.CONE_NODE_MID.height))
         .andThen(
             Commands.either(
                 Commands.runOnce(() -> setManualIntakeMode(IntakeMode.OUTTAKE_CUBE)),

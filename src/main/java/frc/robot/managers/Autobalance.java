@@ -4,6 +4,7 @@
 
 package frc.robot.managers;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -23,6 +24,7 @@ public class Autobalance extends LifecycleSubsystem {
   private static final double ANGLE_THRESHOLD = 9;
   private final LinearFilter autoBalanceFilter = LinearFilter.movingAverage(13);
   private Rotation2d averageRoll = new Rotation2d();
+  private final Debouncer driveVelocityDebouncer = new Debouncer(9 * 0.02);
 
   public Autobalance(SwerveSubsystem swerve, ImuSubsystem imu) {
     super(SubsystemPriority.AUTOBALANCE);
@@ -47,7 +49,7 @@ public class Autobalance extends LifecycleSubsystem {
     if (enabled) {
       Rotation2d goalAngle = Rotation2d.fromDegrees(FmsSubsystem.isRedAlliance() ? 0 : 180);
 
-      if (getDriveVelocity() == 0) {
+      if (driveVelocityDebouncer.calculate(getDriveVelocity() == 0)) {
         swerve.setXSwerve(true);
       } else {
         swerve.setXSwerve(false);
@@ -79,7 +81,6 @@ public class Autobalance extends LifecycleSubsystem {
         .until(() -> atGoal())
         .withTimeout(15.0)
         .andThen(runOnce(() -> setEnabled(false)))
-        .andThen(runOnce(() -> swerve.getXSwerveCommand()))
         .handleInterrupt(() -> setEnabled(false));
   }
 }
