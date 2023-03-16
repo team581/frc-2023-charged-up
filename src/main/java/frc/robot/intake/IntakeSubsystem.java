@@ -102,7 +102,11 @@ public class IntakeSubsystem extends LifecycleSubsystem {
       }
     }
 
-    if (mode == IntakeMode.OUTTAKE_CUBE) {
+    if (mode == IntakeMode.MANUAL_INTAKE) {
+      motor.set(TalonFXControlMode.PercentOutput, 0.5);
+    } else if (mode == IntakeMode.MANUAL_OUTTAKE) {
+      motor.set(TalonFXControlMode.PercentOutput, -0.5);
+    } else if (mode == IntakeMode.OUTTAKE_CUBE) {
       motor.set(TalonFXControlMode.PercentOutput, -0.3);
     } else if (mode == IntakeMode.OUTTAKE_CONE) {
       motor.set(TalonFXControlMode.PercentOutput, 0.4);
@@ -113,10 +117,6 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     } else if (mode == IntakeMode.INTAKE_CUBE) {
       motor.set(TalonFXControlMode.PercentOutput, 0.5);
     } else if (mode == IntakeMode.INTAKE_CONE) {
-      motor.set(TalonFXControlMode.PercentOutput, -0.5);
-    } else if (mode == IntakeMode.MANUAL_INTAKE) {
-      motor.set(TalonFXControlMode.PercentOutput, 0.5);
-    } else if (mode == IntakeMode.MANUAL_OUTTAKE) {
       motor.set(TalonFXControlMode.PercentOutput, -0.5);
     } else {
       motor.set(TalonFXControlMode.PercentOutput, 0);

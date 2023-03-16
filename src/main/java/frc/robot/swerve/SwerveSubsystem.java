@@ -173,6 +173,10 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   }
 
   public void setChassisSpeeds(ChassisSpeeds speeds, boolean openLoop) {
+    if (xSwerveEnabled) {
+      return;
+    }
+
     if (snapToAngle) {
       speeds.omegaRadiansPerSecond =
           thetaController.calculate(imu.getRobotHeading().getRadians(), goalAngle.getRadians());

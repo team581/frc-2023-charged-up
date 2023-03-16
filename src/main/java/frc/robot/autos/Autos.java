@@ -77,7 +77,7 @@ public class Autos {
   private final IntakeSubsystem intake;
 
   private final SwerveAutoBuilder autoBuilder;
-  private final LoggedDashboardChooser<AutoKind> autoChooser =
+  private final LoggedDashboardChooser<AutoKindWithoutTeam> autoChooser =
       new LoggedDashboardChooser<>("Auto Choices");
   private final Map<AutoKind, WeakReference<Command>> autosCache = new EnumMap<>(AutoKind.class);
 
@@ -121,19 +121,19 @@ public class Autos {
             Map.entry(
                 "scoreLow",
                 superstructure
-                    .getScoreCommand(NodeHeight.LOW)
+                    .getScoreCommand(NodeHeight.LOW, 0.5)
                     .withTimeout(3)
                     .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
             Map.entry(
                 "scoreMid",
                 superstructure
-                    .getScoreCommand(Config.IS_SPIKE ? NodeHeight.MID : NodeHeight.LOW)
+                    .getScoreCommand(Config.IS_SPIKE ? NodeHeight.MID : NodeHeight.LOW, 0.5)
                     .withTimeout(3)
                     .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
             Map.entry(
                 "scoreHigh",
                 superstructure
-                    .getScoreCommand(Config.IS_SPIKE ? NodeHeight.HIGH : NodeHeight.LOW)
+                    .getScoreCommand(Config.IS_SPIKE ? NodeHeight.HIGH : NodeHeight.LOW, 0.5)
                     .withTimeout(3)
                     .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
             Map.entry("home", superstructure.getHomeCommand()),
@@ -177,15 +177,11 @@ public class Autos {
               command -> System.out.println("[COMMANDS] Finished command " + command.getName()));
     }
 
-    autoChooser.addOption("Do nothing", AutoKind.DO_NOTHING);
+    autoChooser.addOption("Do nothing", AutoKindWithoutTeam.DO_NOTHING);
 
-    autoChooser.addOption("Blue long side 2", AutoKind.BLUE_LONG_SIDE_2);
-    autoChooser.addOption("Blue mid 1.5 balance", AutoKind.BLUE_MID_1_5_BALANCE);
-    autoChooser.addOption("Blue short side 2", AutoKind.BLUE_SHORT_SIDE_2);
-
-    autoChooser.addOption("Red long side 2", AutoKind.RED_LONG_SIDE_2);
-    autoChooser.addOption("Red mid 1.5 balance", AutoKind.RED_MID_1_5_BALANCE);
-    autoChooser.addOption("Red short side 2", AutoKind.RED_SHORT_SIDE_2);
+    autoChooser.addOption("Long side 2", AutoKindWithoutTeam.LONG_SIDE_2);
+    autoChooser.addDefaultOption("Mid 1.5 balance", AutoKindWithoutTeam.MID_1_5_BALANCE);
+    autoChooser.addOption("Short side 2", AutoKindWithoutTeam.SHORT_SIDE_2);
 
     // autoChooser.addOption("Blue long side 1", AutoKind.BLUE_LONG_SIDE_1);
     // autoChooser.addOption("Blue short side 1", AutoKind.BLUE_SHORT_SIDE_1);
@@ -236,14 +232,13 @@ public class Autos {
   }
 
   public Command getAutoCommand() {
-    AutoKind auto = autoChooser.get();
+    AutoKindWithoutTeam rawAuto = autoChooser.get();
 
-    if (auto == null) {
-      return buildAutoCommand(
-          FmsSubsystem.isRedAlliance()
-              ? AutoKind.RED_MID_1_5_BALANCE
-              : AutoKind.BLUE_MID_1_5_BALANCE);
+    if (rawAuto == null) {
+      rawAuto = AutoKindWithoutTeam.MID_1_5_BALANCE;
     }
+
+    AutoKind auto = FmsSubsystem.isRedAlliance() ? rawAuto.redVersion : rawAuto.blueVersion;
 
     return buildAutoCommand(auto);
   }

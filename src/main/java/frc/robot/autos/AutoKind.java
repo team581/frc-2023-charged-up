@@ -9,13 +9,13 @@ import com.pathplanner.lib.PathConstraints;
 public enum AutoKind {
   DO_NOTHING("", 0.01, 0.01, false),
 
-  BLUE_LONG_SIDE_2("BlueLongSide2", 3, 4, false),
+  BLUE_LONG_SIDE_2("BlueLongSide2", 2, 3, false),
   BLUE_MID_1_5_BALANCE("BlueMid1.5Balance", 3, 3, true),
-  BLUE_SHORT_SIDE_2("BlueShortSide2", 3, 4, false),
+  BLUE_SHORT_SIDE_2("BlueShortSide2", 2, 3, false),
 
-  RED_LONG_SIDE_2("RedLongSide2", 3, 4, false),
+  RED_LONG_SIDE_2("RedLongSide2", 2, 3, false),
   RED_MID_1_5_BALANCE("RedMid1.5Balance", 3, 3, true),
-  RED_SHORT_SIDE_2("RedShortSide2", 3, 4, false);
+  RED_SHORT_SIDE_2("RedShortSide2", 2, 3, false);
 
   // BLUE_LONG_SIDE_1("BlueLongSide1", 1, 1, false),
   // BLUE_MID_1_BALANCE("BlueMid1Balance", 1.5, 2.5, true),
