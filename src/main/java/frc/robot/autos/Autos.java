@@ -244,8 +244,9 @@ public class Autos {
   }
 
   private Command buildAutoCommand(AutoKind auto) {
-    if (autosCache.containsKey(auto)) {
-      Command autoCommand = autosCache.get(auto).get();
+    WeakReference<Command> ref = autosCache.get(auto);
+    if (ref.get() != null) {
+      Command autoCommand = ref.get();
 
       if (autoCommand != null) {
         return autoCommand;
