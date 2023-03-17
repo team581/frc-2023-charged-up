@@ -2,10 +2,8 @@
 
 // @ts-check
 
-import fs from "node:fs/promises";
-import nodePath from "node:path";
-
-const __dirname = nodePath.dirname(new URL(import.meta.url).pathname);
+const fs = require("fs/promises");
+const nodePath = require("path");
 
 function serialize(path) {
   return JSON.stringify(path, null, 2);
@@ -31,6 +29,8 @@ function translate(waypoint) {
   }
 }
 
+async function main () {
+
 const pathDir = nodePath.join(
   __dirname,
   "..",
@@ -39,11 +39,10 @@ const pathDir = nodePath.join(
   "deploy",
   "pathplanner"
 );
+
 const [, , ...rawFilenames] = process.argv;
 
-let filenames = rawFilenames.map((rawFilename) =>
-  rawFilename.endsWith(".path") ? rawFilename : `${rawFilename}.path`
-);
+let filenames = rawFilenames;
 
 // Default to all blue paths
 if (filenames.length === 0) {
@@ -71,3 +70,6 @@ for (const filename of filenames) {
   await fs.writeFile(outputPath, serialize(path));
   console.log(outputPath);
 }
+}
+
+main();
