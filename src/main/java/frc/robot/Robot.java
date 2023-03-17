@@ -125,8 +125,8 @@ public class Robot extends LoggedRobot {
   public Robot() {
     // Log to a USB stick
     Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/"));
-    // Publish data to NetworkTables
-    Logger.getInstance().addDataReceiver(new NT4Publisher());
+    // // Publish data to NetworkTables
+    // Logger.getInstance().addDataReceiver(new NT4Publisher());
     // Enables power distribution logging
     pdpLogging = new PowerDistribution(Config.PDP_ID, Config.PDP_TYPE);
 
