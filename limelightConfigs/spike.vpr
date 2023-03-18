@@ -34,10 +34,10 @@ dilation_steps:0
 direction_filter:0
 dual_close_sort_origin:0
 erosion_steps:0
-exposure:596
+exposure:1400
 fiducial_decoder_strictness:strict
 fiducial_denoise:0.000000
-fiducial_idfilters:4
+fiducial_idfilters:1,2,3,6,7,8
 fiducial_locfilters:
 fiducial_qualitythreshold:10
 fiducial_resdiv:2
@@ -54,7 +54,7 @@ image_source:0
 img_to_show:0
 intersection_filter:0
 invert_hue:0
-lcgain:13.9
+lcgain:12
 multigroup_max:7
 multigroup_min:1
 multigroup_rejector:0
