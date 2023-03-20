@@ -115,6 +115,11 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
   @Override
   public void robotPeriodic() {
+    frontLeft.log();
+    frontRight.log();
+    backLeft.log();
+    backRight.log();
+
     Logger.getInstance().recordOutput("Swerve/ModuleStates", getModuleStates());
 
     ChassisSpeeds chassisSpeeds = getChassisSpeeds();

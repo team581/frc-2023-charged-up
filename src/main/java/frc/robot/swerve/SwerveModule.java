@@ -6,6 +6,7 @@ package frc.robot.swerve;
 
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenixpro.StatusCode;
+import com.ctre.phoenixpro.StatusSignalValue;
 import com.ctre.phoenixpro.configs.ClosedLoopGeneralConfigs;
 import com.ctre.phoenixpro.configs.TalonFXConfiguration;
 import com.ctre.phoenixpro.controls.DutyCycleOut;
@@ -21,6 +22,7 @@ import frc.robot.config.Config;
 import frc.robot.util.CircleConverter;
 import frc.robot.util.CtreModuleState;
 import frc.robot.util.GearingConverter;
+import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule {
   private static final GearingConverter STEER_MOTOR_GEARING_CONVERTER =
@@ -44,6 +46,8 @@ public class SwerveModule {
   private Rotation2d previousAngle = new Rotation2d();
   private double commandedDriveVelocity = 0;
   private boolean rotorPositionSet = false;
+
+  private StatusSignalValue<Double> driveMotorStatorCurrent;
 
   public SwerveModule(
       SwerveModuleConstants constants, TalonFX driveMotor, TalonFX steerMotor, CANCoder encoder) {
@@ -109,6 +113,15 @@ public class SwerveModule {
     if (!steerStatus.isOK()) {
       System.out.println("Could not apply configs, error code: " + steerStatus.toString());
     }
+
+    driveMotorStatorCurrent = driveMotor.getStatorCurrent();
+  }
+
+  public void log() {
+    Logger.getInstance()
+        .recordOutput(
+            "Swerve/" + constants.corner.toString() + "/DriveMotorStatorCurrent",
+            driveMotorStatorCurrent.refresh().getValue());
   }
 
   public void setDesiredState(
