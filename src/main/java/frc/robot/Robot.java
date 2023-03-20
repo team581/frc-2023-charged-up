@@ -39,6 +39,7 @@ import frc.robot.util.scheduling.LifecycleSubsystemManager;
 import frc.robot.wrist.WristSubsystem;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 /**
@@ -124,8 +125,10 @@ public class Robot extends LoggedRobot {
   public Robot() {
     // Log to a USB stick
     Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/"));
-    // // Publish data to NetworkTables
-    // Logger.getInstance().addDataReceiver(new NT4Publisher());
+    if (Config.IS_DEVELOPMENT) {
+      // Publish data to NetworkTables
+      Logger.getInstance().addDataReceiver(new NT4Publisher());
+    }
     // Enables power distribution logging
     pdpLogging = new PowerDistribution(Config.PDP_ID, Config.PDP_TYPE);
 
