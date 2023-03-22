@@ -198,8 +198,8 @@ public class Robot extends LoggedRobot {
     // X swerve
     driveController.x().onTrue(swerve.getXSwerveCommand());
 
-    // Face towards grids
-    driveController.b().onTrue(autoRotate.getCommand(() -> AutoRotate.getGridAngle()));
+    // Face towards charge station for forks on short side
+    driveController.b().onTrue(autoRotate.getCommand(() -> AutoRotate.getForksAngle()));
     // Face towards shelf
     driveController.a().onTrue(autoRotate.getCommand(() -> AutoRotate.getShelfAngle()));
 

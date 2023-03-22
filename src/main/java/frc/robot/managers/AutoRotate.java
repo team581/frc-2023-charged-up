@@ -18,8 +18,8 @@ public class AutoRotate extends LifecycleSubsystem {
     return FmsSubsystem.isRedAlliance() ? Rotation2d.fromDegrees(0) : Rotation2d.fromDegrees(180);
   }
 
-  public static Rotation2d getGridAngle() {
-    return FmsSubsystem.isRedAlliance() ? Rotation2d.fromDegrees(180) : Rotation2d.fromDegrees(0);
+  public static Rotation2d getForksAngle() {
+    return FmsSubsystem.isRedAlliance() ? Rotation2d.fromDegrees(270) : Rotation2d.fromDegrees(90);
   }
 
   private final SwerveSubsystem swerve;
