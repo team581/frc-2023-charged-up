@@ -11,6 +11,7 @@ import com.ctre.phoenix.sensors.Pigeon2;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.autos.Autos;
@@ -193,7 +194,14 @@ public class Robot extends LoggedRobot {
         // TODO: Support cancelling this command when the button is released early
         .onTrue(superstructureManager.setIntakeModeCommand(HeldGamePiece.CONE));
     // Intake on shelf
-    driveController.leftBumper().onTrue(superstructureManager.getShelfIntakeCommand());
+    driveController
+        .leftBumper()
+        .onTrue(
+            superstructureManager
+                .getShelfIntakeCommand()
+                .raceWith(
+                    Commands.run(() -> swerve.driveTeleop(0, 0.1, 0, true, false), swerve)
+                        .unless(() -> intake.getGamePiece() != HeldGamePiece.NOTHING)));
 
     // X swerve
     driveController.x().onTrue(swerve.getXSwerveCommand());
