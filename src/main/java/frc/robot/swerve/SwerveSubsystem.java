@@ -66,6 +66,11 @@ public class SwerveSubsystem extends LifecycleSubsystem {
           Config.SWERVE_ROTATION_PID.kP,
           Config.SWERVE_ROTATION_PID.kI,
           Config.SWERVE_ROTATION_PID.kD);
+  private final PIDController snapThetaController =
+      new PIDController(
+          Config.SWERVE_ROTATION_SNAP_PID.kP,
+          Config.SWERVE_ROTATION_SNAP_PID.kI,
+          Config.SWERVE_ROTATION_SNAP_PID.kD);
 
   private final ProfiledPIDController xProfiledController =
       new ProfiledPIDController(
@@ -184,7 +189,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
     if (snapToAngle) {
       speeds.omegaRadiansPerSecond =
-          thetaController.calculate(imu.getRobotHeading().getRadians(), goalAngle.getRadians());
+          snapThetaController.calculate(imu.getRobotHeading().getRadians(), goalAngle.getRadians());
     }
 
     final var moduleStates = KINEMATICS.toSwerveModuleStates(speeds);
