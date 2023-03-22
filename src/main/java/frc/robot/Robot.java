@@ -8,6 +8,9 @@ import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
+
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -123,6 +126,8 @@ public class Robot extends LoggedRobot {
 
   private Command autoCommand = autos.getAutoCommand();
 
+  private final DoubleSubscriber shelfIntakeRobotSpeedSubscriber = NetworkTableInstance.getDefault().getDoubleTopic("/ConeShelfTuning/SwerveSpeed").subscribe(0);
+
   public Robot() {
     // Log to a USB stick
     Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/"));
@@ -200,7 +205,7 @@ public class Robot extends LoggedRobot {
             superstructureManager
                 .getShelfIntakeCommand()
                 .raceWith(
-                    Commands.run(() -> swerve.driveTeleop(0, 0.1, 0, true, false), swerve)
+                    Commands.run(() -> swerve.driveTeleop(0, shelfIntakeRobotSpeedSubscriber.get(), 0, true, false), swerve)
                         .unless(() -> intake.getGamePiece() != HeldGamePiece.NOTHING)));
 
     // X swerve
