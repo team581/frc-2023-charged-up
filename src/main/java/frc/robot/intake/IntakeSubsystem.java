@@ -9,7 +9,6 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.config.Config;
@@ -27,15 +26,6 @@ public class IntakeSubsystem extends LifecycleSubsystem {
   private IntakeMode mode = IntakeMode.STOPPED;
 
   private final TalonFX motor;
-
-  private final LinearFilter coneFilterIntakeCurrent =
-      LinearFilter.movingAverage(Config.IS_SPIKE ? 48 : 30); // Was 24 for spike
-  private final LinearFilter cubeFilterIntakeCurrent =
-      LinearFilter.movingAverage(Config.IS_SPIKE ? 20 : 10); // Was 10 for spike
-  private final LinearFilter coneFilterOuttakeCurrent =
-      LinearFilter.movingAverage(Config.IS_SPIKE ? 28 : 30); // Was 14 for spike
-  private final LinearFilter cubeFilterOuttakeCurrent =
-      LinearFilter.movingAverage(Config.IS_SPIKE ? 20 : 10); // Was 10 for spike
 
   private final Debouncer coneFilterSensor = new Debouncer(5 * 0.02, DebounceType.kBoth);
   private final Debouncer cubeFilterSensor = new Debouncer(5 * 0.02, DebounceType.kBoth);
@@ -69,38 +59,11 @@ public class IntakeSubsystem extends LifecycleSubsystem {
 
   @Override
   public void enabledPeriodic() {
-    double coneIntakeCurrent = coneFilterIntakeCurrent.calculate(motor.getStatorCurrent());
-    double cubeIntakeCurrent = cubeFilterIntakeCurrent.calculate(motor.getStatorCurrent());
-    double coneOuttakeCurrent = coneFilterOuttakeCurrent.calculate(motor.getStatorCurrent());
-    double cubeOuttakeCurrent = cubeFilterOuttakeCurrent.calculate(motor.getStatorCurrent());
-    Logger.getInstance().recordOutput("Intake/FilteredConeIntakeCurrent", coneIntakeCurrent);
-    Logger.getInstance().recordOutput("Intake/FilteredCubeIntakeCurrent", cubeIntakeCurrent);
-    Logger.getInstance().recordOutput("Intake/FilteredConeOuttakeCurrent", coneOuttakeCurrent);
-    Logger.getInstance().recordOutput("Intake/FilteredCubeOuttakeCurrent", cubeOuttakeCurrent);
 
     boolean coneSensor = coneFilterSensor.calculate(sensorHasCone());
     boolean cubeSensor = cubeFilterSensor.calculate(sensorHasCube());
     Logger.getInstance().recordOutput("Intake/FilteredConeIntakeSensor", coneSensor);
     Logger.getInstance().recordOutput("Intake/FilteredCubeIntakeSensor", cubeSensor);
-
-    if (mode == IntakeMode.INTAKE_CUBE) {
-      if (cubeIntakeCurrent > 35 || cubeSensor) {
-        gamePiece = HeldGamePiece.CUBE;
-      }
-    } else if (mode == IntakeMode.INTAKE_CONE) {
-      if (coneIntakeCurrent > (Config.IS_SPIKE ? 45 : 70)
-          || coneSensor) { // TODO: Edit currents for tyke
-        gamePiece = HeldGamePiece.CONE;
-      }
-    } else if (mode == IntakeMode.OUTTAKE_CUBE) {
-      if (cubeOuttakeCurrent < (Config.IS_SPIKE ? 10 : 10) || !cubeSensor) {
-        gamePiece = HeldGamePiece.NOTHING;
-      }
-    } else if (mode == IntakeMode.OUTTAKE_CONE) {
-      if (coneOuttakeCurrent < 10 || !coneSensor) {
-        gamePiece = HeldGamePiece.NOTHING;
-      }
-    }
 
     if (mode == IntakeMode.MANUAL_INTAKE) {
       motor.set(TalonFXControlMode.PercentOutput, 0.5);
