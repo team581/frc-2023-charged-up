@@ -9,6 +9,8 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.config.Config;
@@ -20,7 +22,10 @@ public class IntakeSubsystem extends LifecycleSubsystem {
   private static final SupplyCurrentLimitConfiguration CURRENT_LIMIT =
       new SupplyCurrentLimitConfiguration(true, 15, 25, 0.2);
 
-  // numbers above are placeholders for current limits
+  private final DoubleSubscriber coneVoltageSubscriber =
+      NetworkTableInstance.getDefault()
+          .getDoubleTopic("/ConeShelfTuning/IntakeVoltage")
+          .subscribe(0);
   private HeldGamePiece gamePiece = HeldGamePiece.NOTHING;
 
   private IntakeMode mode = IntakeMode.STOPPED;
@@ -80,7 +85,7 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     } else if (mode == IntakeMode.INTAKE_CUBE) {
       motor.set(TalonFXControlMode.PercentOutput, 0.5);
     } else if (mode == IntakeMode.INTAKE_CONE) {
-      motor.set(TalonFXControlMode.PercentOutput, -0.5);
+      motor.set(TalonFXControlMode.PercentOutput, coneVoltageSubscriber.get());
     } else {
       motor.set(TalonFXControlMode.PercentOutput, 0);
     }

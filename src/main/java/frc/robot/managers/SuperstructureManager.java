@@ -6,6 +6,8 @@ package frc.robot.managers;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.NodeHeight;
@@ -29,6 +31,14 @@ import org.littletonrobotics.junction.Logger;
 public class SuperstructureManager extends LifecycleSubsystem {
   private final SuperstructureMotionManager motionManager;
   private final IntakeSubsystem intake;
+  private final DoubleSubscriber elevatorHeightSubscriber =
+      NetworkTableInstance.getDefault()
+          .getDoubleTopic("/ConeShelfTuning/ElevatorHeight")
+          .subscribe(23);
+  private final DoubleSubscriber wristAngle =
+      NetworkTableInstance.getDefault()
+          .getDoubleTopic("/ConeShelfTuning/WristAngle")
+          .subscribe(131);
   private SuperstructureState goal = States.STOWED;
   private HeldGamePiece mode = HeldGamePiece.CUBE;
   private ScoringState scoringState = ScoringState.IDLE;
@@ -180,7 +190,12 @@ public class SuperstructureManager extends LifecycleSubsystem {
             () ->
                 mode == HeldGamePiece.CUBE
                     ? States.INTAKING_CUBE_SHELF
-                    : States.INTAKING_CONE_SHELF)
+                    : new SuperstructureState(
+                        new SuperstructurePosition(
+                            elevatorHeightSubscriber.get(),
+                            Rotation2d.fromDegrees(wristAngle.get()),
+                            -1),
+                        IntakeMode.INTAKE_CONE))
         .andThen(getCommand(States.STOWED))
         .withName("SuperstructureShelfIntake");
   }
