@@ -20,14 +20,13 @@ public class IntakeSubsystem extends LifecycleSubsystem {
   private static final SupplyCurrentLimitConfiguration CURRENT_LIMIT =
       new SupplyCurrentLimitConfiguration(true, 15, 25, 0.2);
 
-  // numbers above are placeholders for current limits
   private HeldGamePiece gamePiece = HeldGamePiece.NOTHING;
 
   private IntakeMode mode = IntakeMode.STOPPED;
 
   private final TalonFX motor;
 
-  private final Debouncer coneFilterSensor = new Debouncer(5 * 0.02, DebounceType.kBoth);
+  private final Debouncer coneFilterSensor = new Debouncer(10 * 0.02, DebounceType.kBoth);
   private final Debouncer cubeFilterSensor = new Debouncer(5 * 0.02, DebounceType.kBoth);
 
   public IntakeSubsystem(TalonFX motor) {
