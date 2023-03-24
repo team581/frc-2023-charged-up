@@ -21,6 +21,7 @@ public class AutoRotate extends LifecycleSubsystem {
   public static Rotation2d getRightAngle() {
     return FmsSubsystem.isRedAlliance() ? Rotation2d.fromDegrees(90) : Rotation2d.fromDegrees(270);
   }
+
   public static Rotation2d getForwardAngle() {
     return FmsSubsystem.isRedAlliance() ? Rotation2d.fromDegrees(180) : Rotation2d.fromDegrees(0);
   }
