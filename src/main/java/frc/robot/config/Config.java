@@ -144,7 +144,7 @@ public class Config {
       IS_SPIKE ? new PIDConstants(1.1, 0, 0.1) : new PIDConstants(4.25, 0, 0.4);
   public static final PIDConstants SWERVE_ROTATION_SNAP_PID =
       IS_SPIKE
-          ? new PIDConstants(1.65, 0, 0)
+          ? new PIDConstants(7.5, 0, 0.5)
           : new PIDConstants(0, 0, 0); // TODO: Edit these PID constants
   public static final boolean SWERVE_USE_FOC = IS_SPIKE ? true : true;
 

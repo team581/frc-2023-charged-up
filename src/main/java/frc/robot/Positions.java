@@ -13,6 +13,10 @@ public class Positions {
       Config.IS_SPIKE
           ? new SuperstructurePosition(0, Rotation2d.fromDegrees(25), -1)
           : new SuperstructurePosition(0, Rotation2d.fromDegrees(35), -1);
+  public static final SuperstructurePosition PRE_SCORE =
+      Config.IS_SPIKE
+          ? new SuperstructurePosition(7.5, Rotation2d.fromDegrees(50), -1)
+          : new SuperstructurePosition(7.5, Rotation2d.fromDegrees(50), -1);
   public static final SuperstructurePosition FULL_EXTENSION =
       new SuperstructurePosition(20, Rotation2d.fromDegrees(10), -1);
 

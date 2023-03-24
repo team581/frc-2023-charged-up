@@ -14,12 +14,19 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class AutoRotate extends LifecycleSubsystem {
-  public static Rotation2d getShelfAngle() {
-    return FmsSubsystem.isRedAlliance() ? Rotation2d.fromDegrees(0) : Rotation2d.fromDegrees(180);
+  public static Rotation2d getLeftAngle() {
+    return FmsSubsystem.isRedAlliance() ? Rotation2d.fromDegrees(270) : Rotation2d.fromDegrees(90);
   }
 
-  public static Rotation2d getForksAngle() {
-    return FmsSubsystem.isRedAlliance() ? Rotation2d.fromDegrees(270) : Rotation2d.fromDegrees(90);
+  public static Rotation2d getRightAngle() {
+    return FmsSubsystem.isRedAlliance() ? Rotation2d.fromDegrees(90) : Rotation2d.fromDegrees(270);
+  }
+  public static Rotation2d getForwardAngle() {
+    return FmsSubsystem.isRedAlliance() ? Rotation2d.fromDegrees(180) : Rotation2d.fromDegrees(0);
+  }
+
+  public static Rotation2d getBackwardsAngle() {
+    return FmsSubsystem.isRedAlliance() ? Rotation2d.fromDegrees(0) : Rotation2d.fromDegrees(180);
   }
 
   private final SwerveSubsystem swerve;

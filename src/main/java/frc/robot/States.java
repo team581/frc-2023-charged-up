@@ -10,6 +10,8 @@ import frc.robot.managers.SuperstructureState;
 public class States {
   public static final SuperstructureState STOWED =
       new SuperstructureState(Positions.STOWED, IntakeMode.STOPPED, true);
+  public static final SuperstructureState PRE_SCORE =
+      new SuperstructureState(Positions.PRE_SCORE, IntakeMode.STOPPED, true);
   public static final SuperstructureState FULL_EXTENSION =
       new SuperstructureState(Positions.FULL_EXTENSION, IntakeMode.STOPPED, true);
 

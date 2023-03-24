@@ -194,14 +194,17 @@ public class Robot extends LoggedRobot {
         .onTrue(superstructureManager.setIntakeModeCommand(HeldGamePiece.CONE));
     // Intake on shelf
     driveController.leftBumper().onTrue(superstructureManager.getShelfIntakeCommand());
+    // Prescore position
+    driveController.rightBumper().onTrue(superstructureManager.getCommand(States.PRE_SCORE));
 
     // X swerve
-    driveController.x().onTrue(swerve.getXSwerveCommand());
+    driveController.start().onTrue(swerve.getXSwerveCommand());
 
-    // Face towards charge station for forks on short side
-    driveController.b().onTrue(autoRotate.getCommand(() -> AutoRotate.getForksAngle()));
-    // Face towards shelf
-    driveController.a().onTrue(autoRotate.getCommand(() -> AutoRotate.getShelfAngle()));
+    // Snaps for all cardinal directions
+    driveController.x().onTrue(autoRotate.getCommand(() -> AutoRotate.getLeftAngle()));
+    driveController.b().onTrue(autoRotate.getCommand(() -> AutoRotate.getRightAngle()));
+    driveController.y().onTrue(autoRotate.getCommand(() -> AutoRotate.getForwardAngle()));
+    driveController.a().onTrue(autoRotate.getCommand(() -> AutoRotate.getBackwardsAngle()));
 
     new Trigger(() -> driveController.getThetaPercentage() == 0)
         .onFalse(autoRotate.getDisableCommand());
