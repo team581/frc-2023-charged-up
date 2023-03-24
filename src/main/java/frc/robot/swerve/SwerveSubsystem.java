@@ -107,6 +107,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     this.backLeft = backLeft;
 
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    snapThetaController.enableContinuousInput(-Math.PI, Math.PI);
     thetaProfiledController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
