@@ -19,11 +19,11 @@ import frc.robot.util.scheduling.SubsystemPriority;
 import org.littletonrobotics.junction.Logger;
 
 public class ElevatorSubsystem extends LifecycleSubsystem {
+  private static final double HOMING_CURRENT = 5;
   private final TalonFX motor;
   private double goalPositionInInches = Positions.STOWED.height;
   private double sensorUnitsPerElevatorInch = (Config.ELEVATOR_GEARING * 2048) / (1.75 * Math.PI);
   private boolean isHoming = false;
-  private double homingCurrent = 1.5;
   private boolean goToGoal = false;
   private static final double TOLERANCE = 0.5;
 
@@ -43,7 +43,7 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
     this.motor.configMotionAcceleration(Config.ELEVATOR_ACCELERATION);
     // Set current limiting
     this.motor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(false, 40, 40, 1));
-    this.motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 15, 0.5));
+    this.motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 20, 30, 0.5));
   }
 
   public void startHoming() {
@@ -95,9 +95,9 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
     // Add homing sequence
     // Convert goal in inches to sensor units, and set motor
     if (isHoming) {
-      motor.set(ControlMode.PercentOutput, -0.1);
+      motor.set(ControlMode.PercentOutput, -0.15);
       double current = motor.getSupplyCurrent();
-      if (current > homingCurrent) {
+      if (current > HOMING_CURRENT) {
         motor.setSelectedSensorPosition(0);
         this.isHoming = false;
         goalPositionInInches = Positions.STOWED.height;
