@@ -65,6 +65,24 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     Logger.getInstance().recordOutput("Intake/FilteredConeIntakeSensor", coneSensor);
     Logger.getInstance().recordOutput("Intake/FilteredCubeIntakeSensor", cubeSensor);
 
+    if (mode == IntakeMode.INTAKE_CUBE) {
+      if (cubeSensor) {
+        gamePiece = HeldGamePiece.CUBE;
+      }
+    } else if (mode == IntakeMode.INTAKE_CONE) {
+      if (coneSensor) {
+        gamePiece = HeldGamePiece.CONE;
+      }
+    } else if (mode == IntakeMode.OUTTAKE_CUBE) {
+      if (!cubeSensor) {
+        gamePiece = HeldGamePiece.NOTHING;
+      }
+    } else if (mode == IntakeMode.OUTTAKE_CONE) {
+      if (!coneSensor) {
+        gamePiece = HeldGamePiece.NOTHING;
+      }
+    }
+
     if (mode == IntakeMode.MANUAL_INTAKE) {
       motor.set(TalonFXControlMode.PercentOutput, 0.5);
     } else if (mode == IntakeMode.MANUAL_OUTTAKE) {
