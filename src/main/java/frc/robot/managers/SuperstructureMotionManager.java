@@ -107,7 +107,7 @@ public class SuperstructureMotionManager extends LifecycleSubsystem {
 
   @Override
   public void robotPeriodic() {
-    if (goalPosition.height > 1) {
+    if (goalPosition.height > 10) {
       controller.slowModeToggle(true);
     } else if (elevator.getHeight() < 20) {
       controller.slowModeToggle(false);
