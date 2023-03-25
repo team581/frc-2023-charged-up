@@ -131,8 +131,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     ChassisSpeeds chassisSpeeds = getChassisSpeeds();
     Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/X", chassisSpeeds.vxMetersPerSecond);
     Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/Y", chassisSpeeds.vyMetersPerSecond);
-    Logger.getInstance()
-        .recordOutput("Swerve/ChassisSpeeds/Omega", chassisSpeeds.omegaRadiansPerSecond);
+    Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/Omega", chassisSpeeds.omegaRadiansPerSecond);
 
     Logger.getInstance().recordOutput("Swerve/SnapToAngle/Goal", goalAngle.getDegrees());
     Logger.getInstance().recordOutput("Swerve/SnapToAngle/Enabled", snapToAngle);
@@ -184,6 +183,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   }
 
   public void setChassisSpeeds(ChassisSpeeds speeds, boolean openLoop) {
+
     if (xSwerveEnabled) {
       return;
     }
@@ -192,12 +192,26 @@ public class SwerveSubsystem extends LifecycleSubsystem {
       speeds.omegaRadiansPerSecond =
           snapThetaController.calculate(imu.getRobotHeading().getRadians(), goalAngle.getRadians());
     }
+    Logger.getInstance().recordOutput("Swerve/BeforeSkew/X", speeds.vxMetersPerSecond);
+    Logger.getInstance().recordOutput("Swerve/BeforeSkew/Y", speeds.vyMetersPerSecond);
+    Logger.getInstance().recordOutput("Swerve/BeforeSkew/Omega", speeds.omegaRadiansPerSecond);
+
+    Translation2d originalTranslation = new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
+
+    Translation2d skewedTranslation = originalTranslation.rotateBy(new Rotation2d(speeds.omegaRadiansPerSecond*-0.1));
+
+    speeds.vxMetersPerSecond = skewedTranslation.getX();
+    speeds.vyMetersPerSecond = skewedTranslation.getY();
+
+    Logger.getInstance().recordOutput("Swerve/Skew/X", speeds.vxMetersPerSecond);
+    Logger.getInstance().recordOutput("Swerve/Skew/Y", speeds.vyMetersPerSecond);
+    Logger.getInstance().recordOutput("Swerve/Skew/Omega", speeds.omegaRadiansPerSecond);
 
     final var moduleStates = KINEMATICS.toSwerveModuleStates(speeds);
     setModuleStates(moduleStates, openLoop, false);
   }
 
-  public void setModuleStates(
+  private void setModuleStates(
       SwerveModuleState[] moduleStates, boolean openLoop, boolean skipJitterOptimization) {
     SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_VELOCITY_METERS_PER_SECOND);
     Logger.getInstance().recordOutput("Swerve/GoalModuleStates", moduleStates);
@@ -248,8 +262,9 @@ public class SwerveSubsystem extends LifecycleSubsystem {
             robotTranslation.getY(),
             thetaPercentage * MAX_ANGULAR_VELOCITY,
             fieldRelative ? fieldRelativeHeading : new Rotation2d());
-    SwerveModuleState[] moduleStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds);
-    setChassisSpeeds(KINEMATICS.toChassisSpeeds(moduleStates), openLoop);
+    // SwerveModuleState[] moduleStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds);
+    // setChassisSpeeds(KINEMATICS.toChassisSpeeds(moduleStates), openLoop);
+      setChassisSpeeds(chassisSpeeds, openLoop);
   }
 
   public Command getDriveTeleopCommand(DriveController controller) {

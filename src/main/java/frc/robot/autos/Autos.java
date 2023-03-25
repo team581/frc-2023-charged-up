@@ -160,7 +160,7 @@ public class Autos {
             SwerveSubsystem.KINEMATICS,
             Config.SWERVE_TRANSLATION_PID,
             Config.SWERVE_ROTATION_PID,
-            (states) -> swerve.setModuleStates(states, false, false),
+            (states) -> swerve.setChassisSpeeds(SwerveSubsystem.KINEMATICS.toChassisSpeeds(states), false),
             eventMap,
             false,
             swerve);
