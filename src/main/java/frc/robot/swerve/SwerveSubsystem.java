@@ -4,8 +4,12 @@
 
 package frc.robot.swerve;
 
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
+
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -27,8 +31,6 @@ import frc.robot.imu.ImuSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class SwerveSubsystem extends LifecycleSubsystem {
   private static final Translation2d FRONT_LEFT_LOCATION = Config.SWERVE_FRONT_LEFT_LOCATION;
@@ -199,15 +201,17 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
     ChassisSpeeds currentSpeeds = getChassisSpeeds();
 
+    // double loopTime = skewFixLookahead.get();
+    double loopTime = 0.02;
     Pose2d robotPoseVelocity =
         new Pose2d(
-            currentSpeeds.vxMetersPerSecond * skewFixLookahead.get(),
-            currentSpeeds.vyMetersPerSecond * skewFixLookahead.get(),
-            new Rotation2d(currentSpeeds.omegaRadiansPerSecond * skewFixLookahead.get()));
+            currentSpeeds.vxMetersPerSecond * loopTime,
+            currentSpeeds.vyMetersPerSecond * loopTime,
+            new Rotation2d(currentSpeeds.omegaRadiansPerSecond * loopTime));
     Twist2d twistVelocity = new Pose2d().log(robotPoseVelocity);
     ChassisSpeeds updatedSpeeds =
         new ChassisSpeeds(
-            twistVelocity.dx / skewFixLookahead.get(), twistVelocity.dy / skewFixLookahead.get(), twistVelocity.dtheta / skewFixLookahead.get());
+            twistVelocity.dx / loopTime, twistVelocity.dy / loopTime, twistVelocity.dtheta / loopTime);
 
     final var moduleStates = KINEMATICS.toSwerveModuleStates(updatedSpeeds);
     setModuleStates(moduleStates, openLoop, false);
