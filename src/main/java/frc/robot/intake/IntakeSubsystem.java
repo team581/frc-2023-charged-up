@@ -27,7 +27,7 @@ public class IntakeSubsystem extends LifecycleSubsystem {
   private final TalonFX motor;
 
   private final Debouncer coneFilterSensor = new Debouncer(10 * 0.02, DebounceType.kBoth);
-  private final Debouncer cubeFilterSensor = new Debouncer(5 * 0.02, DebounceType.kBoth);
+  private final Debouncer cubeFilterSensor = new Debouncer(10 * 0.02, DebounceType.kBoth);
 
   public IntakeSubsystem(TalonFX motor) {
     super(SubsystemPriority.INTAKE);
