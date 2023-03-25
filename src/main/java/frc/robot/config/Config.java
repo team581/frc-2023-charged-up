@@ -21,7 +21,7 @@ public class Config {
   // TODO: Change this to false during events
   public static final boolean IS_DEVELOPMENT = true;
 
-  public static final double MATCH_DURATION_TELEOP =  135;
+  public static final double MATCH_DURATION_TELEOP = 135;
 
   public static final int DRIVE_CONTROLLER_PORT = 0;
   public static final int OPERATOR_CONTROLLER_PORT = 1;
