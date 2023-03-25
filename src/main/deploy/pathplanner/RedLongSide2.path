@@ -169,7 +169,6 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "preloadCube",
           "scoreHigh",
           "stowFast"
         ],
