@@ -53,6 +53,13 @@ public class SuperstructureManager extends LifecycleSubsystem {
   }
 
   public void set(SuperstructureState state) {
+    if (state == States.STOWED) {
+      if (goal.intakeMode == IntakeMode.INTAKE_CONE) {
+        intake.setGamePiece(HeldGamePiece.CONE);
+      } else if (goal.intakeMode == IntakeMode.INTAKE_CUBE) {
+        intake.setGamePiece(HeldGamePiece.CUBE);
+      }
+    }
     goal = state;
     manualIntakeMode = null;
     if (state == States.STOWED) {
