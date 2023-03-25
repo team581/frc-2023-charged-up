@@ -199,6 +199,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
   public void setModuleStates(
       SwerveModuleState[] moduleStates, boolean openLoop, boolean skipJitterOptimization) {
+    SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_VELOCITY_METERS_PER_SECOND);
     Logger.getInstance().recordOutput("Swerve/GoalModuleStates", moduleStates);
     frontLeft.setDesiredState(moduleStates[0], openLoop, skipJitterOptimization);
     frontRight.setDesiredState(moduleStates[1], openLoop, skipJitterOptimization);
@@ -248,7 +249,6 @@ public class SwerveSubsystem extends LifecycleSubsystem {
             thetaPercentage * MAX_ANGULAR_VELOCITY,
             fieldRelative ? fieldRelativeHeading : new Rotation2d());
     SwerveModuleState[] moduleStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_VELOCITY_METERS_PER_SECOND);
     setChassisSpeeds(KINEMATICS.toChassisSpeeds(moduleStates), openLoop);
   }
 
