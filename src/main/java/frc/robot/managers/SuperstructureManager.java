@@ -53,7 +53,7 @@ public class SuperstructureManager extends LifecycleSubsystem {
   }
 
   public void set(SuperstructureState state) {
-    if (state == States.STOWED) {
+    if (state == States.STOWED || state == States.STOWED_ROLLING) {
       if (goal.intakeMode == IntakeMode.INTAKE_CONE) {
         intake.setGamePiece(HeldGamePiece.CONE);
       } else if (goal.intakeMode == IntakeMode.INTAKE_CUBE) {
@@ -62,7 +62,7 @@ public class SuperstructureManager extends LifecycleSubsystem {
     }
     goal = state;
     manualIntakeMode = null;
-    if (state == States.STOWED) {
+    if (state == States.STOWED || state == States.STOWED_ROLLING) {
       scoringState = ScoringState.IDLE;
     }
   }
