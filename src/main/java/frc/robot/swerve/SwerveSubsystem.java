@@ -28,6 +28,7 @@ import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.util.scheduling.LifecycleSubsystem;
 import frc.robot.util.scheduling.SubsystemPriority;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class SwerveSubsystem extends LifecycleSubsystem {
   private static final Translation2d FRONT_LEFT_LOCATION = Config.SWERVE_FRONT_LEFT_LOCATION;
@@ -51,6 +52,8 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
   private boolean snapToAngle = false;
   private boolean xSwerveEnabled = false;
+
+  private final LoggedDashboardNumber skewFixLookahead = new LoggedDashboardNumber("SwerveSkewFixLookahead", 0.02);
 
   private final PIDController xController =
       new PIDController(
@@ -198,13 +201,13 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
     Pose2d robotPoseVelocity =
         new Pose2d(
-            currentSpeeds.vxMetersPerSecond * 0.02,
-            currentSpeeds.vyMetersPerSecond * 0.02,
-            new Rotation2d(currentSpeeds.omegaRadiansPerSecond * 0.02));
+            currentSpeeds.vxMetersPerSecond * skewFixLookahead.get(),
+            currentSpeeds.vyMetersPerSecond * skewFixLookahead.get(),
+            new Rotation2d(currentSpeeds.omegaRadiansPerSecond * skewFixLookahead.get()));
     Twist2d twistVelocity = new Pose2d().log(robotPoseVelocity);
     ChassisSpeeds updatedSpeeds =
         new ChassisSpeeds(
-            twistVelocity.dx / 0.02, twistVelocity.dy / 0.02, twistVelocity.dtheta / 0.02);
+            twistVelocity.dx / skewFixLookahead.get(), twistVelocity.dy / skewFixLookahead.get(), twistVelocity.dtheta / skewFixLookahead.get());
 
     final var moduleStates = KINEMATICS.toSwerveModuleStates(updatedSpeeds);
     setModuleStates(moduleStates, openLoop, false);
