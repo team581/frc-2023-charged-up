@@ -20,7 +20,7 @@ public class RumbleControllerSubsystem extends LifecycleSubsystem {
   private final XboxController controller;
 
   @Override
-  public void autonomousInit() {
+  public void teleopInit() {
     matchTimer.reset();
     matchTimer.start();
   }
@@ -29,17 +29,17 @@ public class RumbleControllerSubsystem extends LifecycleSubsystem {
     super(SubsystemPriority.RUMBLE_CONTROLLER);
     this.controller = controller;
 
-    new Trigger(() -> matchTimer.hasElapsed(Config.MATCH_DURATION - 90))
+    new Trigger(() -> matchTimer.hasElapsed(Config.MATCH_DURATION_TELEOP - 90))
         .onTrue(getVibrateCommand());
-    new Trigger(() -> matchTimer.hasElapsed(Config.MATCH_DURATION - 60))
+    new Trigger(() -> matchTimer.hasElapsed(Config.MATCH_DURATION_TELEOP - 60))
         .onTrue(getVibrateCommand());
-    new Trigger(() -> matchTimer.hasElapsed(Config.MATCH_DURATION - 30))
+    new Trigger(() -> matchTimer.hasElapsed(Config.MATCH_DURATION_TELEOP - 30))
         .onTrue(getVibrateCommand());
   }
 
   private SequentialCommandGroup getVibrateOnceCommand() {
     return Commands.runOnce(() -> controller.setRumble(RumbleType.kBothRumble, 1))
-        .andThen(Commands.waitSeconds(0.1))
+        .andThen(Commands.waitSeconds(0.2))
         .andThen(() -> controller.setRumble(RumbleType.kBothRumble, 0))
         .andThen(Commands.waitSeconds(0.1));
   }
