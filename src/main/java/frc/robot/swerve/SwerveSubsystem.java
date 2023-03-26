@@ -212,11 +212,12 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/velocity", velocity);
     Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/spinRatio", speeds.omegaRadiansPerSecond/velocity);
     Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/thetaError", Math.abs(t.getAngle().getRadians() - realT.getAngle().getRadians()));
-
-    double skewMagnitude = Math.sqrt(speeds.omegaRadiansPerSecond * 0.1);
-    double skewDirection = speeds.omegaRadiansPerSecond > 0 ? 1 : -1;
     
-    Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/skewMagnitude", skewMagnitude);
+    double skewScale = 0.05;
+    double skewMagnitude = Math.sqrt(Math.abs(speeds.omegaRadiansPerSecond * skewScale));
+    double skewDirection = speeds.omegaRadiansPerSecond < 0 ? 1 : -1;
+    
+    Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/skew", skewMagnitude * skewDirection);
 
     Translation2d skewedT = t.rotateBy( new Rotation2d(skewMagnitude * skewDirection));
     speeds.vxMetersPerSecond = skewedT.getX();
