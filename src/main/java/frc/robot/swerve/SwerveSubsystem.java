@@ -139,7 +139,6 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/theta", t.getAngle().getRadians());
     Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/velocity", velocity);
     Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/spinRatio", chassisSpeeds.omegaRadiansPerSecond/velocity);
-      
     Logger.getInstance().recordOutput("Swerve/SnapToAngle/Goal", goalAngle.getDegrees());
     Logger.getInstance().recordOutput("Swerve/SnapToAngle/Enabled", snapToAngle);
   }
@@ -203,10 +202,22 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     Logger.getInstance()
         .recordOutput("Swerve/CommandedSpeeds/Omega", speeds.omegaRadiansPerSecond);
     Translation2d t = new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
+    ChassisSpeeds realSpeeds = getChassisSpeeds();
+    Translation2d realT = new Translation2d(realSpeeds.vxMetersPerSecond, realSpeeds.vyMetersPerSecond);
     double velocity = t.getDistance(new Translation2d());
     Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/theta", t.getAngle().getRadians());
     Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/velocity", velocity);
     Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/spinRatio", speeds.omegaRadiansPerSecond/velocity);
+    Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/thetaError", Math.abs(t.getAngle().getRadians() - realT.getAngle().getRadians()));
+
+    double skewMagnitude = Math.sqrt(speeds.omegaRadiansPerSecond * 0.1);
+    double skewDirection = speeds.omegaRadiansPerSecond > 0 ? 1 : -1;
+    
+    Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/skewMagnitude", skewMagnitude);
+
+    Translation2d skewedT = t.rotateBy( new Rotation2d(skewMagnitude * skewDirection));
+    speeds.vxMetersPerSecond = skewedT.getX();
+    speeds.vyMetersPerSecond = skewedT.getY();
     final var moduleStates = KINEMATICS.toSwerveModuleStates(speeds);
     setModuleStates(moduleStates, openLoop, false);
   }
