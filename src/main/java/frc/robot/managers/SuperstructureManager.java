@@ -84,6 +84,11 @@ public class SuperstructureManager extends LifecycleSubsystem {
   }
 
   @Override
+  public void disabledInit() {
+    set(States.STOWED);
+  }
+
+  @Override
   public void enabledPeriodic() {
     motionManager.set(goal.position);
 
