@@ -25,6 +25,11 @@ public class RumbleControllerSubsystem extends LifecycleSubsystem {
     matchTimer.start();
   }
 
+  @Override
+  public void disabledInit() {
+    controller.setRumble(RumbleType.kBothRumble, 0);
+  }
+
   public RumbleControllerSubsystem(XboxController controller) {
     super(SubsystemPriority.RUMBLE_CONTROLLER);
     this.controller = controller;

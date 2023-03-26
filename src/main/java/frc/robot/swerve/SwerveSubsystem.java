@@ -134,11 +134,15 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     Logger.getInstance()
         .recordOutput("Swerve/ChassisSpeeds/Omega", chassisSpeeds.omegaRadiansPerSecond);
 
-    Translation2d t = new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond);
+    Translation2d t =
+        new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond);
     double velocity = t.getDistance(new Translation2d());
     Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/theta", t.getAngle().getRadians());
     Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/velocity", velocity);
-    Logger.getInstance().recordOutput("Swerve/ChassisSpeeds/spinRatio", chassisSpeeds.omegaRadiansPerSecond/velocity);
+    Logger.getInstance()
+        .recordOutput(
+            "Swerve/ChassisSpeeds/spinRatio", chassisSpeeds.omegaRadiansPerSecond / velocity);
+
     Logger.getInstance().recordOutput("Swerve/SnapToAngle/Goal", goalAngle.getDegrees());
     Logger.getInstance().recordOutput("Swerve/SnapToAngle/Enabled", snapToAngle);
   }
@@ -199,8 +203,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     }
     Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/X", speeds.vxMetersPerSecond);
     Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/Y", speeds.vyMetersPerSecond);
-    Logger.getInstance()
-        .recordOutput("Swerve/CommandedSpeeds/Omega", speeds.omegaRadiansPerSecond);
+    Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/Omega", speeds.omegaRadiansPerSecond);
     Translation2d t = new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
     ChassisSpeeds realSpeeds = getChassisSpeeds();
     Translation2d realT = new Translation2d(realSpeeds.vxMetersPerSecond, realSpeeds.vyMetersPerSecond);
