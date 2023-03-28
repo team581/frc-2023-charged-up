@@ -272,4 +272,9 @@ public class Autos {
 
     return autoCommand;
   }
+
+  public void clearCache() {
+    autosCache.clear();
+    Paths.getInstance().clearCache();
+  }
 }

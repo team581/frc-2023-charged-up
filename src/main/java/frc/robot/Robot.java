@@ -124,7 +124,7 @@ public class Robot extends LoggedRobot {
       new Autos(
           localization, swerve, imu, superstructureManager, elevator, wrist, intake, autobalance);
 
-  private Command autoCommand = autos.getAutoCommand();
+  private Command autoCommand;
 
   public Robot() {
     // Log to a USB stick
@@ -288,7 +288,12 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
-    autoCommand.cancel();
+    if (autoCommand != null) {
+      autoCommand.cancel();
+      autoCommand = null;
+    }
+
+    autos.clearCache();
   }
 
   @Override
@@ -298,7 +303,10 @@ public class Robot extends LoggedRobot {
   public void disabledInit() {}
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    // Keep selected auto in cache to avoid loading it when auto starts
+    autos.getAutoCommand();
+  }
 
   @Override
   public void testInit() {}
