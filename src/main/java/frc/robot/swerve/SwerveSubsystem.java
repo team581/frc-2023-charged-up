@@ -206,20 +206,25 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/Omega", speeds.omegaRadiansPerSecond);
     Translation2d t = new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
     ChassisSpeeds realSpeeds = getChassisSpeeds();
-    Translation2d realT = new Translation2d(realSpeeds.vxMetersPerSecond, realSpeeds.vyMetersPerSecond);
+    Translation2d realT =
+        new Translation2d(realSpeeds.vxMetersPerSecond, realSpeeds.vyMetersPerSecond);
     double velocity = t.getDistance(new Translation2d());
     Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/theta", t.getAngle().getRadians());
     Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/velocity", velocity);
-    Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/spinRatio", speeds.omegaRadiansPerSecond/velocity);
-    Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/thetaError", Math.abs(t.getAngle().getRadians() - realT.getAngle().getRadians()));
-    
+    Logger.getInstance()
+        .recordOutput("Swerve/CommandedSpeeds/spinRatio", speeds.omegaRadiansPerSecond / velocity);
+    Logger.getInstance()
+        .recordOutput(
+            "Swerve/CommandedSpeeds/thetaError",
+            Math.abs(t.getAngle().getRadians() - realT.getAngle().getRadians()));
+
     double skewScale = 0.05;
     double skewMagnitude = Math.sqrt(Math.abs(speeds.omegaRadiansPerSecond * skewScale));
     double skewDirection = speeds.omegaRadiansPerSecond < 0 ? 1 : -1;
-    
+
     Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/skew", skewMagnitude * skewDirection);
 
-    Translation2d skewedT = t.rotateBy( new Rotation2d(skewMagnitude * skewDirection));
+    Translation2d skewedT = t.rotateBy(new Rotation2d(skewMagnitude * skewDirection));
     speeds.vxMetersPerSecond = skewedT.getX();
     speeds.vyMetersPerSecond = skewedT.getY();
     final var moduleStates = KINEMATICS.toSwerveModuleStates(speeds);
