@@ -9,6 +9,7 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -204,6 +205,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/X", speeds.vxMetersPerSecond);
     Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/Y", speeds.vyMetersPerSecond);
     Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/Omega", speeds.omegaRadiansPerSecond);
+    
     Translation2d t = new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
     ChassisSpeeds realSpeeds = getChassisSpeeds();
     Translation2d realT =
@@ -218,15 +220,23 @@ public class SwerveSubsystem extends LifecycleSubsystem {
             "Swerve/CommandedSpeeds/thetaError",
             Math.abs(t.getAngle().getRadians() - realT.getAngle().getRadians()));
 
-    double skewScale = 0.05;
-    double skewMagnitude = Math.sqrt(Math.abs(speeds.omegaRadiansPerSecond * skewScale));
-    double skewDirection = speeds.omegaRadiansPerSecond < 0 ? 1 : -1;
+    // double skewScale = 0.05;
+    // double skewMagnitude = Math.sqrt(Math.abs(speeds.omegaRadiansPerSecond * skewScale));
+    // double skewDirection = speeds.omegaRadiansPerSecond < 0 ? 1 : -1;
 
-    Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/skew", skewMagnitude * skewDirection);
+    // Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/skew", skewMagnitude * skewDirection);
 
-    Translation2d skewedT = t.rotateBy(new Rotation2d(skewMagnitude * skewDirection));
-    speeds.vxMetersPerSecond = skewedT.getX();
-    speeds.vyMetersPerSecond = skewedT.getY();
+    // Translation2d skewedT = t.rotateBy(new Rotation2d(skewMagnitude * skewDirection));
+    // speeds.vxMetersPerSecond = skewedT.getX();
+    // speeds.vyMetersPerSecond = skewedT.getY();
+
+    //Twist computation.
+    double lookAheadSeconds = 0.02;
+    Pose2d target_pose = new Pose2d(lookAheadSeconds * speeds.vxMetersPerSecond, lookAheadSeconds * speeds.vyMetersPerSecond, Rotation2d.fromRadians(lookAheadSeconds * speeds.omegaRadiansPerSecond));
+    Twist2d twist = (new Pose2d()).log(target_pose);
+    speeds.vxMetersPerSecond = twist.dx / lookAheadSeconds;
+    speeds.vyMetersPerSecond = twist.dy / lookAheadSeconds;
+    speeds.omegaRadiansPerSecond = twist.dtheta / lookAheadSeconds;
     final var moduleStates = KINEMATICS.toSwerveModuleStates(speeds);
     setModuleStates(moduleStates, openLoop, false);
   }
