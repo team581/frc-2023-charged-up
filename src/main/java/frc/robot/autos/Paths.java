@@ -37,6 +37,10 @@ public class Paths {
     return load(auto.pathName, auto.constraints);
   }
 
+  public void clearCache() {
+    cache.clear();
+  }
+
   private List<PathPlannerTrajectory> load(String pathName, PathConstraints constraints) {
     if (!CACHING_ENABLED) {
       return PathPlanner.loadPathGroup(pathName, constraints);

@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -17,6 +18,7 @@ import frc.robot.autos.Autos;
 import frc.robot.autoscore.AutoScoreLocation;
 import frc.robot.config.Config;
 import frc.robot.controller.DriveController;
+import frc.robot.controller.RumbleControllerSubsystem;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.fms.FmsSubsystem;
 import frc.robot.forks.ForksMode;
@@ -112,6 +114,8 @@ public class Robot extends LoggedRobot {
           intake,
           superstructureManager,
           localization);
+  private final RumbleControllerSubsystem rumbleController =
+      new RumbleControllerSubsystem(new XboxController(Config.OPERATOR_CONTROLLER_PORT));
 
   private final Autobalance autobalance = new Autobalance(swerve, imu);
   private final AutoRotate autoRotate = new AutoRotate(swerve);
@@ -120,7 +124,7 @@ public class Robot extends LoggedRobot {
       new Autos(
           localization, swerve, imu, superstructureManager, elevator, wrist, intake, autobalance);
 
-  private Command autoCommand = autos.getAutoCommand();
+  private Command autoCommand;
 
   public Robot() {
     // Log to a USB stick
@@ -136,6 +140,7 @@ public class Robot extends LoggedRobot {
     Logger.getInstance().recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
     Logger.getInstance().recordMetadata("RoborioSerialNumber", Config.SERIAL_NUMBER);
     Logger.getInstance().recordMetadata("RobotConfig", Config.IS_SPIKE ? "Spike" : "Tyke");
+    Logger.getInstance().recordMetadata("VisionMode", Config.VISION_MODE.toString());
     Logger.getInstance().recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
     Logger.getInstance().recordMetadata("GitSHA", BuildConstants.GIT_SHA);
     Logger.getInstance().recordMetadata("GitDate", BuildConstants.GIT_DATE);
@@ -230,17 +235,17 @@ public class Robot extends LoggedRobot {
     operatorController
         .a()
         .onTrue(superstructureManager.getManualScoreCommand(NodeHeight.LOW))
-        .onFalse(superstructureManager.getCommand(States.STOWED));
+        .onFalse(superstructureManager.getCommand(States.STOWED_ROLLING));
     // Manual score mid
     operatorController
         .b()
         .onTrue(superstructureManager.getManualScoreCommand(NodeHeight.MID))
-        .onFalse(superstructureManager.getCommand(States.STOWED));
+        .onFalse(superstructureManager.getCommand(States.STOWED_ROLLING));
     // Manual score high
     operatorController
         .y()
         .onTrue(superstructureManager.getManualScoreCommand(NodeHeight.HIGH))
-        .onFalse(superstructureManager.getCommand(States.STOWED));
+        .onFalse(superstructureManager.getCommand(States.STOWED_ROLLING));
 
     // Stow all
     operatorController.x().onTrue(superstructureManager.getCommand(States.STOWED));
@@ -284,7 +289,12 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
-    autoCommand.cancel();
+    if (autoCommand != null) {
+      autoCommand.cancel();
+      autoCommand = null;
+    }
+
+    autos.clearCache();
   }
 
   @Override
@@ -294,7 +304,10 @@ public class Robot extends LoggedRobot {
   public void disabledInit() {}
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    // Keep selected auto in cache to avoid loading it when auto starts
+    autos.getAutoCommand();
+  }
 
   @Override
   public void testInit() {}

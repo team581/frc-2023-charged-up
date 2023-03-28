@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import frc.robot.localization.VisionMode;
 import frc.robot.swerve.SwerveCorner;
 import frc.robot.swerve.SwerveModuleConstants;
 
@@ -21,6 +22,8 @@ public class Config {
   // TODO: Change this to false during events
   public static final boolean IS_DEVELOPMENT = true;
 
+  public static final double MATCH_DURATION_TELEOP = 135;
+
   public static final int DRIVE_CONTROLLER_PORT = 0;
   public static final int OPERATOR_CONTROLLER_PORT = 1;
 
@@ -28,6 +31,8 @@ public class Config {
 
   public static final int PDP_ID = IS_SPIKE ? 1 : 0;
   public static final ModuleType PDP_TYPE = IS_SPIKE ? ModuleType.kRev : ModuleType.kCTRE;
+
+  public static final VisionMode VISION_MODE = VisionMode.FULLY_ENABLED;
 
   public static final int PIGEON_ID = 1;
 
@@ -49,7 +54,7 @@ public class Config {
   public static final SwerveModuleConstants SWERVE_FL_CONSTANTS =
       IS_SPIKE
           ? new SwerveModuleConstants(
-              Rotation2d.fromDegrees(295.4004), SwerveCorner.FRONT_LEFT, true, true)
+              Rotation2d.fromDegrees(182.4004), SwerveCorner.FRONT_LEFT, true, true)
           : new SwerveModuleConstants(
               Rotation2d.fromDegrees(117.19), SwerveCorner.FRONT_LEFT, false, false);
   // -62.84

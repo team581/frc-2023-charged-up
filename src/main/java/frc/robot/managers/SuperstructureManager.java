@@ -53,9 +53,16 @@ public class SuperstructureManager extends LifecycleSubsystem {
   }
 
   public void set(SuperstructureState state) {
+    if (state == States.STOWED || state == States.STOWED_ROLLING) {
+      if (goal.intakeMode == IntakeMode.INTAKE_CONE) {
+        intake.setGamePiece(HeldGamePiece.CONE);
+      } else if (goal.intakeMode == IntakeMode.INTAKE_CUBE) {
+        intake.setGamePiece(HeldGamePiece.CUBE);
+      }
+    }
     goal = state;
     manualIntakeMode = null;
-    if (state == States.STOWED) {
+    if (state == States.STOWED || state == States.STOWED_ROLLING) {
       scoringState = ScoringState.IDLE;
     }
   }
@@ -74,6 +81,11 @@ public class SuperstructureManager extends LifecycleSubsystem {
     } else {
       return false;
     }
+  }
+
+  @Override
+  public void disabledInit() {
+    set(States.STOWED);
   }
 
   @Override
@@ -124,7 +136,7 @@ public class SuperstructureManager extends LifecycleSubsystem {
         getManualScoreCommand(scoringLocation)
             .andThen(Commands.waitSeconds(delay))
             .andThen(finishManualScoreCommand())
-            .andThen(getCommand(States.STOWED)),
+            .andThen(getCommand(States.STOWED_ROLLING)),
         () ->
             goal.position.height >= Positions.CONE_NODE_MID.height
                 || goal.position.height >= Positions.CUBE_NODE_MID.height);
