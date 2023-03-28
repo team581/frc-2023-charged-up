@@ -140,6 +140,7 @@ public class Robot extends LoggedRobot {
     Logger.getInstance().recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
     Logger.getInstance().recordMetadata("RoborioSerialNumber", Config.SERIAL_NUMBER);
     Logger.getInstance().recordMetadata("RobotConfig", Config.IS_SPIKE ? "Spike" : "Tyke");
+    Logger.getInstance().recordMetadata("VisionMode", Config.VISION_MODE.toString());
     Logger.getInstance().recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
     Logger.getInstance().recordMetadata("GitSHA", BuildConstants.GIT_SHA);
     Logger.getInstance().recordMetadata("GitDate", BuildConstants.GIT_DATE);

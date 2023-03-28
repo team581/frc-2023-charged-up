@@ -9,11 +9,13 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import frc.robot.config.Config;
 import frc.robot.fms.FmsSubsystem;
 import frc.robot.intake.HeldGamePiece;
 import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
+import frc.robot.localization.VisionMode;
 import frc.robot.managers.ScoringState;
 import frc.robot.managers.SuperstructureManager;
 import frc.robot.util.scheduling.LifecycleSubsystem;
@@ -66,7 +68,7 @@ public class LightsSubsystem extends LifecycleSubsystem {
         blinkPattern = BlinkPattern.SOLID;
       }
     } else if (scoringState == ScoringState.ALIGNING || scoringState == ScoringState.SCORING) {
-      if (localization.isVisionWorking()) {
+      if (Config.VISION_MODE != VisionMode.FULLY_ENABLED || localization.isVisionWorking()) {
         color = Color.kGreen;
       } else {
         color = Color.kRed;
@@ -74,7 +76,7 @@ public class LightsSubsystem extends LifecycleSubsystem {
       blinkPattern = BlinkPattern.BLINK_SLOW;
     } else if (scoringState == ScoringState.READY
         || scoringState == ScoringState.FINISHED_SCORING) {
-      if (localization.isVisionWorking()) {
+      if (Config.VISION_MODE != VisionMode.FULLY_ENABLED || localization.isVisionWorking()) {
         color = Color.kGreen;
       } else {
         color = Color.kRed;
