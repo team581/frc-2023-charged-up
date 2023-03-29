@@ -79,15 +79,15 @@
     },
     {
       "anchorPoint": {
-        "x": 5.680682145212272,
+        "x": 6.2,
         "y": 0.9044469395352096
       },
       "prevControl": {
-        "x": 5.284665746233367,
+        "x": 5.803983601021095,
         "y": 0.8879181734809672
       },
       "nextControl": {
-        "x": 5.899781068988534,
+        "x": 6.419098923776262,
         "y": 0.913591598350278
       },
       "holonomicAngle": 0.0,
@@ -154,14 +154,42 @@
     },
     {
       "anchorPoint": {
-        "x": 1.8,
-        "y": 1.11
+        "x": 3.1,
+        "y": 0.8
       },
       "prevControl": {
-        "x": 3.2060253963289176,
-        "y": 0.9815467889008155
+        "x": 3.3909986950911777,
+        "y": 0.8
       },
-      "nextControl": null,
+      "nextControl": {
+        "x": 2.8090013049088225,
+        "y": 0.8
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 2.2,
+        "y": 1.06
+      },
+      "prevControl": {
+        "x": 2.73884946819775,
+        "y": 1.0472543510407684
+      },
+      "nextControl": {
+        "x": 1.996230356120212,
+        "y": 1.06481985508518
+      },
       "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": null,
@@ -173,6 +201,31 @@
           "stowFast"
         ],
         "executionBehavior": "sequential",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 1.79,
+        "y": 1.06
+      },
+      "prevControl": {
+        "x": 2.017870588101461,
+        "y": 1.06
+      },
+      "nextControl": null,
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "scoreHigh",
+          "stow"
+        ],
+        "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
       }
