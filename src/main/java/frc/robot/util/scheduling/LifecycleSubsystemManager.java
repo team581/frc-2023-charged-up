@@ -17,10 +17,11 @@ public class LifecycleSubsystemManager {
       return LifecycleStage.TELEOP;
     } else if (DriverStation.isAutonomousEnabled()) {
       return LifecycleStage.AUTONOMOUS;
-    } else if (DriverStation.isDisabled()) {
-      return LifecycleStage.DISABLED;
-    } else {
+    } else if (DriverStation.isTestEnabled()) {
       return LifecycleStage.TEST;
+    } else {
+
+      return LifecycleStage.DISABLED;
     }
   }
 
