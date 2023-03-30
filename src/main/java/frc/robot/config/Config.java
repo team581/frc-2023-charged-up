@@ -121,9 +121,6 @@ public class Config {
   public static final int INTAKE_MOTOR_ID = 17;
   public static final boolean INVERTED_INTAKE = IS_SPIKE ? false : true;
 
-  public static final int FORKS_MOTOR_ID = 18;
-  public static final double FORKS_GEARING = IS_SPIKE ? 25 : 999;
-
   public static final double SWERVE_STEER_KV = IS_SPIKE ? 0.0 : 0.0;
   public static final double SWERVE_STEER_KP = IS_SPIKE ? 5.0 : 3.0;
   public static final double SWERVE_STEER_KI = IS_SPIKE ? 0.0 : 0.0;
