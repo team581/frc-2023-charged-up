@@ -9,15 +9,14 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -38,9 +37,9 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   public static final SwerveDriveKinematics KINEMATICS =
       new SwerveDriveKinematics(
           FRONT_LEFT_LOCATION, FRONT_RIGHT_LOCATION, BACK_LEFT_LOCATION, BACK_RIGHT_LOCATION);
-  public static final double MAX_VELOCITY = ((6080.0 / 60.0) / Config.SWERVE_DRIVE_GEARING_REDUCTION) * (Config.WHEEL_DIAMETER * Math.PI);
+  public static final double MAX_VELOCITY =
+      ((6080.0 / 60.0) / Config.SWERVE_DRIVE_GEARING_REDUCTION) * (Config.WHEEL_DIAMETER * Math.PI);
   public static final double MAX_ANGULAR_VELOCITY = 20;
-
 
   private final ImuSubsystem imu;
   private final SwerveModule frontRight;
@@ -206,14 +205,18 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/Y", speeds.vyMetersPerSecond);
     Logger.getInstance().recordOutput("Swerve/CommandedSpeeds/Omega", speeds.omegaRadiansPerSecond);
 
-    //Twist computation.
+    // Twist computation.
     double lookAheadSeconds = 0.1;
-    Pose2d target_pose = new Pose2d(lookAheadSeconds * speeds.vxMetersPerSecond, lookAheadSeconds * speeds.vyMetersPerSecond, Rotation2d.fromRadians(lookAheadSeconds * speeds.omegaRadiansPerSecond));
+    Pose2d target_pose =
+        new Pose2d(
+            lookAheadSeconds * speeds.vxMetersPerSecond,
+            lookAheadSeconds * speeds.vyMetersPerSecond,
+            Rotation2d.fromRadians(lookAheadSeconds * speeds.omegaRadiansPerSecond));
     Twist2d twist = (new Pose2d()).log(target_pose);
     speeds.vxMetersPerSecond = twist.dx / lookAheadSeconds;
     speeds.vyMetersPerSecond = twist.dy / lookAheadSeconds;
     speeds.omegaRadiansPerSecond = twist.dtheta / lookAheadSeconds; // omega should stay the same.
-    //Kinematics to convert target chassis speeds to module states.
+    // Kinematics to convert target chassis speeds to module states.
     final var moduleStates = KINEMATICS.toSwerveModuleStates(speeds);
     setModuleStates(moduleStates, openLoop, false);
   }
@@ -255,8 +258,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
       boolean fieldRelative,
       boolean openLoop) {
     Translation2d robotTranslation =
-        new Translation2d(forwardPercentage, sidewaysPercentage)
-            .times(MAX_VELOCITY);
+        new Translation2d(forwardPercentage, sidewaysPercentage).times(MAX_VELOCITY);
     Rotation2d fieldRelativeHeading = imu.getRobotHeading();
 
     if (FmsSubsystem.isRedAlliance()) {
