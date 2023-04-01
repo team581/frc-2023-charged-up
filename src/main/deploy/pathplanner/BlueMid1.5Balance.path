@@ -208,8 +208,8 @@
         "y": 2.79
       },
       "prevControl": {
-        "x": 4.63597279793306,
-        "y": 2.799102473286284
+        "x": 4.636037934977727,
+        "y": 2.79
       },
       "nextControl": null,
       "holonomicAngle": 180.0,
@@ -232,7 +232,7 @@
     {
       "position": 4.2,
       "names": [
-        "intakeCube"
+        "intakeCone"
       ]
     },
     {

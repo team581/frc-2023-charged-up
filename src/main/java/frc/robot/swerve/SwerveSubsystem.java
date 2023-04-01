@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -36,10 +37,9 @@ public class SwerveSubsystem extends LifecycleSubsystem {
   public static final SwerveDriveKinematics KINEMATICS =
       new SwerveDriveKinematics(
           FRONT_LEFT_LOCATION, FRONT_RIGHT_LOCATION, BACK_LEFT_LOCATION, BACK_RIGHT_LOCATION);
-  public static final double MAX_VELOCITY_INCHES_PER_SECOND = 127;
-  public static final double MAX_VELOCITY_METERS_PER_SECOND =
-      MAX_VELOCITY_INCHES_PER_SECOND / 39.37;
+  public static final double MAX_VELOCITY = ((6080.0 / 60.0) / Config.SWERVE_DRIVE_GEARING_REDUCTION) * (Config.WHEEL_DIAMETER * Math.PI);
   public static final double MAX_ANGULAR_VELOCITY = 20;
+
 
   private final ImuSubsystem imu;
   private final SwerveModule frontRight;
@@ -233,7 +233,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
 
   public void setModuleStates(
       SwerveModuleState[] moduleStates, boolean openLoop, boolean skipJitterOptimization) {
-    SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_VELOCITY_METERS_PER_SECOND);
+    SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_VELOCITY);
     Logger.getInstance().recordOutput("Swerve/GoalModuleStates", moduleStates);
     frontLeft.setDesiredState(moduleStates[0], openLoop, skipJitterOptimization);
     frontRight.setDesiredState(moduleStates[1], openLoop, skipJitterOptimization);
@@ -269,7 +269,7 @@ public class SwerveSubsystem extends LifecycleSubsystem {
       boolean openLoop) {
     Translation2d robotTranslation =
         new Translation2d(forwardPercentage, sidewaysPercentage)
-            .times(MAX_VELOCITY_METERS_PER_SECOND);
+            .times(MAX_VELOCITY);
     Rotation2d fieldRelativeHeading = imu.getRobotHeading();
 
     if (FmsSubsystem.isRedAlliance()) {

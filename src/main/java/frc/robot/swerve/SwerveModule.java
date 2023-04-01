@@ -31,7 +31,7 @@ public class SwerveModule {
   private static final GearingConverter DRIVE_MOTOR_GEARING_CONVERTER =
       GearingConverter.fromReduction(Config.SWERVE_DRIVE_GEARING_REDUCTION);
   private static final CircleConverter DRIVE_MOTOR_WHEEL_CONVERTER =
-      CircleConverter.fromDiameter(Units.inchesToMeters(4));
+      CircleConverter.fromDiameter(Config.WHEEL_DIAMETER);
 
   private final SwerveModuleConstants constants;
   private final TalonFX driveMotor;
@@ -135,7 +135,7 @@ public class SwerveModule {
 
     boolean isStopped =
         Math.abs(state.speedMetersPerSecond)
-            <= SwerveSubsystem.MAX_VELOCITY_METERS_PER_SECOND * 0.01;
+            <= SwerveSubsystem.MAX_VELOCITY * 0.01;
     Rotation2d angle = isStopped && !skipJitterOptimization ? this.previousAngle : state.angle;
     this.previousAngle = angle;
 
@@ -149,7 +149,7 @@ public class SwerveModule {
     if (openLoop) {
       driveMotor.setControl(
           driveVoltageOpenLoopRequest.withOutput(
-              state.speedMetersPerSecond / SwerveSubsystem.MAX_VELOCITY_METERS_PER_SECOND));
+              state.speedMetersPerSecond / SwerveSubsystem.MAX_VELOCITY));
     } else {
       driveMotor.setControl(driveVoltageClosedLoopRequest.withVelocity(motorRotationsPerSecond));
     }

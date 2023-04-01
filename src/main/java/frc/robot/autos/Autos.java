@@ -128,13 +128,13 @@ public class Autos {
             Map.entry(
                 "scoreMid",
                 superstructure
-                    .getScoreCommand(Config.IS_SPIKE ? NodeHeight.MID : NodeHeight.LOW, 0.5)
+                    .getScoreCommand(Config.IS_SPIKE ? NodeHeight.MID : NodeHeight.LOW, 0)
                     .withTimeout(3)
                     .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
             Map.entry(
                 "scoreHigh",
                 superstructure
-                    .getScoreCommand(Config.IS_SPIKE ? NodeHeight.HIGH : NodeHeight.LOW, 0.5)
+                    .getScoreCommand(Config.IS_SPIKE ? NodeHeight.HIGH : NodeHeight.LOW, 0)
                     .withTimeout(3)
                     .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
             Map.entry("home", superstructure.getHomeCommand()),
@@ -181,23 +181,13 @@ public class Autos {
     }
 
     autoChooser.addOption("Do nothing", AutoKindWithoutTeam.DO_NOTHING);
+    autoChooser.addOption("Test", AutoKindWithoutTeam.TEST);
 
     autoChooser.addOption("Long side 2", AutoKindWithoutTeam.LONG_SIDE_2);
     autoChooser.addDefaultOption("Mid 1.5 balance", AutoKindWithoutTeam.MID_1_5_BALANCE);
     autoChooser.addOption("Short side 2", AutoKindWithoutTeam.SHORT_SIDE_2);
-
-    // autoChooser.addOption("Blue long side 1", AutoKind.BLUE_LONG_SIDE_1);
-    // autoChooser.addOption("Blue short side 1", AutoKind.BLUE_SHORT_SIDE_1);
-    // autoChooser.addOption("Blue mid 1 balance", AutoKind.BLUE_MID_1_BALANCE);
-
-    // autoChooser.addOption("Red long side 1", AutoKind.RED_LONG_SIDE_1);
-    // autoChooser.addOption("Red mid 1 balance", AutoKind.RED_MID_1_BALANCE);
-    // autoChooser.addOption("Red short side 1", AutoKind.RED_SHORT_SIDE_1);
-
-    // autoChooser.addOption("(Extra) Red short side 1 balance",
-    // AutoKind.EXTRA_RED_SHORT_SIDE_1_BALANCE);
-
-    // autoChooser.addOption("Test", AutoKind.TEST);
+    autoChooser.addOption("Short side 2 balance", AutoKindWithoutTeam.SHORT_SIDE_2_BALANCE);
+    autoChooser.addOption("Short side 3", AutoKindWithoutTeam.SHORT_SIDE_3);
 
     if (Config.IS_DEVELOPMENT) {
       PathPlannerServer.startServer(5811);
