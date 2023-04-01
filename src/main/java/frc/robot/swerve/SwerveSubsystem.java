@@ -236,7 +236,8 @@ public class SwerveSubsystem extends LifecycleSubsystem {
     Twist2d twist = (new Pose2d()).log(target_pose);
     speeds.vxMetersPerSecond = twist.dx / lookAheadSeconds;
     speeds.vyMetersPerSecond = twist.dy / lookAheadSeconds;
-    speeds.omegaRadiansPerSecond = twist.dtheta / lookAheadSeconds;
+    speeds.omegaRadiansPerSecond = twist.dtheta / lookAheadSeconds; // omega should stay the same.
+    //Kinematics to convert target chassis speeds to module states.
     final var moduleStates = KINEMATICS.toSwerveModuleStates(speeds);
     setModuleStates(moduleStates, openLoop, false);
   }
