@@ -23,7 +23,6 @@ import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.fms.FmsSubsystem;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.intake.HeldGamePiece;
-import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.localization.VisionMode;
@@ -114,29 +113,34 @@ public class Autos {
                 "preloadCone",
                 superstructure
                     .setIntakeModeCommand(HeldGamePiece.CONE)
-                    .andThen(superstructure.setManualIntakeCommand(IntakeMode.INTAKE_CONE))
-                    .until(() -> intake.getGamePiece() == HeldGamePiece.CONE)
-                    .withTimeout(0.2)
-                    .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.CONE)))
-                    .andThen(superstructure.setManualIntakeCommand(null))),
+                    .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.CONE)))),
             Map.entry(
                 "scoreLow",
                 superstructure
-                    .getScoreCommand(NodeHeight.LOW, 0.5)
+                    .getScoreCommand(NodeHeight.LOW, 0, false)
                     .withTimeout(3)
                     .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
             Map.entry(
                 "scoreMid",
                 superstructure
-                    .getScoreCommand(Config.IS_SPIKE ? NodeHeight.MID : NodeHeight.LOW, 0)
+                    .getScoreCommand(Config.IS_SPIKE ? NodeHeight.MID : NodeHeight.LOW, 0, false)
                     .withTimeout(3)
                     .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
             Map.entry(
                 "scoreHigh",
                 superstructure
-                    .getScoreCommand(Config.IS_SPIKE ? NodeHeight.HIGH : NodeHeight.LOW, 0)
+                    .getScoreCommand(Config.IS_SPIKE ? NodeHeight.HIGH : NodeHeight.LOW, 0, false)
                     .withTimeout(3)
                     .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
+            Map.entry("superstructureLow", superstructure.getManualScoreCommand(NodeHeight.LOW)),
+            Map.entry(
+                "superstructureMid",
+                superstructure.getManualScoreCommand(
+                    Config.IS_SPIKE ? NodeHeight.MID : NodeHeight.LOW)),
+            Map.entry(
+                "superstructureHigh",
+                superstructure.getManualScoreCommand(
+                    Config.IS_SPIKE ? NodeHeight.HIGH : NodeHeight.LOW)),
             Map.entry("home", superstructure.getHomeCommand()),
             Map.entry(
                 "intakeCone",
