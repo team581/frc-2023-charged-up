@@ -32,10 +32,11 @@ public class Config {
   public static final int PDP_ID = IS_SPIKE ? 1 : 0;
   public static final ModuleType PDP_TYPE = IS_SPIKE ? ModuleType.kRev : ModuleType.kCTRE;
 
-  public static final VisionMode VISION_MODE = VisionMode.FULLY_ENABLED;
+  public static final VisionMode VISION_MODE = VisionMode.ENABLED_UNUSED;
 
   public static final int PIGEON_ID = 1;
 
+  public static final double WHEEL_DIAMETER = Units.inchesToMeters(3.84);
   public static final double SWERVE_STEER_GEARING_REDUCTION = IS_SPIKE ? 150.0 / 7.0 : 12.8;
   public static final double SWERVE_DRIVE_GEARING_REDUCTION =
       IS_SPIKE ? 50.0 * 16.0 * 45.0 / 14.0 / 28.0 / 15.0 : 8.14;
@@ -133,10 +134,10 @@ public class Config {
   public static final double SWERVE_DRIVE_CURRENT_LIMIT = IS_SPIKE ? 35 : 0;
   public static final boolean SWERVE_DRIVE_LIMITS_ENABLE = IS_SPIKE ? true : true;
 
-  public static final double SWERVE_DRIVE_KP = IS_SPIKE ? 0.1 : 0.1;
+  public static final double SWERVE_DRIVE_KP = IS_SPIKE ? 0.24 : 0.1;
   public static final double SWERVE_DRIVE_KI = IS_SPIKE ? 0.0 : 0.0;
   public static final double SWERVE_DRIVE_KD = IS_SPIKE ? 0.0 : 0.0;
-  public static final double SWERVE_DRIVE_KV = IS_SPIKE ? 0.12 : 0.117;
+  public static final double SWERVE_DRIVE_KV = IS_SPIKE ? 0.1185 : 0.117;
   public static final double SWERVE_DRIVE_KS = IS_SPIKE ? 0.0 : 0.0;
 
   public static final double STEER_MOTOR_LIMITS = IS_SPIKE ? 35 : 0.0;
@@ -144,7 +145,7 @@ public class Config {
   public static final PIDConstants SWERVE_TRANSLATION_PID =
       IS_SPIKE ? new PIDConstants(2.5, 0, 0) : new PIDConstants(7, 0, 0.05);
   public static final PIDConstants SWERVE_ROTATION_PID =
-      IS_SPIKE ? new PIDConstants(1.1, 0, 0.1) : new PIDConstants(4.25, 0, 0.4);
+      IS_SPIKE ? new PIDConstants(4.5, 0, 0.1) : new PIDConstants(4.25, 0, 0.4);
   public static final PIDConstants SWERVE_ROTATION_SNAP_PID =
       IS_SPIKE
           ? new PIDConstants(7.5, 0, 0.5)

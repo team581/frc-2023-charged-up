@@ -131,12 +131,16 @@ public class SuperstructureManager extends LifecycleSubsystem {
   }
 
   public Command getScoreCommand(NodeHeight scoringLocation, double delay) {
+    return getScoreCommand(scoringLocation, delay, true);
+  }
+
+  public Command getScoreCommand(NodeHeight scoringLocation, double delay, boolean autoStow) {
     return Commands.either(
         finishManualScoreCommand(),
         getManualScoreCommand(scoringLocation)
             .andThen(Commands.waitSeconds(delay))
             .andThen(finishManualScoreCommand())
-            .andThen(getCommand(States.STOWED_ROLLING)),
+            .andThen(getCommand(States.STOWED_ROLLING).unless(() -> !autoStow)),
         () ->
             goal.position.height >= Positions.CONE_NODE_MID.height
                 || goal.position.height >= Positions.CUBE_NODE_MID.height);

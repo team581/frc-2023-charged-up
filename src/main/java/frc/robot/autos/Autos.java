@@ -23,7 +23,6 @@ import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.fms.FmsSubsystem;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.intake.HeldGamePiece;
-import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
 import frc.robot.localization.VisionMode;
@@ -114,29 +113,34 @@ public class Autos {
                 "preloadCone",
                 superstructure
                     .setIntakeModeCommand(HeldGamePiece.CONE)
-                    .andThen(superstructure.setManualIntakeCommand(IntakeMode.INTAKE_CONE))
-                    .until(() -> intake.getGamePiece() == HeldGamePiece.CONE)
-                    .withTimeout(0.2)
-                    .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.CONE)))
-                    .andThen(superstructure.setManualIntakeCommand(null))),
+                    .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.CONE)))),
             Map.entry(
                 "scoreLow",
                 superstructure
-                    .getScoreCommand(NodeHeight.LOW, 0.5)
+                    .getScoreCommand(NodeHeight.LOW, 0, false)
                     .withTimeout(3)
                     .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
             Map.entry(
                 "scoreMid",
                 superstructure
-                    .getScoreCommand(Config.IS_SPIKE ? NodeHeight.MID : NodeHeight.LOW, 0.5)
+                    .getScoreCommand(Config.IS_SPIKE ? NodeHeight.MID : NodeHeight.LOW, 0, false)
                     .withTimeout(3)
                     .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
             Map.entry(
                 "scoreHigh",
                 superstructure
-                    .getScoreCommand(Config.IS_SPIKE ? NodeHeight.HIGH : NodeHeight.LOW, 0.5)
+                    .getScoreCommand(Config.IS_SPIKE ? NodeHeight.HIGH : NodeHeight.LOW, 0, false)
                     .withTimeout(3)
                     .andThen(Commands.runOnce(() -> intake.setGamePiece(HeldGamePiece.NOTHING)))),
+            Map.entry("superstructureLow", superstructure.getManualScoreCommand(NodeHeight.LOW)),
+            Map.entry(
+                "superstructureMid",
+                superstructure.getManualScoreCommand(
+                    Config.IS_SPIKE ? NodeHeight.MID : NodeHeight.LOW)),
+            Map.entry(
+                "superstructureHigh",
+                superstructure.getManualScoreCommand(
+                    Config.IS_SPIKE ? NodeHeight.HIGH : NodeHeight.LOW)),
             Map.entry("home", superstructure.getHomeCommand()),
             Map.entry(
                 "intakeCone",
@@ -181,23 +185,13 @@ public class Autos {
     }
 
     autoChooser.addOption("Do nothing", AutoKindWithoutTeam.DO_NOTHING);
+    autoChooser.addOption("Test", AutoKindWithoutTeam.TEST);
 
     autoChooser.addOption("Long side 2", AutoKindWithoutTeam.LONG_SIDE_2);
     autoChooser.addDefaultOption("Mid 1.5 balance", AutoKindWithoutTeam.MID_1_5_BALANCE);
     autoChooser.addOption("Short side 2", AutoKindWithoutTeam.SHORT_SIDE_2);
-
-    // autoChooser.addOption("Blue long side 1", AutoKind.BLUE_LONG_SIDE_1);
-    // autoChooser.addOption("Blue short side 1", AutoKind.BLUE_SHORT_SIDE_1);
-    // autoChooser.addOption("Blue mid 1 balance", AutoKind.BLUE_MID_1_BALANCE);
-
-    // autoChooser.addOption("Red long side 1", AutoKind.RED_LONG_SIDE_1);
-    // autoChooser.addOption("Red mid 1 balance", AutoKind.RED_MID_1_BALANCE);
-    // autoChooser.addOption("Red short side 1", AutoKind.RED_SHORT_SIDE_1);
-
-    // autoChooser.addOption("(Extra) Red short side 1 balance",
-    // AutoKind.EXTRA_RED_SHORT_SIDE_1_BALANCE);
-
-    // autoChooser.addOption("Test", AutoKind.TEST);
+    autoChooser.addOption("Short side 2 balance", AutoKindWithoutTeam.SHORT_SIDE_2_BALANCE);
+    autoChooser.addOption("Short side 3", AutoKindWithoutTeam.SHORT_SIDE_3);
 
     if (Config.IS_DEVELOPMENT) {
       PathPlannerServer.startServer(5811);
