@@ -83,6 +83,8 @@ public class ElevatorSubsystem extends LifecycleSubsystem {
     Logger.getInstance().recordOutput("Elevator/Current", motor.getSupplyCurrent());
     Logger.getInstance().recordOutput("Elevator/GoalPosition", goalPositionInInches);
     Logger.getInstance().recordOutput("Elevator/Homing", isHoming);
+    Logger.getInstance().recordOutput("Elevator/AppliedVoltage", motor.getMotorOutputVoltage());
+    Logger.getInstance().recordOutput("Elevator/SensorVelocity", motor.getSelectedSensorVelocity());
   }
 
   @Override
