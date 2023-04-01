@@ -21,8 +21,6 @@ import frc.robot.controller.DriveController;
 import frc.robot.controller.RumbleControllerSubsystem;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.fms.FmsSubsystem;
-import frc.robot.forks.ForksMode;
-import frc.robot.forks.ForksSubsystem;
 import frc.robot.generated.BuildConstants;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.intake.HeldGamePiece;
@@ -92,10 +90,8 @@ public class Robot extends LoggedRobot {
 
   private final ElevatorSubsystem elevator =
       new ElevatorSubsystem(new TalonFX(Config.ELEVATOR_MOTOR_ID, Config.CANIVORE_ID));
-  private final WristSubsystem wrist =
-      new WristSubsystem(new TalonFX(Config.WRIST_MOTOR_ID, Config.CANIVORE_ID));
-  private final IntakeSubsystem intake =
-      new IntakeSubsystem(new TalonFX(Config.INTAKE_MOTOR_ID, Config.CANIVORE_ID));
+  private final WristSubsystem wrist = new WristSubsystem(new TalonFX(Config.WRIST_MOTOR_ID));
+  private final IntakeSubsystem intake = new IntakeSubsystem(new TalonFX(Config.INTAKE_MOTOR_ID));
   private final SuperstructureMotionManager superstructureMotionManager =
       new SuperstructureMotionManager(elevator, wrist, driveController);
   private final ImuSubsystem imu =
@@ -103,17 +99,12 @@ public class Robot extends LoggedRobot {
   private final SwerveSubsystem swerve =
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
   private final LocalizationSubsystem localization = new LocalizationSubsystem(swerve, imu);
-  private final ForksSubsystem forks =
-      new ForksSubsystem(new TalonFX(Config.FORKS_MOTOR_ID, Config.CANIVORE_ID));
   private final FmsSubsystem fmsSubsystem = new FmsSubsystem();
   private final SuperstructureManager superstructureManager =
       new SuperstructureManager(superstructureMotionManager, intake, localization);
   private final LightsSubsystem lights =
       new LightsSubsystem(
-          new CANdle(Config.LIGHTS_CANDLE_ID, Config.CANIVORE_ID),
-          intake,
-          superstructureManager,
-          localization);
+          new CANdle(Config.LIGHTS_CANDLE_ID), intake, superstructureManager, localization);
   private final RumbleControllerSubsystem rumbleController =
       new RumbleControllerSubsystem(new XboxController(Config.OPERATOR_CONTROLLER_PORT));
 
@@ -251,17 +242,6 @@ public class Robot extends LoggedRobot {
     operatorController.x().onTrue(superstructureManager.getCommand(States.STOWED));
     // Home superstructure
     operatorController.back().onTrue(superstructureManager.getHomeCommand());
-
-    // Forks go up
-    operatorController
-        .povUp()
-        .onTrue(forks.getCommand(ForksMode.UP))
-        .onFalse(forks.getCommand(ForksMode.STOPPED));
-    // Forks go down
-    operatorController
-        .povDown()
-        .onTrue(forks.getCommand(ForksMode.DOWN))
-        .onFalse(forks.getCommand(ForksMode.STOPPED));
   }
 
   @Override
