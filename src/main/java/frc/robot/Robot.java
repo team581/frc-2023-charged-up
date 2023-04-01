@@ -90,10 +90,8 @@ public class Robot extends LoggedRobot {
 
   private final ElevatorSubsystem elevator =
       new ElevatorSubsystem(new TalonFX(Config.ELEVATOR_MOTOR_ID, Config.CANIVORE_ID));
-  private final WristSubsystem wrist =
-      new WristSubsystem(new TalonFX(Config.WRIST_MOTOR_ID, Config.CANIVORE_ID));
-  private final IntakeSubsystem intake =
-      new IntakeSubsystem(new TalonFX(Config.INTAKE_MOTOR_ID, Config.CANIVORE_ID));
+  private final WristSubsystem wrist = new WristSubsystem(new TalonFX(Config.WRIST_MOTOR_ID));
+  private final IntakeSubsystem intake = new IntakeSubsystem(new TalonFX(Config.INTAKE_MOTOR_ID));
   private final SuperstructureMotionManager superstructureMotionManager =
       new SuperstructureMotionManager(elevator, wrist, driveController);
   private final ImuSubsystem imu =
@@ -106,10 +104,7 @@ public class Robot extends LoggedRobot {
       new SuperstructureManager(superstructureMotionManager, intake, localization);
   private final LightsSubsystem lights =
       new LightsSubsystem(
-          new CANdle(Config.LIGHTS_CANDLE_ID, Config.CANIVORE_ID),
-          intake,
-          superstructureManager,
-          localization);
+          new CANdle(Config.LIGHTS_CANDLE_ID), intake, superstructureManager, localization);
   private final RumbleControllerSubsystem rumbleController =
       new RumbleControllerSubsystem(new XboxController(Config.OPERATOR_CONTROLLER_PORT));
 
