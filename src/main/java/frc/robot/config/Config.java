@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import frc.robot.localization.VisionMode;
 import frc.robot.swerve.SwerveCorner;
 import frc.robot.swerve.SwerveModuleConstants;
 
@@ -30,6 +31,8 @@ public class Config {
 
   public static final int PDP_ID = IS_SPIKE ? 1 : 0;
   public static final ModuleType PDP_TYPE = IS_SPIKE ? ModuleType.kRev : ModuleType.kCTRE;
+
+  public static final VisionMode VISION_MODE = VisionMode.FULLY_ENABLED;
 
   public static final int PIGEON_ID = 1;
 
@@ -118,9 +121,6 @@ public class Config {
 
   public static final int INTAKE_MOTOR_ID = 17;
   public static final boolean INVERTED_INTAKE = IS_SPIKE ? false : true;
-
-  public static final int FORKS_MOTOR_ID = 18;
-  public static final double FORKS_GEARING = IS_SPIKE ? 25 : 999;
 
   public static final double SWERVE_STEER_KV = IS_SPIKE ? 0.0 : 0.0;
   public static final double SWERVE_STEER_KP = IS_SPIKE ? 5.0 : 3.0;

@@ -14,6 +14,7 @@ import edu.wpi.first.util.InterpolatingTreeMap;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.config.Config;
 import frc.robot.fms.FmsSubsystem;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.localization.LimelightHelpers.LimelightResults;
@@ -84,7 +85,9 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
 
     boolean visionIsValid = false; // Indicates if vision is valid in this loop.
 
-    if (LimelightHelpers.getTV("") == 1) {
+    if (Config.VISION_MODE == VisionMode.OFF) {
+      visionWorking = false;
+    } else if (LimelightHelpers.getTV("") == 1) {
       Pose2d ntCurrentVisionPose = LimelightHelpers.getBotPose2d_wpiBlue("");
       if (previousPose.getX() != ntCurrentVisionPose.getX()
           && previousPose.getY() != ntCurrentVisionPose.getY()) {

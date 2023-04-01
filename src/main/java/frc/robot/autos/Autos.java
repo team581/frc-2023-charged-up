@@ -26,6 +26,7 @@ import frc.robot.intake.HeldGamePiece;
 import frc.robot.intake.IntakeMode;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.localization.LocalizationSubsystem;
+import frc.robot.localization.VisionMode;
 import frc.robot.managers.Autobalance;
 import frc.robot.managers.SuperstructureManager;
 import frc.robot.swerve.SwerveSubsystem;
@@ -155,7 +156,9 @@ public class Autos {
 
     autoBuilder =
         new SwerveAutoBuilder(
-            localization::getPose,
+            Config.VISION_MODE == VisionMode.FULLY_ENABLED
+                ? localization::getPose
+                : localization::getOdometryPose,
             localization::resetPose,
             SwerveSubsystem.KINEMATICS,
             Config.SWERVE_TRANSLATION_PID,

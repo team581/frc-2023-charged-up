@@ -21,8 +21,6 @@ import frc.robot.controller.DriveController;
 import frc.robot.controller.RumbleControllerSubsystem;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.fms.FmsSubsystem;
-import frc.robot.forks.ForksMode;
-import frc.robot.forks.ForksSubsystem;
 import frc.robot.generated.BuildConstants;
 import frc.robot.imu.ImuSubsystem;
 import frc.robot.intake.HeldGamePiece;
@@ -103,8 +101,6 @@ public class Robot extends LoggedRobot {
   private final SwerveSubsystem swerve =
       new SwerveSubsystem(imu, frontRight, frontLeft, backRight, backLeft);
   private final LocalizationSubsystem localization = new LocalizationSubsystem(swerve, imu);
-  private final ForksSubsystem forks =
-      new ForksSubsystem(new TalonFX(Config.FORKS_MOTOR_ID, Config.CANIVORE_ID));
   private final FmsSubsystem fmsSubsystem = new FmsSubsystem();
   private final SuperstructureManager superstructureManager =
       new SuperstructureManager(superstructureMotionManager, intake, localization);
@@ -140,6 +136,7 @@ public class Robot extends LoggedRobot {
     Logger.getInstance().recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
     Logger.getInstance().recordMetadata("RoborioSerialNumber", Config.SERIAL_NUMBER);
     Logger.getInstance().recordMetadata("RobotConfig", Config.IS_SPIKE ? "Spike" : "Tyke");
+    Logger.getInstance().recordMetadata("VisionMode", Config.VISION_MODE.toString());
     Logger.getInstance().recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
     Logger.getInstance().recordMetadata("GitSHA", BuildConstants.GIT_SHA);
     Logger.getInstance().recordMetadata("GitDate", BuildConstants.GIT_DATE);
@@ -250,17 +247,6 @@ public class Robot extends LoggedRobot {
     operatorController.x().onTrue(superstructureManager.getCommand(States.STOWED));
     // Home superstructure
     operatorController.back().onTrue(superstructureManager.getHomeCommand());
-
-    // Forks go up
-    operatorController
-        .povUp()
-        .onTrue(forks.getCommand(ForksMode.UP))
-        .onFalse(forks.getCommand(ForksMode.STOPPED));
-    // Forks go down
-    operatorController
-        .povDown()
-        .onTrue(forks.getCommand(ForksMode.DOWN))
-        .onFalse(forks.getCommand(ForksMode.STOPPED));
   }
 
   @Override
