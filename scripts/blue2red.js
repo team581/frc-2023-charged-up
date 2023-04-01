@@ -55,6 +55,10 @@ if (filenames.length === 0) {
     .map((absolutePath) => nodePath.basename(absolutePath));
 }
 
+if (filenames.some(filename => filename.startsWith("Red"))) {
+  throw new RangeError('Some of the filenames are red paths, not blue ones');
+}
+
 for (const filename of filenames) {
   const pathBuf = await fs.readFile(nodePath.join(pathDir, filename));
   const path = JSON.parse(pathBuf.toString());
