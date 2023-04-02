@@ -115,6 +115,8 @@ public class SwerveModule {
     }
 
     driveMotorStatorCurrent = driveMotor.getStatorCurrent();
+
+    setDesiredState(new SwerveModuleState(0, new Rotation2d()), true, false);
   }
 
   public void log() {
