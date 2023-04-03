@@ -10,10 +10,20 @@ public class SuperstructurePosition {
   public final double height;
   public final Rotation2d angle;
   public final double earlyTransitionHeight;
+  public final boolean skipCollisionAvoidance;
 
   public SuperstructurePosition(double height, Rotation2d angle, double earlyTransitionHeight) {
+    this(height, angle, earlyTransitionHeight, false);
+  }
+
+  public SuperstructurePosition(
+      double height,
+      Rotation2d angle,
+      double earlyTransitionHeight,
+      boolean skipCollisionAvoidance) {
     this.height = height;
     this.angle = angle;
     this.earlyTransitionHeight = earlyTransitionHeight;
+    this.skipCollisionAvoidance = skipCollisionAvoidance;
   }
 }
