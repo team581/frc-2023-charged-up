@@ -190,8 +190,6 @@ public class Robot extends LoggedRobot {
         .onTrue(superstructureManager.setIntakeModeCommand(HeldGamePiece.CONE));
     // Intake on shelf
     driveController.leftBumper().onTrue(superstructureManager.getShelfIntakeCommand());
-    // Prescore position
-    driveController.rightBumper().onTrue(superstructureManager.getCommand(States.PRE_SCORE));
 
     // X swerve
     driveController.start().onTrue(swerve.getXSwerveCommand());
