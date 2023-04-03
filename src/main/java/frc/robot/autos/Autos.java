@@ -153,8 +153,7 @@ public class Autos {
                     .setIntakeModeCommand(HeldGamePiece.CUBE)
                     .andThen(superstructure.getFloorIntakeSpinningCommand())),
             Map.entry("stow", superstructure.getCommand(States.STOWED)),
-            Map.entry("stowFast", Commands.runOnce(() -> superstructure.set(States.STOWED))),
-            Map.entry("autoBalance", autoBalance.getCommand().withName("AutoAutoBalance")));
+            Map.entry("stowFast", Commands.runOnce(() -> superstructure.set(States.STOWED))));
 
     eventMap = wrapAutoEventMap(eventMap);
 
@@ -188,7 +187,10 @@ public class Autos {
     autoChooser.addOption("Test", AutoKindWithoutTeam.TEST);
 
     autoChooser.addOption("Long side 2", AutoKindWithoutTeam.LONG_SIDE_2);
+    autoChooser.addOption("Long side 2 balance", AutoKindWithoutTeam.LONG_SIDE_2_BALANCE);
+
     autoChooser.addDefaultOption("Mid 1.5 balance", AutoKindWithoutTeam.MID_1_5_BALANCE);
+
     autoChooser.addOption("Short side 2", AutoKindWithoutTeam.SHORT_SIDE_2);
     autoChooser.addOption("Short side 2 balance", AutoKindWithoutTeam.SHORT_SIDE_2_BALANCE);
     autoChooser.addOption("Short side 3", AutoKindWithoutTeam.SHORT_SIDE_3);
