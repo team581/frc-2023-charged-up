@@ -61,7 +61,8 @@ public class SuperstructureMotionManager extends LifecycleSubsystem {
 
     positionList.clear();
 
-    if ((wristGoalInCollisionArea || currentWristAngleInCollisionArea)
+    if (!newGoal.skipCollisionAvoidance
+        && (wristGoalInCollisionArea || currentWristAngleInCollisionArea)
         && (leavingBumperArea || goingToBumperArea)) {
       positionList.add(
           new SuperstructurePosition(elevator.getHeight(), Rotation2d.fromDegrees(50), -1));
