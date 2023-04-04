@@ -87,6 +87,12 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
 
     if (Config.VISION_MODE == VisionMode.OFF) {
       visionWorking = false;
+    } else if (Config.VISION_MODE == VisionMode.ENABLED_UNUSED) {
+      Pose2d ntCurrentVisionPose = LimelightHelpers.getBotPose2d_wpiBlue("");
+      Pose2d angleAdjustedVisionPose =
+          new Pose2d(ntCurrentVisionPose.getTranslation(), imu.getRobotHeading());
+      Logger.getInstance().recordOutput("Localization/VisionPose", angleAdjustedVisionPose);
+      visionWorking = false;
     } else if (LimelightHelpers.getTV("") == 1) {
       Pose2d ntCurrentVisionPose = LimelightHelpers.getBotPose2d_wpiBlue("");
       if (previousPose.getX() != ntCurrentVisionPose.getX()
