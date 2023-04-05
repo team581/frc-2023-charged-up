@@ -256,7 +256,10 @@ public class Autos {
     Command autoCommand = Commands.runOnce(() -> swerve.driveTeleop(0, 0, 0, true, true), swerve);
 
     if (auto == AutoKind.DO_NOTHING) {
-      return autoCommand.withName(autoName);
+      return autoCommand
+          .andThen(localization.getZeroCommand())
+          .andThen(superstructure.getHomeCommand())
+          .withName(autoName);
     }
 
     autoCommand = autoCommand.andThen(autoBuilder.fullAuto(Paths.getInstance().getPath(auto)));

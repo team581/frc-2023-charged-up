@@ -91,7 +91,7 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     } else if (mode == IntakeMode.OUTTAKE_CONE) {
       motor.set(TalonFXControlMode.PercentOutput, 0.4);
     } else if (gamePiece == HeldGamePiece.CUBE) {
-      motor.set(TalonFXControlMode.PercentOutput, 0.15);
+      motor.set(TalonFXControlMode.PercentOutput, 0.25);
     } else if (gamePiece == HeldGamePiece.CONE) {
       motor.set(TalonFXControlMode.PercentOutput, -0.1);
     } else if (mode == IntakeMode.INTAKE_CUBE) {
