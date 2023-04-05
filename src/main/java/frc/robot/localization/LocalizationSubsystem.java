@@ -182,6 +182,11 @@ public class LocalizationSubsystem extends LifecycleSubsystem {
         () -> resetGyro(Rotation2d.fromDegrees(FmsSubsystem.isRedAlliance() ? 180 : 0)));
   }
 
+  public Command getZeroAwayCommand() {
+    return Commands.runOnce(
+        () -> resetGyro(Rotation2d.fromDegrees(FmsSubsystem.isRedAlliance() ? 0 : 180)));
+  }
+
   public boolean atPose(Pose2d goal) {
 
     Pose2d pose = getPose();

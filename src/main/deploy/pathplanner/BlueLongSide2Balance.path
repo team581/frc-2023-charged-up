@@ -226,7 +226,7 @@
       "stopEvent": {
         "names": [
           "scoreHigh",
-          "stow"
+          "stowFast"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
@@ -235,16 +235,16 @@
     },
     {
       "anchorPoint": {
-        "x": 5.50906506089328,
-        "y": 2.1501091585179135
+        "x": 5.51,
+        "y": 2.5
       },
       "prevControl": {
-        "x": 6.796747180285859,
-        "y": -0.17847427319348452
+        "x": 6.797682119392579,
+        "y": 0.17141656828860197
       },
       "nextControl": {
-        "x": 5.49987295060708,
-        "y": 2.1667317359324434
+        "x": 5.5008078897137995,
+        "y": 2.51662257741453
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
@@ -261,11 +261,11 @@
     {
       "anchorPoint": {
         "x": 4.078735369262237,
-        "y": 2.15
+        "y": 2.5
       },
       "prevControl": {
         "x": 4.8721691877017195,
-        "y": 2.15
+        "y": 2.5
       },
       "nextControl": null,
       "holonomicAngle": 180.0,

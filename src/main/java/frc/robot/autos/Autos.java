@@ -257,7 +257,7 @@ public class Autos {
 
     if (auto == AutoKind.DO_NOTHING) {
       return autoCommand
-          .andThen(localization.getZeroCommand())
+          .andThen(localization.getZeroAwayCommand())
           .andThen(superstructure.getHomeCommand())
           .withName(autoName);
     }
