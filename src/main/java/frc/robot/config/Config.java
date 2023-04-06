@@ -20,7 +20,7 @@ public class Config {
   public static final boolean IS_SPIKE =
       SERIAL_NUMBER == null || !SERIAL_NUMBER.equalsIgnoreCase(TYKE_SERIAL_NUMBER);
   // TODO: Change this to false during events
-  public static final boolean IS_DEVELOPMENT = true;
+  public static final boolean IS_DEVELOPMENT = false;
 
   public static final double MATCH_DURATION_TELEOP = 135;
 
