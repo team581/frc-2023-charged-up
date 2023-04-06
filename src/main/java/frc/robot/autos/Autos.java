@@ -39,10 +39,6 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class Autos {
   private static Command wrapAutoEvent(String commandName, Command command) {
-    if (!Config.IS_DEVELOPMENT) {
-      return command.withName(commandName);
-    }
-
     return Commands.sequence(
             Commands.print("[COMMANDS] Starting auto event " + commandName),
             command.deadlineWith(
@@ -171,17 +167,15 @@ public class Autos {
             false,
             swerve);
 
-    if (Config.IS_DEVELOPMENT) {
-      CommandScheduler.getInstance()
-          .onCommandInitialize(
-              command -> System.out.println("[COMMANDS] Starting command " + command.getName()));
-      CommandScheduler.getInstance()
-          .onCommandInterrupt(
-              command -> System.out.println("[COMMANDS] Cancelled command " + command.getName()));
-      CommandScheduler.getInstance()
-          .onCommandFinish(
-              command -> System.out.println("[COMMANDS] Finished command " + command.getName()));
-    }
+    CommandScheduler.getInstance()
+        .onCommandInitialize(
+            command -> System.out.println("[COMMANDS] Starting command " + command.getName()));
+    CommandScheduler.getInstance()
+        .onCommandInterrupt(
+            command -> System.out.println("[COMMANDS] Cancelled command " + command.getName()));
+    CommandScheduler.getInstance()
+        .onCommandFinish(
+            command -> System.out.println("[COMMANDS] Finished command " + command.getName()));
 
     autoChooser.addOption("Do nothing", AutoKindWithoutTeam.DO_NOTHING);
     autoChooser.addOption("Test", AutoKindWithoutTeam.TEST);
