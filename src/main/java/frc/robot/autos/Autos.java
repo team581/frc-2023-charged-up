@@ -191,7 +191,6 @@ public class Autos {
 
     autoChooser.addDefaultOption("Mid 1.5 balance", AutoKindWithoutTeam.MID_1_5_BALANCE);
 
-    autoChooser.addOption("Short side 2", AutoKindWithoutTeam.SHORT_SIDE_2);
     autoChooser.addOption("Short side 2 balance", AutoKindWithoutTeam.SHORT_SIDE_2_BALANCE);
     autoChooser.addOption("Short side 3", AutoKindWithoutTeam.SHORT_SIDE_3);
 
