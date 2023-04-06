@@ -226,7 +226,7 @@
       "stopEvent": {
         "names": [
           "scoreHigh",
-          "stow"
+          "stowFast"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
