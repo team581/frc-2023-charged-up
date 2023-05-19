@@ -4,6 +4,7 @@
 
 package frc.robot.intake;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -36,6 +37,8 @@ public class IntakeSubsystem extends LifecycleSubsystem {
     motor.setInverted(Config.INVERTED_INTAKE);
     motor.configSupplyCurrentLimit(CURRENT_LIMIT);
     motor.overrideLimitSwitchesEnable(false);
+
+    motor.set(ControlMode.PercentOutput, 0);
   }
 
   private boolean sensorHasCube() {

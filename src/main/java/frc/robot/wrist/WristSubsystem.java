@@ -43,6 +43,8 @@ public class WristSubsystem extends LifecycleSubsystem {
     this.motor.configMotionAcceleration(Config.WRIST_MOTION_ACCELERATION);
 
     this.motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 25, 25, 0.5));
+
+    motor.set(ControlMode.PercentOutput, 0);
   }
 
   public Rotation2d getAngle() {
